@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sintering Materials Research Lab | University of Saskatchewan</title>
-<meta name="description" content="The Sintering Materials Research Lab at the University of Saskatchewan studies how powder become dense, high-performance materials. Saskatoon, Saskatchewan, Canada.">
+<meta name="description" content="The Sintering Materials Research Lab at the University of Saskatchewan studies how powders become dense, high-performance materials, with a focus on nuclear materials and fuel. Saskatoon, Saskatchewan, Canada.">
 <link rel="canonical" href="https://sintrlab.ca/">
 <meta property="og:title" content="Sintering Materials Research Lab">
 <meta property="og:description" content="Research on sintering, microstructure, and materials performance at the University of Saskatchewan.">
 <meta property="og:url" content="https://sintrlab.ca/">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="sintrlab_symbol.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
@@ -79,11 +80,10 @@ a:hover { color: var(--accent-deep); }
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
-.wordmark { font-family: var(--head); font-weight: 700; font-size: 1.2rem; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
-.wordmark:hover { color: var(--accent); }
-.wordmark { display: inline-flex; align-items: center; gap: 10px; }
-.wordmark img { height: 46px; width: auto; display: block; }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 84px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; }
+.brand { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
+.brand-symbol { height: 58px; width: auto; display: block; }
+.brand-word { height: 46px; width: auto; display: block; }
 
 .hero-grid { display: block; }
 .nav { display: flex; gap: 22px; flex-wrap: wrap; }
@@ -114,6 +114,21 @@ a:hover { color: var(--accent-deep); }
 .sim-readout strong { display: block; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
 input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; margin: 0; }
 .sim-note { font-size: 0.9rem; color: var(--ink-soft); margin: 12px 0 0; max-width: none; }
+
+/* About */
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 72px; align-items: center; }
+.about-logo { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.about-symbol { width: 190px; height: auto; display: block; }
+.about-word { width: 270px; height: auto; display: block; }
+
+/* Research groups */
+.group + .group { margin-top: 72px; }
+.group-head { margin-bottom: 24px; }
+.group-head h3 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.015em; }
+.group-head p { color: var(--ink-soft); margin: 10px 0 0; }
+.cta { margin-top: 28px; }
+.more summary { cursor: pointer; font-family: var(--head); font-weight: 500; color: var(--accent); margin: 28px 0 12px; }
+.more[open] summary { margin-bottom: 0; }
 
 /* Rows */
 .row {
@@ -164,7 +179,13 @@ address { font-style: normal; }
   .avatar { width: 120px; height: 120px; font-size: 2.2rem; }
   #sim { height: 280px; }
   .nav { gap: 16px; }
-  .wordmark img { height: 38px; }
+  .brand { gap: 12px; }
+  .brand-symbol { height: 46px; }
+  .brand-word { height: 36px; }
+  .about-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .about-logo { align-items: flex-start; }
+  .about-symbol { width: 130px; }
+  .about-word { width: 210px; }
 }
 </style>
 </head>
@@ -174,10 +195,11 @@ address { font-style: normal; }
 
 <header class="site-header">
   <div class="wrap">
-    <a class="wordmark" href="#top" aria-label="Sintering Materials Research Lab, back to top"><img src="logo-horizontal.png" alt="Sintr lab" width="1200" height="500"></a>
+    <a class="brand" href="#top" aria-label="Sintering Materials Research Lab, back to top"><img class="brand-symbol" src="sintrlab_symbol.svg" alt="" width="380" height="414"><img class="brand-word" src="sintrlab_wordmark.svg" alt="Sintr lab" width="442" height="116"></a>
     <nav class="nav" aria-label="Main">
       <a href="#about">About</a>
       <a href="#research">Research</a>
+      <a href="#capabilities">Capabilities</a>
       <a href="#people">People</a>
       <a href="#publications">Publications</a>
       <a href="#join">Join the lab</a>
@@ -221,8 +243,17 @@ address { font-style: normal; }
   <section class="section" id="about">
     <div class="wrap">
       <div class="section-head"><h2>About the lab</h2></div>
-      <p>Sintering bonds powder particles into a solid by heating them below their melting point. Atoms move across the contacts between particles, necks form, pores close, and the part densifies. The temperature, time, pressure, and atmosphere we choose set the microstructure, which in turn set how the material performs in service.</p>
-      <p>The lab's vision is unearthing the relationship between manufacturing process, structure, and property in materials fabricated using sintering. </p>
+      <div class="about-grid">
+        <div>
+          <p>Sintering bonds powder particles into a solid by heating them below their melting point. Atoms move across the contacts between particles, necks form, pores close, and the part densifies. The temperature, time, pressure, and atmosphere we choose set the microstructure, which in turn set how the material performs in service.</p>
+          <p>The lab's vision is unearthing the relationship between manufacturing process, structure, and property in materials fabricated using sintering.</p>
+          <p>We start with nuclear materials and fuel, where the way a material is made has a large effect on how it performs in a reactor. The same questions come up wherever powders are turned into parts that must survive heat, wear, corrosion or radiation, so we also want to apply our work to mining, agriculture, oil and gas, and other industries that depend on sintered materials.</p>
+        </div>
+        <div class="about-logo">
+          <img class="about-symbol" src="sintrlab_symbol.svg" alt="Sintr lab symbol: a maple leaf filled with a printed tool-path pattern, above pressing blocks and packed orange particles." width="380" height="414">
+          <img class="about-word" src="sintrlab_wordmark.svg" alt="sintr lab" width="442" height="116">
+        </div>
+      </div>
     </div>
   </section>
 
@@ -231,37 +262,104 @@ address { font-style: normal; }
     <div class="wrap">
       <div class="section-head">
         <h2>Research</h2>
-        <p><span class="ph">[Draft themes. Edit, remove, or add to match the lab's actual projects.]</span></p>
+        <p>Our core is nuclear materials and fuel. Our approach is broader: link how a material is made to its structure, and its structure to how it performs.</p>
       </div>
 
-      <div class="row">
-        <h3>Sintering of ceramics and metals</h3>
-        <p><span class="ph">[Describe the material systems, the sintering routes you use, and the main question you are asking.]</span></p>
+      <div class="group">
+        <div class="group-head">
+          <h3>Nuclear materials and fuel</h3>
+          <p>Reactor fuel has been made by pressing and sintering uranium dioxide powder for decades. Newer reactor designs call for fuels that conduct heat better, hold in fission products better, and can take new shapes. How fabrication conditions control those properties is not yet well understood, and that is the gap we work on.</p>
+        </div>
+        <div class="row">
+          <h3>Advanced technology fuels</h3>
+          <p>Uranium dioxide fuel with additives or dopants that improve heat conduction and the retention of fission products. We study how the additive and the sintering route, from conventional press-and-sinter to spark plasma sintering, change the microstructure and the resulting properties.</p>
+        </div>
+        <div class="row">
+          <h3>TRISO fuel</h3>
+          <p>TRISO fuel packs small coated fuel particles into a compact. We study how to make compacts that hold more particles without damaging them, and how the particles interact while they are pressed and heated.</p>
+        </div>
+        <div class="row">
+          <h3>3D-printed fuel</h3>
+          <p>Printing can make fuel shapes, such as internal channels and fins, that pressing cannot. We work on feedstock, binder removal and sintering so that printed parts are dense and chemically clean, and we compare them with injection-molded parts of the same shape.</p>
+        </div>
+        <div class="row">
+          <h3>Spent fuel and waste forms</h3>
+          <p>Spark plasma sintering can turn stabilized spent research-reactor fuel into dense pellets for long-term disposal. We are interested in how sintering conditions, tooling and fuel chemistry affect pellet quality and the release of fission products during processing.</p>
+        </div>
+        <div class="row">
+          <h3>Radiation sources and detectors</h3>
+          <p>3D printing can shape radiation sources and scintillator materials for detection and nuclear forensics. We are interested in printing these materials with controlled composition and geometry.</p>
+        </div>
       </div>
-      <div class="row">
-        <h3>Materials for nuclear energy</h3>
-        <p><span class="ph">[Confirm and describe. For example: fuel and structural materials, including TRISO fuel, and how fabrication affects behaviour under radiation.]</span></p>
+
+      <div class="group">
+        <div class="group-head">
+          <h3>How we work</h3>
+          <p>The same three steps apply to every material we study.</p>
+        </div>
+        <div class="row">
+          <h3>Process</h3>
+          <p>We combine conventional press-and-sinter, spark plasma sintering, 3D printing and powder injection molding to make test materials, and we use them to prototype new compositions and shapes quickly.</p>
+        </div>
+        <div class="row">
+          <h3>Structure</h3>
+          <p>Laboratory methods such as X-ray diffraction, electron microscopy and metallography, together with synchrotron techniques at the Canadian Light Source, show how processing changes chemistry, phases, grain size, porosity and defects.</p>
+        </div>
+        <div class="row">
+          <h3>Performance</h3>
+          <p>Measurements such as thermal conductivity show how structure turns into performance. With partners, we aim to follow promising materials into test-reactor irradiation.</p>
+        </div>
       </div>
-      <div class="row">
-        <h3>Microstructure and properties</h3>
-        <p><span class="ph">[Describe how you link grain size, porosity, and phase structure to strength, thermal behaviour, and durability.]</span></p>
-      </div>
-      <div class="row">
-        <h3>Advanced sintering methods</h3>
-        <p><span class="ph">[Name the methods and equipment, e.g. field-assisted or pressure-assisted sintering, if applicable.]</span></p>
+
+      <div class="group">
+        <div class="group-head">
+          <h3>Where we want to grow</h3>
+          <p>Sintering is used well beyond nuclear power. We want to carry what we learn about nuclear materials into other industries that matter to Saskatchewan and Canada. These are directions we are exploring, and we are looking for partners to shape them with us. <span class="ph">[Agriculture and oil and gas are goals without past projects behind them yet. Keep, reword or remove them, and add real contacts or partners.]</span></p>
+        </div>
+        <div class="row">
+          <h3>Mining</h3>
+          <p>Wear-resistant and corrosion-resistant sintered parts, such as hard-metal tools for drilling and cutting and components for mineral processing. Dr. Prasad has worked with industry on metallurgical failure analysis of mining parts such as crusher hammers, drag chains and slurry pump components.</p>
+        </div>
+        <div class="row">
+          <h3>Agriculture</h3>
+          <p>Longer-lasting parts for equipment that works in abrasive soil and grain, where wear drives cost and downtime.</p>
+        </div>
+        <div class="row">
+          <h3>Oil and gas</h3>
+          <p>Ceramic proppants, which hold fractures open in hydraulic fracturing, and wear- and corrosion-resistant components for harsh downhole conditions.</p>
+        </div>
+        <div class="row">
+          <h3>Other energy and manufacturing</h3>
+          <p>High-temperature ceramics, powder-metal parts, and additive manufacturing of metals and ceramics, wherever the way a part is made decides how long it lasts. Dr. Prasad has also used spark plasma sintering for solid electrolytes, heat sinks, microfluidic parts and grain refiners for aluminum alloys.</p>
+        </div>
+        <p class="cta">Have a materials problem in one of these areas, or want to explore a joint project? <a class="btn" href="mailto:anil.prasad@usask.ca?subject=Collaboration%20inquiry%20-%20Sintering%20Materials%20Research%20Lab">Discuss a collaboration</a></p>
       </div>
     </div>
   </section>
 
-  <!-- Facilities -->
-  <section class="section" id="facilities">
+  <!-- Capabilities and partners -->
+  <section class="section" id="capabilities">
     <div class="wrap">
-      <div class="section-head"><h2>Facilities and equipment</h2></div>
-      <ul class="plain">
-        <li><strong>Furnaces and sintering equipment.</strong> <span class="ph">[List furnaces, maximum temperatures, atmospheres.]</span></li>
-        <li><strong>Powder processing.</strong> <span class="ph">[List milling, mixing, pressing, and forming equipment.]</span></li>
-        <li><strong>Characterization.</strong> <span class="ph">[List microscopy, diffraction, density, and mechanical testing tools, in the lab or shared on campus.]</span></li>
-      </ul>
+      <div class="section-head">
+        <h2>Capabilities and partners</h2>
+        <p>The Sintering Materials Research Lab is new. We are building our own laboratory, and until it is ready we work through shared facilities and collaborations.</p>
+      </div>
+      <div class="row">
+        <h3>Our laboratory</h3>
+        <p>Being established in the Department of Mechanical Engineering. <span class="ph">[Update this as equipment arrives, for example furnaces, sample preparation and testing equipment.]</span></p>
+      </div>
+      <div class="row">
+        <h3>Experience</h3>
+        <p>Our principal investigator has set up and run laboratories for radioactive materials, including the first spark plasma sintering facility in Canada equipped for this work, and has hired, trained and supervised students and technologists.</p>
+      </div>
+      <div class="row">
+        <h3>Synchrotron characterization</h3>
+        <p>The Canadian Light Source, Canada's national synchrotron facility, is on the University of Saskatchewan campus. Its X-ray techniques let us look inside materials at small scales, including how defects, phases and particles change during processing.</p>
+      </div>
+      <div class="row">
+        <h3>Collaborators</h3>
+        <p>We work with researchers at the University of Saskatchewan, Canadian Nuclear Laboratories, and other universities and industry, and we welcome new partners. <span class="ph">[Name the partners you are happy to list publicly.]</span></p>
+      </div>
     </div>
   </section>
 
@@ -275,31 +373,12 @@ address { font-style: normal; }
         <div>
           <h3>Dr. Anil Prasad</h3>
           <p class="role">Principal investigator. Assistant Professor, Department of Mechanical Engineering, College of Engineering. Ph.D., P.Eng.</p>
-          <p><span class="ph">[Add a 2–3 sentence bio and research interests.]</span></p>
-          <p><a href="mailto:anil.prasad@usask.ca">anil.prasad@usask.ca</a></p>
+          <p>Dr. Prasad joined the University of Saskatchewan as an Assistant Professor in September 2026. He holds a PhD (2020) and MASc (2017) in Mechanical Engineering from UBC Okanagan and a B.Tech from IIT Madras. From 2020 to 2026 he was a Fuel Scientist at Canadian Nuclear Laboratories (CNL), where he led work on spark plasma sintering and additive manufacturing of nuclear materials. He remains an Adjunct Professor at UBC. During his graduate work he set up the first spark plasma sintering facility in Canada equipped to process radioactive materials. At CNL he fabricated the first additively manufactured dense uranium dioxide part, founded the CNL 3D Printing User Group, and received the 2023 D.F. Torgerson Discovery Award. He also created the Pan-Canadian TRISO Academic Working Group. <span class="ph">[Review this bio and add a photo.]</span></p>
+          <p><a href="mailto:anil.prasad@usask.ca">anil.prasad@usask.ca</a><br><a href="https://scholar.google.com/citations?hl=en&user=GAYjEOsAAAAJ">Google Scholar</a> &nbsp;|&nbsp; <a href="https://orcid.org/0000-0002-8381-9841">ORCID</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/prasadanil/">LinkedIn</a></p>
         </div>
       </div>
 
-      <div class="people-block table-wrap">
-        <table>
-          <caption>Current members</caption>
-          <thead><tr><th scope="col">Name</th><th scope="col">Role</th><th scope="col">Project</th></tr></thead>
-          <tbody>
-            <tr><td><span class="ph">[Name]</span></td><td><span class="ph">[PhD / MSc / Postdoc / Undergraduate]</span></td><td><span class="ph">[Project title]</span></td></tr>
-            <tr><td><span class="ph">[Name]</span></td><td><span class="ph">[Role]</span></td><td><span class="ph">[Project title]</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="people-block table-wrap">
-        <table>
-          <caption>Alumni</caption>
-          <thead><tr><th scope="col">Name</th><th scope="col">Degree and year</th><th scope="col">Now</th></tr></thead>
-          <tbody>
-            <tr><td><span class="ph">[Name]</span></td><td><span class="ph">[Degree, year]</span></td><td><span class="ph">[Current position]</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <p>Students and postdoctoral researchers will be listed here as they join the lab. See <a href="#join">Join the lab</a> if you would like to be one of them.</p>
     </div>
   </section>
 
@@ -308,13 +387,51 @@ address { font-style: normal; }
     <div class="wrap">
       <div class="section-head">
         <h2>Publications</h2>
-        <p>Full lists are on <a href="#" class="ph">[Google Scholar link]</a> and <a href="#" class="ph">[ORCID link]</a>.</p>
+        <p>Journal articles and conference papers, newest first. Citation counts and the latest additions are on <a href="https://scholar.google.com/citations?hl=en&user=GAYjEOsAAAAJ">Google Scholar</a> and <a href="https://orcid.org/0000-0002-8381-9841">ORCID</a>.</p>
       </div>
       <ul class="plain">
-        <li><span class="meta"><span class="ph">[Year, Journal]</span></span><span class="ph">[Authors. Title. Citation. DOI link.]</span></li>
-        <li><span class="meta"><span class="ph">[Year, Journal]</span></span><span class="ph">[Authors. Title. Citation. DOI link.]</span></li>
-        <li><span class="meta"><span class="ph">[Year, Conference]</span></span><span class="ph">[Authors. Title. Citation.]</span></li>
+        <li><span class="meta">2026. <em>Nuclear Technology</em></span><strong>Prasad, A.</strong>, Spencer, M., Crigger, J., Bakshi, A., Spengen, T., Dickson, R., Thiessen, S. Stabilization of research reactor spent nuclear fuels: pellet formation using spark plasma sintering. <a href="https://doi.org/10.1080/00295450.2026.2712097">doi:10.1080/00295450.2026.2712097</a></li>
+        <li><span class="meta">2026. <em>Nuclear Technology</em></span><strong>Prasad, A.</strong>, Dickson, R., Crigger, J., Barry, A., Geiger, E., Spencer, M., Bakshi, A. Stabilization of research reactor spent nuclear fuels: fuel types and oxidation in air. <a href="https://doi.org/10.1080/00295450.2026.2675131">doi:10.1080/00295450.2026.2675131</a></li>
+        <li><span class="meta">2026. <em>Nuclear Technology</em> 212(2): 395–409</span>Huston, D. A., <strong>Prasad, A.</strong>, Kotsios, N., Bergeron, A., Kelly, F., Corcoran, E. C. Progress toward instrumented nuclear fuel pellets using additive manufacturing. <a href="https://doi.org/10.1080/00295450.2025.2472094">doi:10.1080/00295450.2025.2472094</a></li>
+        <li><span class="meta">2025. <em>Nuclear Engineering and Design</em> 433: 113886</span><strong>Prasad, A.</strong>, Bergeron, A., Liu, C., Cruse, A., Bichler, L. Spark plasma sintering of urania-thoria duplex fuel pellet.</li>
+        <li><span class="meta">2025. <em>Journal of Nuclear Engineering and Radiation Science</em> 11</span><strong>Prasad, A.</strong>, Tummalapalli, M. K., Malakkal, L., et al. Master (spark plasma) sintering curve of UO<sub>2</sub> and UO<sub>2</sub>-Mo fuel material. <a href="https://doi.org/10.1115/1.4068390">doi:10.1115/1.4068390</a></li>
+        <li><span class="meta">2025. TopFuel 2025 conference</span><strong>Prasad, A.</strong>, Ali, Z., Cruse, A., Bergeron, A., Namburi, H., Buckley, J., Battersby, J., Rich, K., Pillari, L. K., Spencer, M., Mottershead, O., Morrison, P., Osmond, R., Szlachta, V., Thiriet, C., Bichler, L. Exploring spark plasma sintering as a promising method for TRISO compact fabrication. <a href="https://doi.org/10.13182/TOPFUEL25-48648">doi:10.13182/TOPFUEL25-48648</a></li>
+        <li><span class="meta">2025. Nuclear Waste Management, Decommissioning and Environmental Restoration (NWMDER) 2025</span><strong>Prasad, A.</strong>, Barry, A., Geiger, E., Crigger, J., Spencer, M. Investigation of die liners for spark plasma sintering in stabilization of spent research reactor fuel.</li>
+        <li><span class="meta">2025. Nuclear Waste Management, Decommissioning and Environmental Restoration (NWMDER) 2025</span>Spencer, M., <strong>Prasad, A.</strong>, Crigger, J., Dickson, R., Barry, A., Bergeron, A., Geiger, E., Spengen, T. Stabilization of research reactor spent nuclear fuels: investigation of potential fission product release during pellet formation using spark plasma sintering.</li>
+        <li><span class="meta">2025. Canadian Nuclear Society Annual Conference 2025</span>Cruse, A., Rich, K., <strong>Prasad, A.</strong>, Mottershead, O., Buckley, J., Xu, S., Situm, A. Progress towards the fabrication of uranium oxycarbide pellets using spark plasma sintering.</li>
+        <li><span class="meta">2024. <em>Nuclear Engineering and Design</em> 426: 113398</span><strong>Prasad, A.</strong>, Ranasinghe, J., Malakkal, L., Bichler, L., Szpunar, J., Liu, C. Spark plasma sintering of fuel meats for U<sub>3</sub>O<sub>8</sub> based dispersion fuels. <a href="https://doi.org/10.1016/j.nucengdes.2024.113398">doi:10.1016/j.nucengdes.2024.113398</a></li>
+        <li><span class="meta">2024. TopFuel 2024 conference, Grenoble, France</span><strong>Prasad, A.</strong>, Kotsios, N., Bergeron, A., Thiriet, C., Buenaventura, A., Cluff, D., Pawlowska, V., Battersby, J., Morrison, P., Crigger, J., Osmond, R. Progress in additive manufacturing of uranium dioxide parts.</li>
+        <li><span class="meta">2024. <em>Journal of Electroceramics</em> 52: 273–282</span><strong>Prasad, A.</strong>, Malakkal, L., Bichler, L., Szpunar, J. Spark plasma sintering of cerium (IV) oxide under a carbon dioxide atmosphere. <a href="https://doi.org/10.1007/s10832-024-00363-z">doi:10.1007/s10832-024-00363-z</a></li>
       </ul>
+      <details class="more">
+        <summary>Show earlier publications (24)</summary>
+        <ul class="plain">
+        <li><span class="meta">2024. TopFuel 2024 conference, Grenoble, France</span><strong>Prasad, A.</strong>, Kermani, A., Osmond, R., Morrison, P., Szlachta, V., Atfield, J., Yaraskavitch, L. Fabrication of homogenised TRISO analogue fuel for reactor physics testing.</li>
+        <li><span class="meta">2024. TopFuel 2024 conference, Grenoble, France</span><strong>Prasad, A.</strong>, Spencer, M., Geiger, E., Barry, A. Application of spark plasma sintering for stabilisation of spent research reactor fuel materials.</li>
+        <li><span class="meta">2024. Generation IV and Small Reactors (G4SR-5) conference</span>Buckley, J., Spencer, M., <strong>Prasad, A.</strong>, Battersby, J., Osmond, R., Thiriet, C., Pawlowska, V., Pillari, L., Bichler, L. Fabrication of graphitic matrix fuel compacts applicable to high temperature gas cooled reactors.</li>
+        <li><span class="meta">2024. 43rd Annual Canadian Nuclear Society Conference</span>Liu, C., <strong>Prasad, A.</strong>, Kotsios, N., Afolabi, O., Bentoumi, G., Li, L. The use of additive manufacturing for fabrication of radiation sources in nuclear forensics applications.</li>
+        <li><span class="meta">2023. <em>Nuclear Engineering and Technology</em> 55(10): 3725–3731</span>Malakkal, L., <strong>Prasad, A.</strong>, Ranasinghe, J., Tummalapalli, M. K., Jossou, E., Bichler, L., Szpunar, J. Enhanced thermal conductivity of spark plasma sintered thorium dioxide-silicon carbide composite fuel pellets.</li>
+        <li><span class="meta">2023. 5th Canadian Conference on Nuclear Waste Management, Decommissioning and Environmental Restoration</span>Spencer, M., Barry, A., Bergeron, A., Crigger, B., Dickson, R., Goliad, A., <strong>Prasad, A.</strong>, Stoddard, T. The use of spark plasma sintering for compact formation from chemically stabilised research reactor fuels for disposal.</li>
+        <li><span class="meta">2022. <em>International Journal of Metalcasting</em> 16: 573–584</span>Karanam, A., <strong>Prasad, A.</strong>, Bichler, L., Birnie-Browne, R. In-service performance of high-manganese steel clinker crusher hammer.</li>
+        <li><span class="meta">2022. <em>Journal of Nuclear Materials</em> 559: 153444</span>Tummalapalli, M. K., Szpunar, J. A., <strong>Prasad, A.</strong>, Malakkal, L., Bichler, L. Evaluation of thermophysical properties of UO<sub>2</sub>-10 vol% Mo nuclear fuel pellets. <a href="https://doi.org/10.1016/j.jnucmat.2021.153444">doi:10.1016/j.jnucmat.2021.153444</a></li>
+        <li><span class="meta">2021. <em>Nuclear Engineering and Technology</em> 53(12): 4052–4059</span>Tummalapalli, M. K., Szpunar, J. A., <strong>Prasad, A.</strong>, Bichler, L. EBSD studies on microstructure and crystallographic orientation of UO<sub>2</sub>-Mo composite fuels.</li>
+        <li><span class="meta">2021. <em>Journal of Nuclear Materials</em> 549: 152900</span>Ranasinghe, J., Malakkal, L., Szpunar, B., <strong>Prasad, A.</strong>, Jossou, E., Szpunar, J., Bichler, L. DFT and experimental study on the thermal conductivity of U<sub>3</sub>O<sub>8</sub> and U<sub>3</sub>O<sub>8</sub>-X (X = Al and Mo). <a href="https://doi.org/10.1016/j.jnucmat.2021.152900">doi:10.1016/j.jnucmat.2021.152900</a></li>
+        <li><span class="meta">2020. <em>Scripta Materialia</em> 186: 375–380</span>Karati, A., Hariharan, V. S., Ghosh, S., <strong>Prasad, A.</strong>, Nagini, M., Guruvidyathri, K., Mallik, R. C., Shabadi, R., Bichler, L., Murty, B. S., Varadaraju, U. V. Thermoelectric properties of half-Heusler high-entropy Ti<sub>2</sub>NiCoSn<sub>1-x</sub>Sb<sub>1+x</sub> (x = 0.5, 1) alloys with VEC &gt; 18.</li>
+        <li><span class="meta">2019. <em>Nanomaterials</em> 9(8): 1086</span>Zhu, H., <strong>Prasad, A.</strong>, Doja, S., Bichler, L., Liu, J. Spark plasma sintering of lithium aluminum germanium phosphate solid electrolyte and its electrochemical properties.</li>
+        <li><span class="meta">2019. <em>Journal of Nuclear Materials</em> 527: 151811</span>Malakkal, L., <strong>Prasad, A.</strong>, Ranasinghe, J., Jossou, E., Olamedji, D., Szpunar, B., Bichler, L., Szpunar, J. The effect of SPS processing parameters on the microstructure and thermal conductivity of ThO<sub>2</sub>.</li>
+        <li><span class="meta">2019. <em>Journal of Alloys and Compounds</em> 798: 507–516</span>Malakkal, L., <strong>Prasad, A.</strong>, Jossou, E., Ranasinghe, J., Szpunar, B., Bichler, L., Szpunar, J. Thermal conductivity of bulk and porous ThO<sub>2</sub>: atomistic and experimental study.</li>
+        <li><span class="meta">2019. <em>Ceramic Transactions</em> 266: 39–48</span><strong>Prasad, A.</strong>, Malakkal, L., Szpunar, J., Bichler, L. Optimizing processing conditions for thorium dioxide using spark plasma sintering. <a href="https://doi.org/10.1002/9781119631460.ch12">doi:10.1002/9781119631460.ch12</a></li>
+        <li><span class="meta">2019. <em>Scientific Reports</em> 9: 6326</span>Malakkal, L., <strong>Prasad, A.</strong>, Oladimeji, D., Jossou, E., Ranasinghe, J., Szpunar, B., Bichler, L., Szpunar, J. Atomistic and experimental study on thermal conductivity of bulk and porous cerium dioxide.</li>
+        <li><span class="meta">2019. <em>Transactions of the Indian Institute of Metals</em> 72(6): 1399–1403</span><strong>Prasad, A.</strong>, Lafortune, L., Mok, J., Bichler, L. An investigation on spark plasma sintering of a carbon black grain refiner for the aluminum alloy B319.</li>
+        <li><span class="meta">2018. <em>Transactions of the Indian Institute of Metals</em> 71(11): 2759–2763</span><strong>Prasad, A.</strong>, Mok, J., Lafortune, L., Bichler, L. Grain refinement of B319 alloy using spark plasma sintered Al–Ti–C grain refiners.</li>
+        <li><span class="meta">2018. Materials Science &amp; Technology 2018 proceedings</span>Doja, S., <strong>Prasad, A.</strong>, Bichler, L. Spark plasma sintering of pure cadmium.</li>
+        <li><span class="meta">2018. <em>Acta Materialia</em> 153: 214–225</span>Chattopadhyay, C., <strong>Prasad, A.</strong>, Murty, B. S. Phase prediction in high entropy alloys: a kinetic approach.</li>
+        <li><span class="meta">2018. <em>Ceramic Transactions</em> 261: 217–224</span><strong>Prasad, A.</strong>, Malakkal, L., Bichler, L., Szpunar, J. Challenges in spark plasma sintering of cerium (IV) oxide.</li>
+        <li><span class="meta">2018. <em>Ceramic Transactions</em> 261: 127–136</span><strong>Prasad, A.</strong>, Doja, S., Bichler, L. On the effect of electric field during spark plasma sintering: a “Faraday cage” approach.</li>
+        <li><span class="meta">2017. <em>Materials &amp; Design</em> 126: 37–46</span>Vaidya, M., <strong>Prasad, A.</strong>, Parakh, A., Murty, B. S. Influence of sequence of elemental addition on phase evolution in nanocrystalline AlCoCrFeNi: novel approach to alloy synthesis using mechanical alloying.</li>
+        <li><span class="meta">2016. Canadian Society for Mechanical Engineering International Congress 2016</span><strong>Prasad, A.</strong>, Malakkal, L., Bichler, L., Szpunar, J. Effect of spark plasma sintering process parameters on density and microstructure of cerium (IV) oxide.</li>
+        </ul>
+      </details>
     </div>
   </section>
 
@@ -323,9 +440,8 @@ address { font-style: normal; }
     <div class="wrap">
       <div class="section-head"><h2>News</h2></div>
       <ul class="plain">
-        <li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Short announcement: a new paper, award, grant, or student milestone.]</span></li>
-        <li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Short announcement.]</span></li>
-        <li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Short announcement.]</span></li>
+        <li><span class="meta">September 2026</span>Dr. Anil Prasad joins the Department of Mechanical Engineering at the University of Saskatchewan as an Assistant Professor and starts the Sintering Materials Research Lab.</li>
+        <li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Add the next announcement: a new paper, award, grant, or student milestone.]</span></li>
       </ul>
     </div>
   </section>
@@ -334,7 +450,7 @@ address { font-style: normal; }
   <section class="section" id="join">
     <div class="wrap">
       <div class="section-head"><h2>Join the lab</h2></div>
-      <p><span class="ph">[Confirm which positions are open: MSc, PhD, postdoctoral, summer or undergraduate research.]</span></p>
+      <p>We are looking for graduate students and undergraduate researchers who want to work on nuclear materials and fuel, and on sintering-based materials for mining, agriculture, energy and other industries. <span class="ph">[Confirm which positions are open and how they are funded.]</span></p>
       <p>To ask about a position, email Dr. Prasad with your CV, unofficial transcripts, and a short note on which of our research themes interests you and why. Graduate applicants also apply through the University of Saskatchewan's College of Graduate and Postdoctoral Studies.</p>
       <p><a class="btn" href="mailto:anil.prasad@usask.ca?subject=Research%20position%20inquiry%20-%20Sintering%20Materials%20Research%20Lab">Email Dr. Prasad</a></p>
     </div>
