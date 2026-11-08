@@ -1,3 +1,7 @@
+Claude
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,13 +19,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-
+ 
 <!--
   DRAFT NOTES
   Every item in a yellow [bracket] is a placeholder to replace or confirm.
   Search this file for class="ph" to find them all.
 -->
-
+ 
 <style>
 :root {
   --bg: #EEF0F1;
@@ -37,7 +41,7 @@
   --head: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
   --body: "Source Serif 4", Georgia, "Times New Roman", serif;
 }
-
+ 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body {
@@ -50,7 +54,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-
+ 
 h1, h2, h3 { font-family: var(--head); line-height: 1.12; margin: 0; letter-spacing: -0.015em; }
 h1 { font-size: clamp(2.5rem, 6.4vw, 4.8rem); font-weight: 700; letter-spacing: -0.03em; max-width: 14ch; }
 h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 700; }
@@ -59,20 +63,20 @@ p { margin: 0 0 1em; max-width: 64ch; }
 a { color: var(--accent); text-underline-offset: 3px; }
 a:hover { color: var(--accent-deep); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-
+ 
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 .section { padding: 88px 0; border-top: 1px solid var(--line); }
 .section-head { margin-bottom: 40px; }
 .section-head p { color: var(--ink-soft); margin-top: 12px; }
-
+ 
 .ph { background: var(--ph); padding: 0 0.25em; border-radius: 2px; }
-
+ 
 .skip {
   position: absolute; left: 16px; top: -60px;
   background: var(--ink); color: #fff; padding: 10px 16px; z-index: 100;
 }
 .skip:focus { top: 12px; }
-
+ 
 /* Header */
 .site-header {
   position: sticky; top: 0; z-index: 50;
@@ -84,12 +88,12 @@ a:hover { color: var(--accent-deep); }
 .brand { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
 .brand-symbol { height: 58px; width: auto; display: block; }
 .brand-word { height: 46px; width: auto; display: block; }
-
+ 
 .hero-grid { display: block; }
 .nav { display: flex; gap: 22px; flex-wrap: wrap; }
 .nav a { font-family: var(--head); font-weight: 500; font-size: 0.98rem; color: var(--ink); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
 .nav a:hover { border-bottom-color: var(--accent); color: var(--ink); }
-
+ 
 /* Hero */
 .hero { padding: 72px 0 56px; }
 .hero-sub { font-size: 1.25rem; color: var(--ink-soft); margin-top: 24px; max-width: 52ch; }
@@ -101,7 +105,7 @@ a:hover { color: var(--accent-deep); }
 }
 .btn:hover { background: var(--accent-deep); color: #fff; }
 .text-link { font-family: var(--head); font-weight: 500; }
-
+ 
 .ps-switch { display: inline-flex; border: 1px solid var(--ink); border-radius: 4px; overflow: hidden; margin: 56px 0 20px; font-family: var(--head); }
 .ps-switch button { font: inherit; font-weight: 500; font-size: 0.98rem; padding: 9px 20px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .ps-switch button + button { border-left: 1px solid var(--ink); }
@@ -119,13 +123,13 @@ a:hover { color: var(--accent-deep); }
 .ps-read strong { display: block; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
 input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; margin: 0; }
 .ps-note { font-size: 0.9rem; color: var(--ink-soft); margin: 14px 0 0; max-width: 90ch; }
-
+ 
 /* About */
 .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 72px; align-items: center; }
 .about-logo { display: flex; flex-direction: column; align-items: center; gap: 20px; }
 .about-symbol { width: 190px; height: auto; display: block; }
 .about-word { width: 270px; height: auto; display: block; }
-
+ 
 /* Research groups */
 .group + .group { margin-top: 72px; }
 .group-head { margin-bottom: 24px; }
@@ -134,7 +138,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 .cta { margin-top: 28px; }
 .more summary { cursor: pointer; font-family: var(--head); font-weight: 500; color: var(--accent); margin: 28px 0 12px; }
 .more[open] summary { margin-bottom: 0; }
-
+ 
 /* Rows */
 .row {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px 48px;
@@ -142,7 +146,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; ma
 }
 .row:last-child { border-bottom: 1px solid var(--line); }
 .row p:last-child { margin-bottom: 0; }
-
+ 
 /* People */
 .pi { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 32px; align-items: start; margin-bottom: 56px; }
 .avatar {
@@ -158,23 +162,23 @@ th, td { text-align: left; padding: 14px 16px 14px 0; border-top: 1px solid var(
 th { font-family: var(--head); font-weight: 500; color: var(--ink-soft); font-size: 0.95rem; }
 tr:last-child td { border-bottom: 1px solid var(--line); }
 .people-block + .people-block { margin-top: 48px; }
-
+ 
 /* Lists */
 .plain { list-style: none; margin: 0; padding: 0; }
 .plain li { padding: 18px 0; border-top: 1px solid var(--line); }
 .plain li:last-child { border-bottom: 1px solid var(--line); }
 .plain .meta { display: block; font-family: var(--head); font-size: 0.92rem; color: var(--ink-soft); margin-bottom: 2px; }
-
+ 
 /* Contact */
 .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
 address { font-style: normal; }
-
+ 
 /* Footer */
 .site-footer { background: var(--ink); color: #D5DCE0; padding: 56px 0; }
 .site-footer a { color: #fff; }
 .site-footer p { max-width: 70ch; font-size: 0.98rem; }
 .site-footer .small { font-size: 0.9rem; color: #A9B6BE; margin: 0; }
-
+ 
 @media (max-width: 820px) {
   .section { padding: 64px 0; }
   .row, .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
@@ -197,10 +201,10 @@ address { font-style: normal; }
 }
 </style>
 </head>
-
+ 
 <body>
 <a class="skip" href="#main">Skip to main content</a>
-
+ 
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Sintering Materials Research Lab, back to top"><img class="brand-symbol" src="sintrlab_symbol.svg" alt="" width="380" height="414"><img class="brand-word" src="sintrlab_wordmark.svg" alt="Sintr lab" width="442" height="116"></a>
@@ -215,9 +219,9 @@ address { font-style: normal; }
     </nav>
   </div>
 </header>
-
+ 
 <main id="main">
-
+ 
   <!-- Hero -->
   <section class="hero" id="top">
     <div class="wrap">
@@ -231,12 +235,12 @@ address { font-style: normal; }
           </div>
         </div>
       </div>
-
+ 
       <div class="ps-switch" role="group" aria-label="Sintering route">
         <button type="button" id="tabPart" aria-pressed="true">3D Printing</button>
         <button type="button" id="tabDie" aria-pressed="false">Spark Plasma Sintering</button>
       </div>
-
+ 
       <div class="ps-stage" id="psStage">
         <figure class="ps-panel">
           <canvas id="partCv" role="img" aria-label="A whole maple leaf printed in layers, seen at an angle. As the slider moves, the gaps between the printed roads and the layer lines close, and the leaf shrinks inside a dashed outline of its printed footprint."></canvas>
@@ -248,7 +252,7 @@ address { font-style: normal; }
         </figure>
         <svg class="ps-links" id="psLinks" aria-hidden="true"><polygon points=""/></svg>
       </div>
-
+ 
       <div class="ps-controls">
         <div>
           <label for="progress">Sintering</label>
@@ -258,10 +262,10 @@ address { font-style: normal; }
         <div class="ps-read">Density<strong id="density">50%</strong></div>
         <div class="ps-read">Shrinkage<strong id="shrink">0%</strong></div>
       </div>
-      <p class="ps-note">Drag the slider to watch sintering in action. This is a simplified sketch of solid-state sintering, not a simulation of a specific material. Density is measured from the right panel, which is a flat 2D slice of the material. A free-standing 3D-printed part has no walls around it, so it shrinks in every direction, about 20% in length. In a spark plasma sintering die, the walls stop the powder shrinking sideways, so only its height changes: it drops by about half as the density goes from 50% to 99%. The die is cut in half along its axis so the powder inside can be seen, and the faint warm tint shows heating. Both are illustrative. The printed part is shown from a fixed angle, with the layer height exaggerated so the layers stay visible. Box A is not drawn to scale: the right panel covers only a few hundred micrometres of the material. Particles are about 20 µm across, which is illustrative.</p>
+      <p class="ps-note">Drag the slider to watch sintering in action. This is a simplified sketch of solid-state sintering, not a simulation of a specific material. Density is measured from the right panel, which is a flat 2D slice of the material. A free-standing 3D-printed part has no walls around it, so it shrinks in every direction, about 20% in length. In a spark plasma sintering die, the walls stop the powder shrinking sideways, so only its height changes: it drops by about half as the density goes from 50% to 99%. A quarter of the die is cut away so the powder inside can be seen, and the faint warm tint shows heating. Both are illustrative. The printed part is shown from a fixed angle, with the layer height exaggerated so the layers stay visible. Box A is not drawn to scale: the right panel covers only a few hundred micrometres of the material. Particles are about 20 µm across, which is illustrative.</p>
     </div>
   </section>
-
+ 
   <!-- About -->
   <section class="section" id="about">
     <div class="wrap">
@@ -279,7 +283,7 @@ address { font-style: normal; }
       </div>
     </div>
   </section>
-
+ 
   <!-- Research -->
   <section class="section" id="research">
     <div class="wrap">
@@ -287,7 +291,7 @@ address { font-style: normal; }
         <h2>Research</h2>
         <p>Our core is nuclear materials and fuel. Our approach is broader: link how a material is made to its structure, and its structure to how it performs.</p>
       </div>
-
+ 
       <div class="group">
         <div class="group-head">
           <h3>Nuclear materials and fuel</h3>
@@ -314,7 +318,7 @@ address { font-style: normal; }
           <p>3D printing can shape radiation sources and scintillator materials for detection and nuclear forensics. We are interested in printing these materials with controlled composition and geometry.</p>
         </div>
       </div>
-
+ 
       <div class="group">
         <div class="group-head">
           <h3>How we work</h3>
@@ -333,7 +337,7 @@ address { font-style: normal; }
           <p>Measurements such as thermal conductivity show how structure turns into performance. With partners, we aim to follow promising materials into test-reactor irradiation.</p>
         </div>
       </div>
-
+ 
       <div class="group">
         <div class="group-head">
           <h3>Where we want to grow</h3>
@@ -360,7 +364,7 @@ address { font-style: normal; }
       </div>
     </div>
   </section>
-
+ 
   <!-- Capabilities and partners -->
   <section class="section" id="capabilities">
     <div class="wrap">
@@ -386,12 +390,12 @@ address { font-style: normal; }
       </div>
     </div>
   </section>
-
+ 
   <!-- People -->
   <section class="section" id="people">
     <div class="wrap">
       <div class="section-head"><h2>People</h2></div>
-
+ 
       <div class="pi">
         <div class="avatar"><img src="Anil_prasad.jpg" alt="Dr. Anil Prasad" width="180" height="194" style="width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block"></div>
         <div>
@@ -401,11 +405,11 @@ address { font-style: normal; }
           <p><a href="mailto:anil.prasad@usask.ca">anil.prasad@usask.ca</a><br><a href="https://scholar.google.com/citations?hl=en&user=GAYjEOsAAAAJ">Google Scholar</a> &nbsp;|&nbsp; <a href="https://orcid.org/0000-0002-8381-9841">ORCID</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/prasadanil/">LinkedIn</a></p>
         </div>
       </div>
-
+ 
       <p>Students and postdoctoral researchers will be listed here as they join the lab. See <a href="#join">Join the lab</a> if you would like to be one of them.</p>
     </div>
   </section>
-
+ 
   <!-- Publications -->
   <section class="section" id="publications">
     <div class="wrap">
@@ -458,7 +462,7 @@ address { font-style: normal; }
       </details>
     </div>
   </section>
-
+ 
   <!-- News -->
   <section class="section" id="news">
     <div class="wrap">
@@ -469,7 +473,7 @@ address { font-style: normal; }
       </ul>
     </div>
   </section>
-
+ 
   <!-- Join -->
   <section class="section" id="join">
     <div class="wrap">
@@ -479,7 +483,7 @@ address { font-style: normal; }
       <p><a class="btn" href="mailto:anil.prasad@usask.ca?subject=Research%20position%20inquiry%20-%20Sintering%20Materials%20Research%20Lab">Email Dr. Prasad</a></p>
     </div>
   </section>
-
+ 
   <!-- Contact -->
   <section class="section" id="contact">
     <div class="wrap">
@@ -502,14 +506,14 @@ address { font-style: normal; }
     </div>
   </section>
 </main>
-
+ 
 <footer class="site-footer">
   <div class="wrap">
     <p>The University of Saskatchewan's main campus is on Treaty 6 Territory and the Homeland of the Métis. We acknowledge the land we work on and the people whose home it is. </p>
     <p class="small">&copy; 2026 Sintering Materials Research Lab, University of Saskatchewan. sintrlab.ca</p>
   </div>
 </footer>
-
+ 
 <script>
 /* Sintering model: fixed-size particles, necks that widen at contacts,
    and centre-to-centre approach (shrinkage) as the necks grow. */
@@ -521,7 +525,7 @@ function mulberry32(a) {
     return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
   };
 }
-
+ 
 function createModel(W, H, rm, opts) {
   opts = Object.assign({ gapK: 2.15, vac: 0.09, small: 0.3, pull: 0.5, epsMax: 0.4, overlap: 0.8, seed: 11 }, opts || {});
   const rnd = mulberry32(opts.seed);
@@ -532,7 +536,7 @@ function createModel(W, H, rm, opts) {
   const rows = Math.max(2, Math.floor((H - 2 * margin) / rowH));
   const ox = (W - (cols - 1) * gap - gap / 2) / 2;
   const oy = (H - (rows - 1) * rowH) / 2;
-
+ 
   // Loose powder: mixed sizes, a few vacancies, slightly irregular packing.
   const parts = [];
   for (let j = 0; j < rows; j++) {
@@ -546,7 +550,7 @@ function createModel(W, H, rm, opts) {
       });
     }
   }
-
+ 
   // Candidate neighbour pairs.
   let cand = [];
   for (let a = 0; a < parts.length; a++) {
@@ -556,7 +560,7 @@ function createModel(W, H, rm, opts) {
       if (dx * dx + dy * dy < lim * lim) cand.push([a, b]);
     }
   }
-
+ 
   // Settle the powder: remove overlaps and let nearby particles touch.
   for (let it = 0; it < 100; it++) {
     for (const [a, b] of cand) {
@@ -573,7 +577,7 @@ function createModel(W, H, rm, opts) {
       B.x -= dx * s; B.y -= dy * s;
     }
   }
-
+ 
   // Keep pairs that are in (or almost in) contact.
   const pairs = [];
   for (const [a, b] of cand) {
@@ -585,7 +589,7 @@ function createModel(W, H, rm, opts) {
       pairs.push({ a, b, k });
     }
   }
-
+ 
   // Drop particles that touch nothing: in a real compact every grain is supported.
   const deg = new Array(parts.length).fill(0);
   for (const pr of pairs) if (pr.k > 0) { deg[pr.a]++; deg[pr.b]++; }
@@ -594,13 +598,13 @@ function createModel(W, H, rm, opts) {
   parts.forEach((q, i) => { if (deg[i] > 0) { remap[i] = kept.length; kept.push(q); } });
   parts.length = 0; kept.forEach(q => parts.push(q));
   for (const pr of pairs) { pr.a = remap[pr.a]; pr.b = remap[pr.b]; }
-
+ 
   let cx = 0, cy = 0;
   for (const p of parts) { cx += p.x; cy += p.y; }
   cx /= parts.length; cy /= parts.length;
-
+ 
   const maxNeck = 0.8; // neck radius as a fraction of particle radius at p = 1
-
+ 
   // Final arrangement: the compact contracts and particles rearrange into the voids.
   // Particles keep their size; they may only overlap slightly, where grains press together.
   const shrink = 1 - opts.epsMax;
@@ -621,19 +625,19 @@ function createModel(W, H, rm, opts) {
       }
     }
   }
-
+ 
   function frame(p) {
     // Neck growth is fast at first and slows down, as in diffusion-controlled sintering.
     const nfrac = maxNeck * Math.pow(Math.max(p, 0), 0.33);
     // Particles move from the loose arrangement toward the compacted one as the necks widen.
     const g = Math.pow(nfrac / maxNeck, 2);
-
+ 
     const pos = parts.map((q, i) => ({
       x: q.x + (end[i].x - q.x) * g,
       y: q.y + (end[i].y - q.y) * g,
       r: q.r
     }));
-
+ 
     const necks = [];
     for (const pr of pairs) {
       if (pr.k <= 0) continue;
@@ -658,15 +662,15 @@ function createModel(W, H, rm, opts) {
     }
     return { pos, necks, nfrac, g };
   }
-
+ 
   return { parts, pairs, frame, center: { x: cx, y: cy } };
 }
-
-
+ 
+ 
 /* Raster helpers (work on a half-resolution solid mask).
    S    : Uint8Array, 1 where a particle or neck is drawn
    dist : distance (in mask pixels) from each empty pixel to the nearest solid pixel */
-
+ 
 function chamferDist(S, w, h, dist) {
   const INF = 1e9, D = 1.414;
   for (let i = 0; i < w * h; i++) dist[i] = S[i] ? 0 : INF;
@@ -699,8 +703,8 @@ function chamferDist(S, w, h, dist) {
     }
   }
 }
-
-
+ 
+ 
 /* Fraction for a given rho without building F (used when calibrating). */
 function fractionForRho(S, dist, w, h, roi, region, rho) {
   const rx0 = Math.max(0, roi[0]), ry0 = Math.max(0, roi[1]);
@@ -716,8 +720,8 @@ function fractionForRho(S, dist, w, h, roi, region, rho) {
   }
   return total ? solid / total : 0;
 }
-
-
+ 
+ 
 /* Grain boundaries as exact line segments.
    Each grain's cell is the region closer (by power distance) to its own particle than to any other.
    Cell edges shared with a neighbour are the boundaries between the two grains. */
@@ -764,7 +768,7 @@ function grainEdges(pos, half) {
   }
   return segs;
 }
-
+ 
 /* ---------- The printed leaf ----------
    Outline of a whole maple leaf, stem included. Geometry is kept in "print space" (CSS pixels at the as-printed size).
    Road pattern: two perimeter roads that follow the outline, then straight infill roads at 45 degrees.
@@ -772,7 +776,7 @@ function grainEdges(pos, half) {
 const LEAF_PTS = [-0.0093,-0.529,-0.0176,-0.5166,-0.0776,-0.3468,-0.0859,-0.3323,-0.0963,-0.3344,-0.1998,-0.3799,-0.2101,-0.3799,-0.2205,-0.3716,-0.2226,-0.3592,-0.1646,-0.1066,-0.1646,-0.0963,-0.1708,-0.0942,-0.2909,-0.2122,-0.3033,-0.2122,-0.3137,-0.2039,-0.3447,-0.1253,-0.3613,-0.1273,-0.4565,-0.1563,-0.471,-0.1563,-0.4814,-0.146,-0.4814,-0.1315,-0.4337,-0.0238,-0.4337,-0.0135,-0.4896,0.028,-0.5,0.0383,-0.5,0.0528,-0.4896,0.0652,-0.2619,0.2578,-0.2785,0.3406,-0.2764,0.353,-0.2702,0.3592,-0.2536,0.3613,-0.059,0.3282,-0.0569,0.3302,-0.0569,0.4834,-0.0549,0.4917,-0.0424,0.5124,-0.0321,0.5207,-0.0176,0.5269,0.0031,0.529,0.028,0.5207,0.0445,0.5041,0.0528,0.4793,0.0528,0.3302,0.0549,0.3282,0.2516,0.3613,0.2702,0.3592,0.2764,0.3509,0.2764,0.3323,0.2619,0.2681,0.2619,0.2578,0.4876,0.0673,0.5,0.0528,0.5,0.0383,0.4337,-0.0135,0.4337,-0.0238,0.4814,-0.1315,0.4814,-0.146,0.471,-0.1563,0.4565,-0.1563,0.3613,-0.1273,0.3447,-0.1253,0.3137,-0.2039,0.3033,-0.2122,0.2909,-0.2122,0.1708,-0.0942,0.1646,-0.0963,0.1729,-0.1439,0.2226,-0.3592,0.2205,-0.3716,0.2101,-0.3799,0.1998,-0.3799,0.0963,-0.3344,0.0859,-0.3323,0.0776,-0.3468,0.0176,-0.5166,0.0093,-0.529];
 const LEAF_CENTROID = [-0.0002, 0.0156];   // area centroid, in units of the leaf's width
 const LEAF_ASPECT = 1.058;           // height / width (the stem is included)
-
+ 
 function leafGeometry(LW, gq) {
   const pts = [];
   for (let i = 0; i < LEAF_PTS.length; i += 2) pts.push([LEAF_PTS[i] * LW, LEAF_PTS[i + 1] * LW]);
@@ -796,13 +800,13 @@ function leafGeometry(LW, gq) {
   chamferDist(outside, gw, gh, D);
   return { pts, hw, hh, gw, gh, gq, D, LW, cent: [LEAF_CENTROID[0] * LW, LEAF_CENTROID[1] * LW] };
 }
-
+ 
 // How much of a one-pixel-wide window centred `d` pixels from a stripe's centre is covered by a stripe `gw` pixels wide.
 function stripeOverlap(d, gw) {
   const h = gw / 2, v = Math.min(h, d + 0.5) - Math.max(-h, d - 0.5);
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
-
+ 
 /* Draw the leaf into a device-pixel RGBA buffer.
    st: s (linear scale), gap (current gap between roads, print px), P (road pitch), nPer, dpr, csx/csy (where the leaf's centroid sits on screen, CSS px),
    ky (vertical squash of the top face when it is tilted away from the viewer; 1 = seen from straight above) */
@@ -842,7 +846,7 @@ function renderLeaf(geo, data, devW, devH, st) {
     }
   }
 }
-
+ 
 (() => {
   const partCv = document.getElementById('partCv'), microCv = document.getElementById('microCv');
   const partCtx = partCv.getContext('2d'), microCtx = microCv.getContext('2d');
@@ -852,7 +856,7 @@ function renderLeaf(geo, data, devW, devH, st) {
   const stageBox = document.getElementById('psStage'), linkSvg = document.getElementById('psLinks'), linkPoly = linkSvg.querySelector('polygon');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const twoCol = window.matchMedia('(min-width: 821px)');
-
+ 
   const FILL = '#E8641A', INK = '#14222B', SOFT = '#4A5B66', ACCENT = '#C0271B';
   const EXP = 1.15, TARGET = 0.99;
   const ZOOM = [-0.12, 0.05];     // zoom box centre, in leaf widths from the leaf's bounding-box centre
@@ -864,7 +868,7 @@ function renderLeaf(geo, data, devW, devH, st) {
   const LAYERS = 12;              // printed layers shown on the side walls (0.25 mm each)
   const lerp3 = (a, b, k) => 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',') + ')';
   const smooth = x => { x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * (3 - 2 * x); };
-
+ 
   let t = 0, userTouched = false, dpr = 1;
   // microstructure window
   let mw = 0, mh = 0, mrm = 14, mModel = null, mOx = 0, mOy = 0, rhoMax = 0.2, d0 = 0.5, dens = 0.5;
@@ -873,9 +877,9 @@ function renderLeaf(geo, data, devW, devH, st) {
   let pw = 0, ph = 0, geo = null, leafImg = null, leafCv = null, leafCtx = null, LW = 400, P = 6, g0 = 2, csx = 0, csyBase = 0, bxC = 0, byC = 0, boxH = 0;
   let partOff = { x: 0, y: 0 }, micOff = { x: 0, y: 0 };
   let mode = 'part', dieW = 84, dieWall = 106, dieH = 182, dieH0 = 120, dieMid = 180, dieCx = 260, dieEnd = 144;
-
+ 
   function makeLayer(width, height) { const c = document.createElement('canvas'); c.width = width; c.height = height; return c; }
-
+ 
   /* ---------- microstructure: a window cut from inside the material ---------- */
   function neckPath(c, n) {
     const nx = -n.uy, ny = n.ux, hh = n.h;
@@ -954,7 +958,7 @@ function renderLeaf(geo, data, devW, devH, st) {
     scaleBar(microCtx, 18, mh - 16, 50 * pxPerUm, '50 µm');
     return fractionForRho(S, dist, mw, mh, all, all, rho + 0.5);
   }
-
+ 
   /* ---------- the printed part, seen from a fixed angle above ---------- */
   // Outline of the leaf in screen space. yc is where the leaf's centroid sits for this height, sc the scale.
   function leafPath(c, yc, sc, dx) {
@@ -972,24 +976,24 @@ function renderLeaf(geo, data, devW, devH, st) {
     const T = THICK * LW * s;                                               // current thickness, CSS px
     const topY = csyBase - T * SINT;                                        // where the top face's centroid sits on screen
     const devW = partCv.width, devH = partCv.height;
-
+ 
     // top face: the print roads, drawn pixel by pixel into a transparent layer
     leafImg.data.fill(0);
     renderLeaf(geo, leafImg.data, devW, devH, { s, gap, P, nPer: 2, dpr, csx, csy: topY, ky: KY });
     leafCtx.putImageData(leafImg, 0, 0);
-
+ 
     partCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     partCtx.clearRect(0, 0, pw, ph);
-
+ 
     // the footprint it was printed on, drawn first so the part hides it until the part shrinks away from it
     partCtx.save();
     partCtx.setLineDash([5, 4]); partCtx.lineWidth = 1.25; partCtx.strokeStyle = '#6F7F8A';
     leafPath(partCtx, csyBase, 1); partCtx.stroke(); partCtx.restore();
-
+ 
     // soft shadow on the ground
     partCtx.fillStyle = 'rgba(20, 34, 43, 0.05)';
     for (let k = 1; k <= 3; k++) { leafPath(partCtx, csyBase + 3 * k, s, 4 * k); partCtx.fill(); }
-
+ 
     // side walls: the leaf's outline stacked layer by layer, lowest first. Only the strips on the camera side stay visible.
     const wallA = lerp3([178, 70, 13], [196, 82, 18], c), wallB = lerp3([160, 61, 10], [196, 82, 18], c);
     const dz = T / LAYERS;
@@ -1003,7 +1007,7 @@ function renderLeaf(geo, data, devW, devH, st) {
     leafPath(partCtx, topY, s);
     partCtx.fillStyle = lerp3([112, 44, 9], [200, 84, 19], Math.sqrt(c)); partCtx.fill();
     partCtx.drawImage(leafCv, 0, 0, pw, ph);
-
+ 
     // zoom box on the top face, squashed by the same tilt
     boxH = BOX * KY;
     bxC = csx + s * (ZOOM[0] * LW - geo.cent[0]); byC = topY + s * KY * (ZOOM[1] * LW - geo.cent[1]);
@@ -1021,23 +1025,30 @@ function renderLeaf(geo, data, devW, devH, st) {
     partCtx.restore();
     return s;
   }
-
-  /* ---------- the SPS die in 3D: a half-section seen from 22 degrees above ----------
-     The front half is cut away along the axis. The flat cut faces show the walls, punches and powder; the curved
-     inside of the bore and the rims show the depth. Heights shrink to 0.93 and circles become ellipses 0.37 as tall as wide. */
-  const SV = Math.cos(Math.PI * 22 / 180), EL = Math.sin(Math.PI * 22 / 180);
+ 
+  /* ---------- the SPS die in 3D: a quarter cut away ----------
+     The die, both punches and the powder are all round, with one vertical axis. A quarter is cut away at the front, so you see
+     the curved outer walls, the lit top face, and two flat cut faces that meet at the axis. The scene is turned 20 degrees
+     and viewed from 22 degrees above. Every surface is built from small flat facets and shaded by a single light. */
+  const SV = Math.cos(Math.PI * 22 / 180), EL = Math.sin(Math.PI * 22 / 180);   // heights shrink to 0.93, circles become ellipses 0.37 as tall as wide
+  const AZ = -20 * Math.PI / 180;                       // the scene is turned this far about its axis
+  const DA = 3 * Math.PI / 180, A_MAX = 1.5 * Math.PI;  // facet size; the surviving part runs from 0 to 270 degrees
+  const LV = (() => { const l = [-0.35, -0.45, 0.82], n = Math.hypot(l[0], l[1], l[2]); return l.map(v => v / n); })();   // light: from the upper left, in front
+  const lit = (nx, ny, nz) => 0.52 + 0.7 * Math.max(0, nx * LV[0] + ny * LV[1] + nz * LV[2]);
   const DIE_COLD = [74, 80, 86], DIE_HOT = [82, 80, 79];
-  const RIM_COLD = [118, 126, 134], RIM_HOT = [122, 121, 120];
   const PUNCH_COLD = [176, 186, 194], PUNCH_HOT = [204, 187, 174];
-  const CAPTOP_COLD = [214, 222, 228], CAPTOP_HOT = [222, 212, 202];
-  const CAP_COLD = [128, 140, 150], CAP_HOT = [158, 138, 122];
+  const DISC_COLD = [214, 222, 228], DISC_HOT = [222, 212, 202];
   const POWDER_LOOSE = [241, 146, 92], POWDER_DENSE = [232, 100, 26];
+  const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const col = (c, k) => 'rgb(' + c.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(',') + ')';
   // Pores in the powder. Each has a fixed place in the material and a threshold: the small ones close first.
-  const specks = (() => { const rnd = mulberry32(21), u = [], v = [], thr = []; for (let i = 0; i < 900; i++) { u.push(rnd()); v.push(rnd()); thr.push(Math.pow(rnd(), 0.8)); } return { u, v, thr }; })();
-
+  const specks = (() => { const rnd = mulberry32(21), u = [], v = [], thr = []; for (let i = 0; i < 380; i++) { u.push(rnd()); v.push(rnd()); thr.push(Math.pow(rnd(), 0.8)); } return { u, v, thr }; })();
+  // Fine grain in the powder, so it reads as a granular solid and not a flat colour.
+  const grains = (() => { const rnd = mulberry32(5), u = [], v = [], tone = []; for (let i = 0; i < 320; i++) { u.push(rnd()); v.push(rnd()); tone.push(rnd() < 0.5 ? 0 : 1); } return { u, v, tone }; })();
+ 
   function arrow(c, x, y0, y1) {
     const d = y1 > y0 ? 1 : -1;
-    // a white halo first, so the arrow stays readable over the dark inside of the bore
+    // a white halo first, so the arrow stays readable over the dark parts
     c.save(); c.strokeStyle = '#fff'; c.fillStyle = '#fff'; c.lineWidth = 4.5; c.lineJoin = 'round';
     c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1 - d * 4); c.stroke();
     c.beginPath(); c.moveTo(x, y1 + d * 1.5); c.lineTo(x - 6, y1 - d * 9.5); c.lineTo(x + 6, y1 - d * 9.5); c.closePath(); c.fill(); c.stroke();
@@ -1045,83 +1056,109 @@ function renderLeaf(geo, data, devW, devH, st) {
     c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1 - d * 4); c.stroke();
     c.beginPath(); c.moveTo(x, y1); c.lineTo(x - 4.5, y1 - d * 8); c.lineTo(x + 4.5, y1 - d * 8); c.closePath(); c.fill();
   }
-
+ 
   function dieDraw() {
     const c = partCtx;
     const k = Math.min(1, Math.max(0.45, d0 / Math.max(dens, d0)));              // powder height now / height when loaded
     const heat = smooth(t), f = Math.min(1, Math.max(0, (dens - d0) / (0.99 - d0)));
-    const Ri = dieW / 2, Ro = Ri + dieWall, yMid = dieMid;
-    const HdS = dieH * SV, h0S = dieH0 * SV, hS = h0S * k;                       // heights on screen
-    const yDieTop = yMid - HdS / 2, yDieBot = yMid + HdS / 2;                    // top and bottom of the die's cut face
-    const yTop = yMid - hS / 2, yBot = yMid + hS / 2;                            // the powder's two faces
-    const shiftS = (h0S - hS) / 2;                                               // how far each punch has travelled
-    const eTop = yMid - dieEnd + shiftS, eBot = yMid + dieEnd - shiftS;         // outer ends of the punches
-    const x0 = dieCx - Ri, x1 = dieCx + Ri;
+    const Ri = dieW / 2, Ro = Ri + dieWall, Hd = dieH, h0 = dieH0, h = h0 * k, yMid = dieMid;
+    const zT = h / 2, zB = -h / 2;                                               // the powder's two faces; z = 0 is the middle of the powder
+    const zE0 = dieEnd / SV, shiftW = (h0 - h) / 2;
+    const zEndT = zE0 - shiftW, zEndB = -(zE0 - shiftW);                         // outer ends of the punches
+    const dieBase = mix(DIE_COLD, DIE_HOT, heat), punchBase = mix(PUNCH_COLD, PUNCH_HOT, heat), discBase = mix(DISC_COLD, DISC_HOT, heat);
+    const powderBase = mix(POWDER_LOOSE, POWDER_DENSE, f);
+    // a point on the scene: radius r, angle a around the axis, height z
+    const P = (r, a, z) => [dieCx + r * Math.cos(a + AZ), yMid - z * SV - r * Math.sin(a + AZ) * EL];
+    const poly = (pts, fill, stroke, lw) => {
+      c.beginPath(); pts.forEach((p, i) => { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath();
+      if (fill) { c.fillStyle = fill; c.fill(); }
+      if (stroke) { c.strokeStyle = stroke; c.lineWidth = lw || 0.7; c.stroke(); }
+    };
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, pw, ph);
-    c.lineJoin = 'miter'; c.lineWidth = 1; c.setLineDash([]);
-    const edge = '#2A3036';
-
-    // the die's top face, behind the cut: a half ring
-    c.fillStyle = lerp3(RIM_COLD, RIM_HOT, heat);
-    c.beginPath(); c.moveTo(dieCx - Ro, yDieTop); c.ellipse(dieCx, yDieTop, Ro, Ro * EL, 0, Math.PI, 2 * Math.PI);
-    c.lineTo(x1, yDieTop); c.ellipse(dieCx, yDieTop, Ri, Ri * EL, 0, 2 * Math.PI, Math.PI, true); c.closePath();
-    c.fill(); c.strokeStyle = edge; c.stroke();
-
-    // the inside of the bore: the far half of the cylinder, darker at the sides
-    const g = c.createLinearGradient(x0, 0, x1, 0);
-    g.addColorStop(0, '#242A2F'); g.addColorStop(0.5, '#4A525A'); g.addColorStop(1, '#242A2F');
-    c.fillStyle = g;
-    c.beginPath(); c.moveTo(x0, yDieTop); c.ellipse(dieCx, yDieTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.lineTo(x1, yDieBot); c.lineTo(x0, yDieBot); c.closePath(); c.fill();
-
-    // the cut faces of the two walls
-    c.fillStyle = lerp3(DIE_COLD, DIE_HOT, heat);
-    c.fillRect(dieCx - Ro, yDieTop, dieWall, HdS); c.fillRect(x1, yDieTop, dieWall, HdS);
-    c.strokeStyle = edge; c.strokeRect(dieCx - Ro, yDieTop, dieWall, HdS); c.strokeRect(x1, yDieTop, dieWall, HdS);
-
-    // punches: cut faces, with a round end cap on the upper one and a darker end on the lower one
-    c.fillStyle = lerp3(PUNCH_COLD, PUNCH_HOT, heat);
-    c.fillRect(x0, eTop, 2 * Ri, yTop - eTop); c.fillRect(x0, yBot, 2 * Ri, eBot - yBot);
-    c.fillStyle = lerp3(CAP_COLD, CAP_HOT, heat);
-    c.fillRect(x0, eBot - 6, 2 * Ri, 6);
-    c.fillStyle = lerp3(CAPTOP_COLD, CAPTOP_HOT, heat);
-    c.beginPath(); c.moveTo(x0, eTop); c.ellipse(dieCx, eTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.closePath(); c.fill();
-    c.strokeStyle = '#5E6E79';
-    c.strokeRect(x0, eTop, 2 * Ri, yTop - eTop); c.strokeRect(x0, yBot, 2 * Ri, eBot - yBot);
-    c.beginPath(); c.ellipse(dieCx, eTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.stroke();
-
-    // powder cut face, with pores that close from small to large and flatten along the pressing direction
-    c.fillStyle = lerp3(POWDER_LOOSE, POWDER_DENSE, f);
-    c.fillRect(x0, yTop, 2 * Ri, hS);
-    c.fillStyle = 'rgba(255, 255, 255, 0.95)';
-    const sc = Math.max(0.6, (2 * Ri) / 130);
-    for (let i = 0; i < specks.u.length; i++) {
-      if (specks.thr[i] <= f) continue;
-      const rx = (0.7 + 2.0 * specks.thr[i] * specks.thr[i]) * sc * (1 - 0.4 * f), ry = rx * Math.max(0.55, k);
-      c.beginPath(); c.ellipse(x0 + (0.03 + 0.94 * specks.u[i]) * 2 * Ri, yTop + (0.04 + 0.92 * specks.v[i]) * hS, rx, ry, 0, 0, Math.PI * 2); c.fill();
-    }
-    c.strokeStyle = '#B34A0C'; c.lineWidth = 1; c.strokeRect(x0, yTop, 2 * Ri, hS);
-
+    c.lineJoin = 'round'; c.setLineDash([]);
+    const frontFacing = a => Math.sin(a + AZ) < 0;                               // the outside of the cylinder faces the viewer here
+ 
+    // 1. outer wall of a cylinder, on the front-facing part only
+    const wall = (r, z0, z1, base) => {
+      for (let a = 0; a < A_MAX - 1e-6; a += DA) {
+        const a2 = Math.min(a + DA, A_MAX), am = (a + a2) / 2;
+        if (!frontFacing(am)) continue;
+        const l = lit(Math.cos(am + AZ), Math.sin(am + AZ), 0), cl = col(base, l);
+        poly([P(r, a, z1), P(r, a2, z1), P(r, a2, z0), P(r, a, z0)], cl, cl);
+      }
+    };
+    wall(Ro, -Hd / 2, Hd / 2, dieBase);
+ 
+    // 2. the die's top face: a lit ring with a small bevel at each edge
+    const top = (r0, r1, z, base, k2) => {
+      const cl = col(base, k2);
+      for (let a = 0; a < A_MAX - 1e-6; a += DA) { const a2 = Math.min(a + DA, A_MAX); poly([P(r1, a, z), P(r1, a2, z), P(r0, a2, z), P(r0, a, z)], cl, cl); }
+    };
+    const ch = Math.max(2, Ri * 0.06);
+    top(Ri + ch, Ro - ch, Hd / 2, dieBase, 1.55);
+    top(Ro - ch, Ro, Hd / 2, dieBase, 1.9);                                      // outer bevel catches the light
+    top(Ri, Ri + ch, Hd / 2, dieBase, 0.8);                                      // inner bevel falls into shade
+ 
+    // 3. the parts of the punches that stick out of the die
+    wall(Ri, Hd / 2, zEndT, punchBase);
+    wall(Ri, zEndB, -Hd / 2, punchBase);
+    // the upper punch's end face
+    { const pts = [P(0, 0, zEndT)]; for (let a = 0; a <= A_MAX + 1e-6; a += DA) pts.push(P(Ri, Math.min(a, A_MAX), zEndT));
+      poly(pts, col(discBase, 1.04), 'rgba(40,50,58,0.55)', 0.8); }
+ 
+    // 4. the two flat cut faces, which meet at the axis
+    const edge = 'rgba(25,30,36,0.55)';
+    const cutFace = (aObj, sign) => {
+      const ac = aObj + AZ, na = ac + sign * Math.PI / 2;
+      const l = lit(Math.cos(na), Math.sin(na), 0), fc = Math.max(0.25, Math.abs(Math.cos(ac)));
+      const quad = (r0, r1, z0, z1) => [P(r0, aObj, z0), P(r1, aObj, z0), P(r1, aObj, z1), P(r0, aObj, z1)];
+      poly(quad(Ri, Ro, -Hd / 2, Hd / 2), col(dieBase, l), edge);
+      poly(quad(0, Ri, zT, zEndT), col(punchBase, l), edge);
+      poly(quad(0, Ri, zEndB, zB), col(punchBase, l), edge);
+      poly(quad(0, Ri, zB, zT), col(powderBase, Math.max(0.64, l + 0.12)), 'rgba(120,48,10,0.7)', 0.9);
+      // the powder: fine grain, then dark pores that close from small to large and flatten along the pressing direction
+      const sc = Math.max(0.6, (2 * Ri) / 130), at = (u, v) => P((0.03 + 0.94 * u) * Ri, aObj, zB + (0.04 + 0.92 * v) * h);
+      const gr = 1 - 0.7 * f;
+      for (const tone of [0, 1]) {
+        c.fillStyle = tone ? 'rgba(255,205,160,' + (0.28 * gr).toFixed(3) + ')' : 'rgba(130,52,14,' + (0.26 * gr).toFixed(3) + ')';
+        for (let i = 0; i < grains.u.length; i++) { if (grains.tone[i] !== tone) continue; const p = at(grains.u[i], grains.v[i]); c.beginPath(); c.ellipse(p[0], p[1], 1 * sc * fc, 0.9 * sc, 0, 0, Math.PI * 2); c.fill(); }
+      }
+      c.fillStyle = 'rgba(92,38,10,0.82)';
+      for (let i = 0; i < specks.u.length; i++) {
+        if (specks.thr[i] <= f) continue;
+        const rx = (0.6 + 1.7 * specks.thr[i] * specks.thr[i]) * sc * (1 - 0.4 * f), p = at(specks.u[i], specks.v[i]);
+        c.beginPath(); c.ellipse(p[0], p[1], rx * fc, rx * Math.max(0.55, k) * SV, 0, 0, Math.PI * 2); c.fill();
+      }
+    };
+    cutFace(1.5 * Math.PI, 1);          // the narrow face on the left
+    cutFace(0, -1);                     // the wide face, facing the viewer
+ 
+    // 5. highlights along the die's top edge
+    c.lineWidth = 1; c.strokeStyle = 'rgba(255,255,255,0.32)';
+    c.beginPath(); for (let a = 0; a <= A_MAX + 1e-6; a += DA) { const p = P(Ro, Math.min(a, A_MAX), Hd / 2); if (a) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); } c.stroke();
+ 
     // the load on the punches, riding on their outer ends
     c.strokeStyle = INK; c.fillStyle = INK; c.lineWidth = 1.5;
-    arrow(c, dieCx, eTop - Ri * EL - 26, eTop - Ri * EL - 6); arrow(c, dieCx, eBot + 26, eBot + 6);
-
-    // zoom box on the powder, at a fixed place in the material
+    const yTopEnd = P(0, 0, zEndT)[1] - Ri * EL, yBotEnd = P(0, 0, zEndB)[1] + Ri * EL;
+    arrow(c, dieCx, yTopEnd - 26, yTopEnd - 6); arrow(c, dieCx, yBotEnd + 26, yBotEnd + 6);
+ 
+    // zoom box on the powder's cut face, at a fixed place in the material
     boxH = BOX;
-    bxC = x0 + 0.34 * 2 * Ri; byC = yTop + 0.35 * hS;
+    const bp = P(0.5 * Ri, 0, zB + 0.62 * h); bxC = bp[0]; byC = bp[1];
     c.strokeStyle = '#fff'; c.lineWidth = 4; c.strokeRect(bxC - BOX / 2, byC - BOX / 2, BOX, BOX);
     c.strokeStyle = INK; c.lineWidth = 1.5; c.strokeRect(bxC - BOX / 2, byC - BOX / 2, BOX, BOX);
     tag(c, bxC - BOX / 2 - 14, byC - BOX / 2 - 14, 'A', 14);
     scaleBar(c, 18, ph - 16, 5 * (dieW / 10), '5 mm');
     return k;
   }
-
+ 
   function updateLinks() {
     if (!twoCol.matches) { linkSvg.style.display = 'none'; return; }
     linkSvg.style.display = 'block';
     const x1 = partOff.x + bxC + BOX / 2, yT = partOff.y + byC - boxH / 2, yB = partOff.y + byC + boxH / 2;
     linkPoly.setAttribute('points', `${x1},${yT} ${micOff.x},${micOff.y} ${micOff.x},${micOff.y + mh} ${x1},${yB}`);
   }
-
+ 
   function draw() {
     const frac = Math.min(0.99, microDraw());
     dens = frac;
@@ -1135,7 +1172,7 @@ function renderLeaf(geo, data, devW, devH, st) {
     stageEl.textContent = stage;
     slider.setAttribute('aria-valuetext', stage + ', ' + Math.round(frac * 100) + '% dense, ' + shrink + ' shrinkage');
   }
-
+ 
   /* ---------- layout ---------- */
   function layout() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1143,7 +1180,7 @@ function renderLeaf(geo, data, devW, devH, st) {
     pw = Math.round(pr.width); ph = Math.round(pr.height); mw = Math.round(mr.width); mh = Math.round(mr.height);
     partOff = { x: pr.left - sr.left, y: pr.top - sr.top }; micOff = { x: mr.left - sr.left, y: mr.top - sr.top };
     for (const [cv, w, h] of [[partCv, pw, ph], [microCv, mw, mh]]) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
-
+ 
     // microstructure
     mrm = mw < 420 ? 10 : 14;
     mModel = createModel(Math.round(mw * 1.9), Math.round(mh * 1.9), mrm);
@@ -1154,26 +1191,26 @@ function renderLeaf(geo, data, devW, devH, st) {
     S = new Uint8Array(mw * mh); dist = new Float32Array(mw * mh);
     calibrate();
     const keep = t; t = 0; d0 = microDraw(); t = keep;          // density at the start sets the shrinkage reference
-
+ 
     // printed part
     LW = Math.min(pw * 0.8, (ph - 56) / (LEAF_ASPECT * KY + THICK * SINT), 440);
     P = Math.max(6.5, LW * 0.0175); g0 = P * 0.46;       // coarser roads with wider shaded gaps, so the lines survive the tilt
     geo = leafGeometry(LW, dpr >= 2 ? 3 : 2);
     leafImg = partCtx.createImageData(partCv.width, partCv.height);
     leafCv = makeLayer(partCv.width, partCv.height); leafCtx = leafCv.getContext('2d');
-    dieW = Math.max(64, Math.min(pw * 0.16, 84)); dieWall = dieW * 1.26; dieH = ph * (ph < 360 ? 0.48 : 0.51); dieH0 = dieH * 0.72; dieCx = pw / 2;
+    dieW = Math.max(76, Math.min(pw * 0.2, 104)); dieWall = dieW * 1.26; dieH = ph * 0.46; dieH0 = dieH * 0.76; dieCx = pw / 2;
     // The punches' outer ends start far enough out that some of each punch still sticks out of the die at the end of sintering.
     const travel = dieH0 * SV * 0.2375, stickOut = ph < 360 ? 20 : 24;        // how far each punch moves in, and how much is left outside at the end
     dieEnd = dieH * SV / 2 + travel + stickOut;
-    dieMid = Math.max(ph / 2 - 6, dieEnd + 50);                                 // leave room above the upper punch for its arrow
+    dieMid = Math.max(ph / 2 - 6, dieEnd + dieW / 2 * EL + 36);                // leave room above the upper punch for its arrow
     csx = pw / 2 + geo.cent[0];
     csyBase = ph / 2 - 10 + THICK * LW * SINT / 2 + KY * geo.cent[1];       // centre the whole tilted part, thickness included
     draw();
   }
-
+ 
   const CAPS = { die: 'Powder in the Die', part: 'As Printed Part' };
   const ARIA = {
-    die: 'A cross-section of a spark plasma sintering die. A half-section of a spark plasma sintering die, seen from above at an angle. Powder sits between two cylindrical punches inside a thick die. As the slider moves, the punches slide inward, the powder loses its pores, and its height drops by about half. The die stays put, so the powder cannot shrink sideways.',
+    die: 'A cross-section of a spark plasma sintering die. A spark plasma sintering die with a quarter cut away, seen from above at an angle. Powder sits between two cylindrical punches inside a thick die. As the slider moves, the punches slide inward, the powder loses its pores, and its height drops by about half. The die stays put, so the powder cannot shrink sideways.',
     part: 'A whole maple leaf printed in layers, seen at an angle. As the slider moves, the gaps between the printed roads and the layer lines close, and the leaf shrinks inside a dashed outline of its printed footprint.'
   };
   function setMode(next) {
@@ -1186,7 +1223,7 @@ function renderLeaf(geo, data, devW, devH, st) {
   slider.addEventListener('input', () => { userTouched = true; t = slider.value / 100; draw(); });
   let timer; window.addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(layout, 180); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (geo) draw(); });
-
+ 
   layout();
   if (reduce) { t = 0.5; slider.value = 50; draw(); }
   else {
