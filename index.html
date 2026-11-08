@@ -102,18 +102,23 @@ a:hover { color: var(--accent-deep); }
 .btn:hover { background: var(--accent-deep); color: #fff; }
 .text-link { font-family: var(--head); font-weight: 500; }
 
-.sim { margin-top: 56px; border: 1px solid var(--line); background: var(--surface); }
-#sim { display: block; width: 100%; height: 360px; }
-.sim-controls {
-  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px; align-items: center; padding: 18px 24px; border-top: 1px solid var(--line);
-  font-family: var(--head);
-}
-.sim-controls label { display: block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; }
-.sim-readout { font-size: 0.95rem; color: var(--ink-soft); }
-.sim-readout strong { display: block; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
+.ps-switch { display: inline-flex; border: 1px solid var(--ink); border-radius: 4px; overflow: hidden; margin: 56px 0 20px; font-family: var(--head); }
+.ps-switch button { font: inherit; font-weight: 500; font-size: 0.98rem; padding: 9px 20px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.ps-switch button + button { border-left: 1px solid var(--ink); }
+.ps-switch button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.ps-switch button:not([aria-pressed="true"]):hover { background: rgba(20, 34, 43, 0.08); }
+.ps-stage { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; }
+.ps-panel { margin: 0; }
+.ps-panel canvas { display: block; width: 100%; height: 380px; background: var(--surface); outline: 1px solid var(--line); outline-offset: -1px; }
+.ps-panel figcaption { font-family: var(--head); font-size: 1rem; font-weight: 500; color: var(--ink); margin-top: 10px; }
+.ps-links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.ps-links polygon { fill: rgba(192, 39, 27, 0.06); stroke: rgba(20, 34, 43, 0.45); stroke-width: 1; }
+.ps-controls { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; margin-top: 28px; padding: 18px 24px; background: var(--surface); border: 1px solid var(--line); font-family: var(--head); }
+.ps-controls label { display: block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; }
+.ps-read { font-size: 0.95rem; color: var(--ink-soft); }
+.ps-read strong { display: block; font-size: 1.15rem; font-weight: 700; color: var(--ink); }
 input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; margin: 0; }
-.sim-note { font-size: 0.9rem; color: var(--ink-soft); margin: 12px 0 0; max-width: none; }
+.ps-note { font-size: 0.9rem; color: var(--ink-soft); margin: 14px 0 0; max-width: 90ch; }
 
 /* About */
 .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 72px; align-items: center; }
@@ -173,11 +178,14 @@ address { font-style: normal; }
 @media (max-width: 820px) {
   .section { padding: 64px 0; }
   .row, .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .sim-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .sim-controls > div:first-child { grid-column: 1 / -1; }
+  .ps-switch { margin-top: 40px; }
+  .ps-stage { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .ps-panel canvas { height: 340px; }
+  .ps-panel + .ps-panel canvas { height: 260px; }
+  .ps-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .ps-controls > div:first-child { grid-column: 1 / -1; }
   .pi { grid-template-columns: minmax(0, 1fr); }
   .avatar { width: 120px; height: 120px; font-size: 2.2rem; }
-  #sim { height: 280px; }
   .nav { gap: 16px; }
   .brand { gap: 12px; }
   .brand-symbol { height: 46px; }
@@ -224,18 +232,33 @@ address { font-style: normal; }
         </div>
       </div>
 
-      <div class="sim">
-        <canvas id="sim" role="img" aria-label=" What is sintering? Use the slider to understand how powder particles behave during sintering: necks widen where particles touch, and the pores shrink and close until the body is almost fully dense."></canvas>
-        <div class="sim-controls">
-          <div>
-            <label for="progress">Sintering</label>
-            <input id="progress" type="range" min="0" max="100" value="0" step="1">
-          </div>
-          <div class="sim-readout" aria-live="polite">Stage<strong id="stage">Particles in contact</strong></div>
-          <div class="sim-readout">Density<strong id="density">50%</strong></div>
-        </div>
+      <div class="ps-switch" role="group" aria-label="Sintering route">
+        <button type="button" id="tabPart" aria-pressed="true">3D Printing</button>
+        <button type="button" id="tabDie" aria-pressed="false">Spark Plasma Sintering</button>
       </div>
-      <p class="sim-note">Drag the slider to watch sintering in action. This is a simplified 2D sketch of solid-state sintering, not a simulation of a specific material.</p>
+
+      <div class="ps-stage" id="psStage">
+        <figure class="ps-panel">
+          <canvas id="partCv" role="img" aria-label="A whole maple leaf printed in layers, seen at an angle. As the slider moves, the gaps between the printed roads and the layer lines close, and the leaf shrinks inside a dashed outline of its printed footprint."></canvas>
+          <figcaption id="capLeft">As Printed Part</figcaption>
+        </figure>
+        <figure class="ps-panel">
+          <canvas id="microCv" role="img" aria-label="Powder particles inside the material. As the slider moves, the particles bond at necks, pull together, and the pores close until the material is almost fully dense."></canvas>
+          <figcaption>Microstructure in Box A</figcaption>
+        </figure>
+        <svg class="ps-links" id="psLinks" aria-hidden="true"><polygon points=""/></svg>
+      </div>
+
+      <div class="ps-controls">
+        <div>
+          <label for="progress">Sintering</label>
+          <input id="progress" type="range" min="0" max="100" value="0" step="1">
+        </div>
+        <div class="ps-read" aria-live="polite">Stage<strong id="stage">As printed</strong></div>
+        <div class="ps-read">Density<strong id="density">50%</strong></div>
+        <div class="ps-read">Shrinkage<strong id="shrink">0%</strong></div>
+      </div>
+      <p class="ps-note">Drag the slider to watch sintering in action. This is a simplified sketch of solid-state sintering, not a simulation of a specific material. Density is measured from the right panel, which is a flat 2D slice of the material. A free-standing 3D-printed part has no walls around it, so it shrinks in every direction, about 20% in length. In a spark plasma sintering die, the walls stop the powder shrinking sideways, so only its height changes: it drops by about half as the density goes from 50% to 99%. The die is cut in half along its axis so the powder inside can be seen, and the faint warm tint shows heating. Both are illustrative. The printed part is shown from a fixed angle, with the layer height exaggerated so the layers stay visible. Box A is not drawn to scale: the right panel covers only a few hundred micrometres of the material. Particles are about 20 µm across, which is illustrative.</p>
     </div>
   </section>
 
@@ -333,7 +356,7 @@ address { font-style: normal; }
           <p>High-temperature ceramics, powder-metal parts, and additive manufacturing of metals and ceramics, wherever the way a part is made decides how long it lasts. Dr. Prasad has also used spark plasma sintering for solid electrolytes, heat sinks, microfluidic parts and grain refiners for aluminum alloys.</p>
         </div>
         <p class="cta">Have a materials problem in one of these areas, or want to explore a joint project?</p>
-        <p <a class="btn" href="mailto:anil.prasad@usask.ca?subject=Collaboration%20inquiry%20-%20Sintering%20Materials%20Research%20Lab">Discuss a collaboration</a></p>
+        <p><a class="btn" href="mailto:anil.prasad@usask.ca?subject=Collaboration%20inquiry%20-%20Sintering%20Materials%20Research%20Lab">Discuss a collaboration</a></p>
       </div>
     </div>
   </section>
@@ -442,7 +465,7 @@ address { font-style: normal; }
       <div class="section-head"><h2>News</h2></div>
       <ul class="plain">
         <li><span class="meta">September 2026</span>Dr. Anil Prasad joins the Department of Mechanical Engineering at the University of Saskatchewan as an Assistant Professor and starts the Sintering Materials Research Lab.</li>
-        <!--<!--<li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Add the next announcement: a new paper, award, grant, or student milestone.]</span></li>-->
+        <!--<li><span class="meta"><span class="ph">[Date]</span></span><span class="ph">[Add the next announcement: a new paper, award, grant, or student milestone.]</span></li>-->
       </ul>
     </div>
   </section>
@@ -500,7 +523,7 @@ function mulberry32(a) {
 }
 
 function createModel(W, H, rm, opts) {
-  opts = Object.assign({ gapK: 2.2, vac: 0.12, small: 0.3, pull: 0.5, epsMax: 0.4, overlap: 0.8, seed: 11 }, opts || {});
+  opts = Object.assign({ gapK: 2.15, vac: 0.09, small: 0.3, pull: 0.5, epsMax: 0.4, overlap: 0.8, seed: 11 }, opts || {});
   const rnd = mulberry32(opts.seed);
   const gap = rm * opts.gapK;
   const rowH = gap * 0.866;
@@ -636,7 +659,7 @@ function createModel(W, H, rm, opts) {
     return { pos, necks, nfrac, g };
   }
 
-  return { parts, pairs, frame };
+  return { parts, pairs, frame, center: { x: cx, y: cy } };
 }
 
 
@@ -699,24 +722,22 @@ function fractionForRho(S, dist, w, h, roi, region, rho) {
    Each grain's cell is the region closer (by power distance) to its own particle than to any other.
    Cell edges shared with a neighbour are the boundaries between the two grains. */
 function grainEdges(pos, half) {
-  const n = pos.length, segs = [];
-  for (let i = 0; i < n; i++) {
-    const P = pos[i];
+  const n = pos.length, segs = [], lim = 3 * half;
+  const order = Array.from({ length: n }, (_, k) => k).sort((a, b) => pos[a].x - pos[b].x);
+  for (let oi = 0; oi < n; oi++) {
+    const i = order[oi], P = pos[i];
     let poly = [
       { x: P.x - half, y: P.y - half, tag: -1 }, { x: P.x + half, y: P.y - half, tag: -1 },
       { x: P.x + half, y: P.y + half, tag: -1 }, { x: P.x - half, y: P.y + half, tag: -1 }
     ];
-    for (let j = 0; j < n && poly.length > 2; j++) {
-      if (j === i) continue;
+    const cut = j => {
       const Q = pos[j];
       const nx = Q.x - P.x, ny = Q.y - P.y;
       const len = Math.hypot(nx, ny);
-      if (len > 3.2 * half) continue;
+      if (len > lim) return;
       const c = ((Q.x * Q.x + Q.y * Q.y) - (P.x * P.x + P.y * P.y) - Q.r * Q.r + P.r * P.r) / 2;
-      // Signed distance of P from the dividing line; skip lines that cannot reach the cell.
-      if ((c - (nx * P.x + ny * P.y)) / (len || 1) > 1.5 * half) continue;
-      const out = [];
-      const m = poly.length;
+      if ((c - (nx * P.x + ny * P.y)) / (len || 1) > 1.5 * half) return;
+      const out = [], m = poly.length;
       for (let k = 0; k < m; k++) {
         const a = poly[(k + m - 1) % m], b = poly[k];
         const sa = nx * a.x + ny * a.y - c, sb = nx * b.x + ny * b.y - c;
@@ -732,7 +753,9 @@ function grainEdges(pos, half) {
         }
       }
       poly = out;
-    }
+    };
+    for (let k = oi - 1; k >= 0 && P.x - pos[order[k]].x <= lim && poly.length > 2; k--) cut(order[k]);
+    for (let k = oi + 1; k < n && pos[order[k]].x - P.x <= lim && poly.length > 2; k++) cut(order[k]);
     const m = poly.length;
     for (let k = 0; k < m; k++) {
       const v = poly[k], u = poly[(k + m - 1) % m];
@@ -742,36 +765,122 @@ function grainEdges(pos, half) {
   return segs;
 }
 
+/* ---------- The printed leaf ----------
+   Outline of a whole maple leaf, stem included. Geometry is kept in "print space" (CSS pixels at the as-printed size).
+   Road pattern: two perimeter roads that follow the outline, then straight infill roads at 45 degrees.
+   As the part sinters, the gaps between roads close and the whole part shrinks. */
+const LEAF_PTS = [-0.0093,-0.529,-0.0176,-0.5166,-0.0776,-0.3468,-0.0859,-0.3323,-0.0963,-0.3344,-0.1998,-0.3799,-0.2101,-0.3799,-0.2205,-0.3716,-0.2226,-0.3592,-0.1646,-0.1066,-0.1646,-0.0963,-0.1708,-0.0942,-0.2909,-0.2122,-0.3033,-0.2122,-0.3137,-0.2039,-0.3447,-0.1253,-0.3613,-0.1273,-0.4565,-0.1563,-0.471,-0.1563,-0.4814,-0.146,-0.4814,-0.1315,-0.4337,-0.0238,-0.4337,-0.0135,-0.4896,0.028,-0.5,0.0383,-0.5,0.0528,-0.4896,0.0652,-0.2619,0.2578,-0.2785,0.3406,-0.2764,0.353,-0.2702,0.3592,-0.2536,0.3613,-0.059,0.3282,-0.0569,0.3302,-0.0569,0.4834,-0.0549,0.4917,-0.0424,0.5124,-0.0321,0.5207,-0.0176,0.5269,0.0031,0.529,0.028,0.5207,0.0445,0.5041,0.0528,0.4793,0.0528,0.3302,0.0549,0.3282,0.2516,0.3613,0.2702,0.3592,0.2764,0.3509,0.2764,0.3323,0.2619,0.2681,0.2619,0.2578,0.4876,0.0673,0.5,0.0528,0.5,0.0383,0.4337,-0.0135,0.4337,-0.0238,0.4814,-0.1315,0.4814,-0.146,0.471,-0.1563,0.4565,-0.1563,0.3613,-0.1273,0.3447,-0.1253,0.3137,-0.2039,0.3033,-0.2122,0.2909,-0.2122,0.1708,-0.0942,0.1646,-0.0963,0.1729,-0.1439,0.2226,-0.3592,0.2205,-0.3716,0.2101,-0.3799,0.1998,-0.3799,0.0963,-0.3344,0.0859,-0.3323,0.0776,-0.3468,0.0176,-0.5166,0.0093,-0.529];
+const LEAF_CENTROID = [-0.0002, 0.0156];   // area centroid, in units of the leaf's width
+const LEAF_ASPECT = 1.058;           // height / width (the stem is included)
 
+function leafGeometry(LW, gq) {
+  const pts = [];
+  for (let i = 0; i < LEAF_PTS.length; i += 2) pts.push([LEAF_PTS[i] * LW, LEAF_PTS[i + 1] * LW]);
+  const hw = LW / 2 + 3, hh = LW * LEAF_ASPECT / 2 + 3;
+  const gw = Math.ceil(2 * hw * gq), gh = Math.ceil(2 * hh * gq);
+  // Fill the polygon at cell centres (even-odd scanline), then measure each inside cell's distance to the outside.
+  const outside = new Uint8Array(gw * gh).fill(1);
+  for (let gy = 0; gy < gh; gy++) {
+    const y = (gy + 0.5) / gq - hh, xs = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length];
+      if ((a[1] > y) !== (b[1] > y)) xs.push(a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1]));
+    }
+    xs.sort((m, n) => m - n);
+    for (let k = 0; k + 1 < xs.length; k += 2) {
+      const x0 = Math.max(0, Math.ceil((xs[k] + hw) * gq - 0.5)), x1 = Math.min(gw - 1, Math.floor((xs[k + 1] + hw) * gq - 0.5));
+      for (let gx = x0; gx <= x1; gx++) outside[gy * gw + gx] = 0;
+    }
+  }
+  const D = new Float32Array(gw * gh);
+  chamferDist(outside, gw, gh, D);
+  return { pts, hw, hh, gw, gh, gq, D, LW, cent: [LEAF_CENTROID[0] * LW, LEAF_CENTROID[1] * LW] };
+}
+
+// How much of a one-pixel-wide window centred `d` pixels from a stripe's centre is covered by a stripe `gw` pixels wide.
+function stripeOverlap(d, gw) {
+  const h = gw / 2, v = Math.min(h, d + 0.5) - Math.max(-h, d - 0.5);
+  return v < 0 ? 0 : v > 1 ? 1 : v;
+}
+
+/* Draw the leaf into a device-pixel RGBA buffer.
+   st: s (linear scale), gap (current gap between roads, print px), P (road pitch), nPer, dpr, csx/csy (where the leaf's centroid sits on screen, CSS px),
+   ky (vertical squash of the top face when it is tilted away from the viewer; 1 = seen from straight above) */
+function renderLeaf(geo, data, devW, devH, st) {
+  const { D, gw, gh, gq, hw, hh, cent } = geo;
+  const { s, gap, P, nPer, dpr, csx, csy } = st, ky = st.ky || 1;
+  // Pixels per print pixel: across the outline (about the average of the two directions) and across the 45-degree roads.
+  const sqD = s * dpr * (1 + ky) / 2, sqL = dpr * s * Math.SQRT2 * ky / Math.sqrt(ky * ky + 1);
+  const gapD = gap * sqD, gapL = gap * sqL, inv = 1 / s, invY = 1 / (s * ky), sqrt1_2 = Math.SQRT1_2;
+  const x0 = Math.max(0, Math.floor((csx + s * (-hw - cent[0])) * dpr) - 1), x1 = Math.min(devW - 1, Math.ceil((csx + s * (hw - cent[0])) * dpr) + 1);
+  const y0 = Math.max(0, Math.floor((csy + s * ky * (-hh - cent[1])) * dpr) - 1), y1 = Math.min(devH - 1, Math.ceil((csy + s * ky * (hh - cent[1])) * dpr) + 1);
+  const R = 232, G = 100, B = 26;
+  for (let yd = y0; yd <= y1; yd++) {
+    const Y = cent[1] + ((yd + 0.5) / dpr - csy) * invY;
+    const gy = Math.floor((Y + hh) * gq);
+    if (gy < 0 || gy >= gh) continue;
+    for (let xd = x0; xd <= x1; xd++) {
+      const X = cent[0] + ((xd + 0.5) / dpr - csx) * inv;
+      const gx = Math.floor((X + hw) * gq);
+      if (gx < 0 || gx >= gw) continue;
+      const dcell = D[gy * gw + gx];
+      if (dcell <= 0) continue;
+      const Dp = (dcell - 0.5) / gq;                                   // distance from the outline, print px
+      let inside = Dp * sqD + 0.5; inside = inside > 1 ? 1 : inside < 0 ? 0 : inside;
+      let k = Math.round(Dp / P); if (k > nPer) k = nPer;
+      let gapCov = stripeOverlap(Math.abs(Dp - k * P) * sqD, gapD);     // gaps between the perimeter roads
+      if (Dp >= nPer * P - P * 0.5) {                                   // infill roads
+        const u = (X + Y) * sqrt1_2;
+        let t = u % P; if (t < 0) t += P;
+        const lineGap = stripeOverlap((t < P - t ? t : P - t) * sqL, gapL);
+        if (Dp >= nPer * P && lineGap > gapCov) gapCov = lineGap;
+      }
+      const a = (1 - gapCov) * inside;
+      if (a <= 0.003) continue;
+      const i = (yd * devW + xd) * 4;
+      data[i] = R; data[i + 1] = G; data[i + 2] = B; data[i + 3] = Math.round(a * 255);
+    }
+  }
+}
 
 (() => {
-  const cvs = document.getElementById('sim');
-  const ctx = cvs.getContext('2d');
+  const partCv = document.getElementById('partCv'), microCv = document.getElementById('microCv');
+  const partCtx = partCv.getContext('2d'), microCtx = microCv.getContext('2d');
   const slider = document.getElementById('progress');
-  const stageEl = document.getElementById('stage');
-  const densEl = document.getElementById('density');
+  const stageEl = document.getElementById('stage'), densEl = document.getElementById('density'), shrEl = document.getElementById('shrink');
+  const tabDie = document.getElementById('tabDie'), tabPart = document.getElementById('tabPart'), capLeft = document.getElementById('capLeft');
+  const stageBox = document.getElementById('psStage'), linkSvg = document.getElementById('psLinks'), linkPoly = linkSvg.querySelector('polygon');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const twoCol = window.matchMedia('(min-width: 821px)');
 
-  const FILL = '#E8641A';
-  const EXP = 1.15;        // pores shrink slowly at first, faster later
-  const TARGET = 0.99;     // a fully sintered body ends at 99% solid
-  const CELL = 2.4;        // grain cells extend this many particle radii
+  const FILL = '#E8641A', INK = '#14222B', SOFT = '#4A5B66', ACCENT = '#C0271B';
+  const EXP = 1.15, TARGET = 0.99;
+  const ZOOM = [-0.12, 0.05];     // zoom box centre, in leaf widths from the leaf's bounding-box centre
+  const BOX = 18;                 // zoom box size, CSS px (not to scale, see note)
+  const LEAF_MM = 30;             // leaf width as printed, mm
+  const PARTICLE_UM = 20;         // particle diameter shown in the microstructure, micrometres (illustrative)
+  const TILT = Math.PI / 4, KY = Math.cos(TILT), SINT = Math.sin(TILT);   // fixed view: 45 degrees from straight above
+  const THICK = 0.1;              // part thickness as a fraction of its width (3 mm on a 30 mm leaf)
+  const LAYERS = 12;              // printed layers shown on the side walls (0.25 mm each)
+  const lerp3 = (a, b, k) => 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',') + ')';
+  const smooth = x => { x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * (3 - 2 * x); };
 
-  let W = 0, H = 0, w = 0, h = 0, rm = 14, model = null, t = 0, userTouched = false, rhoMax = 0.4;
+  let t = 0, userTouched = false, dpr = 1;
+  // microstructure window
+  let mw = 0, mh = 0, mrm = 14, mModel = null, mOx = 0, mOy = 0, rhoMax = 0.2, d0 = 0.5, dens = 0.5;
   let mc, mctx, fc, fctx, fImg, S, dist;
+  // printed part
+  let pw = 0, ph = 0, geo = null, leafImg = null, leafCv = null, leafCtx = null, LW = 400, P = 6, g0 = 2, csx = 0, csyBase = 0, bxC = 0, byC = 0, boxH = 0;
+  let partOff = { x: 0, y: 0 }, micOff = { x: 0, y: 0 };
+  let mode = 'part', dieW = 84, dieWall = 106, dieH = 182, dieH0 = 120, dieMid = 180, dieCx = 260, dieEnd = 144;
 
-  function makeLayer(width, height) {
-    const c = document.createElement('canvas');
-    c.width = width; c.height = height;
-    return c;
-  }
+  function makeLayer(width, height) { const c = document.createElement('canvas'); c.width = width; c.height = height; return c; }
 
+  /* ---------- microstructure: a window cut from inside the material ---------- */
   function neckPath(c, n) {
     const nx = -n.uy, ny = n.ux, hh = n.h;
-    const ca = Math.sqrt(Math.max(0, n.ar * n.ar - hh * hh));
-    const cb = Math.sqrt(Math.max(0, n.br * n.br - hh * hh));
-    const ax = n.ax + n.ux * ca, ay = n.ay + n.uy * ca;
-    const bx = n.bx - n.ux * cb, by = n.by - n.uy * cb;
+    const ca = Math.sqrt(Math.max(0, n.ar * n.ar - hh * hh)), cb = Math.sqrt(Math.max(0, n.br * n.br - hh * hh));
+    const ax = n.ax + n.ux * ca, ay = n.ay + n.uy * ca, bx = n.bx - n.ux * cb, by = n.by - n.uy * cb;
     const mx = (ax + bx) / 2, my = (ay + by) / 2, k = 0.6 * hh;
     c.moveTo(ax + nx * hh, ay + ny * hh);
     c.quadraticCurveTo(mx + nx * k, my + ny * k, bx + nx * hh, by + ny * hh);
@@ -779,162 +888,314 @@ function grainEdges(pos, half) {
     c.quadraticCurveTo(mx - nx * k, my - ny * k, ax - nx * hh, ay - ny * hh);
     c.closePath();
   }
-
-  // Particles with necks between them, as one filled shape.
   function paintShapes(c, f) {
-    c.beginPath();
-    for (const n of f.necks) if (n.fillet) neckPath(c, n);
-    c.fill();
-    c.beginPath();
-    for (const q of f.pos) { c.moveTo(q.x + q.r, q.y); c.arc(q.x, q.y, q.r, 0, Math.PI * 2); }
-    c.fill();
+    c.beginPath(); for (const n of f.necks) if (n.fillet) neckPath(c, n); c.fill();
+    c.beginPath(); for (const q of f.pos) { c.moveTo(q.x + q.r, q.y); c.arc(q.x, q.y, q.r, 0, Math.PI * 2); } c.fill();
   }
-
-  // One mask pixel per CSS pixel: 1 where a particle or neck is drawn.
+  // The model covers a larger area than the window, so the window stays full as the material contracts.
+  function microFrame(p) {
+    const f = mModel.frame(p), pad = 3 * mrm, pos = [], necks = [];
+    for (const q of f.pos) { const x = q.x - mOx, y = q.y - mOy; if (x > -pad && x < mw + pad && y > -pad && y < mh + pad) pos.push({ x, y, r: q.r }); }
+    for (const n of f.necks) { const x = n.ax - mOx, y = n.ay - mOy; if (x > -pad && x < mw + pad && y > -pad && y < mh + pad) necks.push(Object.assign({}, n, { ax: x, ay: y, bx: n.bx - mOx, by: n.by - mOy })); }
+    return { pos, necks };
+  }
   function maskFor(f) {
-    mctx.setTransform(1, 0, 0, 1, 0, 0);
-    mctx.clearRect(0, 0, w, h);
-    mctx.fillStyle = '#000';
-    paintShapes(mctx, f);
-    const a = mctx.getImageData(0, 0, w, h).data;
-    for (let i = 0, n = w * h; i < n; i++) S[i] = a[i * 4 + 3] > 127 ? 1 : 0;
+    mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.clearRect(0, 0, mw, mh); mctx.fillStyle = '#000'; paintShapes(mctx, f);
+    const a = mctx.getImageData(0, 0, mw, mh).data;
+    for (let i = 0, n = mw * mh; i < n; i++) S[i] = a[i * 4 + 3] > 127 ? 1 : 0;
   }
-
-  // Where pores may shrink (the compact's footprint) and where solid fraction is measured.
-  function rects(pos) {
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, rmax = 0;
-    for (const q of pos) {
-      if (q.x < x0) x0 = q.x; if (q.x > x1) x1 = q.x;
-      if (q.y < y0) y0 = q.y; if (q.y > y1) y1 = q.y;
-      if (q.r > rmax) rmax = q.r;
-    }
-    const ins = rm * 1.6;
-    return {
-      roi: [Math.floor(x0 - rmax), Math.floor(y0 - rmax), Math.ceil(x1 + rmax), Math.ceil(y1 + rmax)],
-      region: [Math.round(x0 + ins), Math.round(y0 + ins), Math.round(x1 - ins), Math.round(y1 - ins)]
-    };
-  }
-
-  // Choose how far pores can shrink so the finished body measures 99% solid.
   function calibrate() {
-    const f = model.frame(1);
-    maskFor(f);
-    chamferDist(S, w, h, dist);
-    const r = rects(f.pos);
+    maskFor(microFrame(1)); chamferDist(S, mw, mh, dist);
+    const all = [0, 0, mw, mh];
     let lo = 0.05, hi = 6;
-    for (let i = 0; i < 16; i++) {
-      const mid = (lo + hi) / 2;
-      if (fractionForRho(S, dist, w, h, r.roi, r.region, mid * rm + 0.5) < TARGET) lo = mid; else hi = mid;
-    }
+    for (let i = 0; i < 16; i++) { const mid = (lo + hi) / 2; if (fractionForRho(S, dist, mw, mh, all, all, mid * mrm + 0.5) < TARGET) lo = mid; else hi = mid; }
     rhoMax = (lo + hi) / 2;
   }
-
-  function build() {
-    const rect = cvs.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = rect.width; H = rect.height;
-    cvs.width = Math.round(W * dpr);
-    cvs.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    rm = W < 560 ? 10 : 14;
-    model = createModel(W, H, rm);
-
-    w = Math.ceil(W); h = Math.ceil(H);
-    mc = makeLayer(w, h); mctx = mc.getContext('2d', { willReadFrequently: true });
-    fc = makeLayer(w, h); fctx = fc.getContext('2d');
-    fImg = fctx.createImageData(w, h);
-    for (let i = 0, n = w * h; i < n; i++) {
-      fImg.data[i * 4] = 232; fImg.data[i * 4 + 1] = 100; fImg.data[i * 4 + 2] = 26;
+  function tag(c, x, y, letter, sz) {
+    c.save();
+    c.fillStyle = ACCENT; c.fillRect(x, y, sz, sz);
+    c.fillStyle = '#fff'; c.font = '600 ' + Math.round(sz * 0.66) + 'px "Bricolage Grotesque", Arial, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(letter, x + sz / 2, y + sz / 2 + 0.5);
+    c.restore();
+  }
+  function scaleBar(c, x, y, len, label) {
+    c.save();
+    c.font = '500 12px "Bricolage Grotesque", Arial, sans-serif'; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+    const tw = Math.max(len, c.measureText(label).width);
+    c.fillStyle = 'rgba(255,255,255,0.92)'; c.fillRect(x - 6, y - 24, tw + 12, 34);
+    c.strokeStyle = INK; c.lineWidth = 1.5; c.beginPath();
+    c.moveTo(x, y); c.lineTo(x + len, y); c.moveTo(x, y - 4); c.lineTo(x, y + 4); c.moveTo(x + len, y - 4); c.lineTo(x + len, y + 4); c.stroke();
+    c.fillStyle = INK; c.fillText(label, x, y - 8);
+    c.restore();
+  }
+  function microDraw() {
+    const f = microFrame(t);
+    maskFor(f); chamferDist(S, mw, mh, dist);
+    const rho = rhoMax * mrm * Math.pow(t, EXP), all = [0, 0, mw, mh];
+    const fd = fImg.data, under = Math.round(255 * Math.min(1, 2 * rho));
+    for (let i = 0, n = mw * mh; i < n; i++) {
+      if (S[i]) fd[i * 4 + 3] = under;
+      else { const a = rho - dist[i] + 1; fd[i * 4 + 3] = a <= 0 ? 0 : a >= 1 ? 255 : Math.round(a * 255); }
     }
-    S = new Uint8Array(w * h);
-    dist = new Float32Array(w * h);
+    fctx.putImageData(fImg, 0, 0);
+    microCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    microCtx.clearRect(0, 0, mw, mh);
+    microCtx.imageSmoothingEnabled = true;
+    microCtx.drawImage(fc, 0, 0, mw, mh);
+    microCtx.fillStyle = FILL; paintShapes(microCtx, f);
+    const segs = grainEdges(f.pos, (1.15 + rhoMax + 0.35) * mrm);
+    microCtx.save();
+    microCtx.globalCompositeOperation = 'source-atop';
+    microCtx.strokeStyle = 'rgba(255,255,255,0.95)'; microCtx.lineWidth = 1.5; microCtx.lineCap = 'round';
+    microCtx.beginPath();
+    for (let k = 0; k < segs.length; k += 4) { microCtx.moveTo(segs[k], segs[k + 1]); microCtx.lineTo(segs[k + 2], segs[k + 3]); }
+    microCtx.stroke(); microCtx.restore();
+    tag(microCtx, 8, 8, 'A', 18);
+    const pxPerUm = mrm / (PARTICLE_UM / 2);
+    scaleBar(microCtx, 18, mh - 16, 50 * pxPerUm, '50 µm');
+    return fractionForRho(S, dist, mw, mh, all, all, rho + 0.5);
+  }
 
-    calibrate();
-    draw();
+  /* ---------- the printed part, seen from a fixed angle above ---------- */
+  // Outline of the leaf in screen space. yc is where the leaf's centroid sits for this height, sc the scale.
+  function leafPath(c, yc, sc, dx) {
+    c.beginPath();
+    geo.pts.forEach((q, i) => {
+      const x = csx + (dx || 0) + sc * (q[0] - geo.cent[0]), y = yc + sc * KY * (q[1] - geo.cent[1]);
+      if (i) c.lineTo(x, y); else c.moveTo(x, y);
+    });
+    c.closePath();
+  }
+  function partDraw() {
+    const s = Math.max(0.7, Math.cbrt(d0 / Math.max(dens, d0)));          // isotropic shrinkage: width, depth and thickness
+    const c = Math.pow(smooth((dens - 0.58) / 0.39), 1.5);                // how far the gaps have closed: slow at first, so the lines stay thick for longer
+    const gap = g0 * (1 - c) + 0.1 * c;
+    const T = THICK * LW * s;                                               // current thickness, CSS px
+    const topY = csyBase - T * SINT;                                        // where the top face's centroid sits on screen
+    const devW = partCv.width, devH = partCv.height;
+
+    // top face: the print roads, drawn pixel by pixel into a transparent layer
+    leafImg.data.fill(0);
+    renderLeaf(geo, leafImg.data, devW, devH, { s, gap, P, nPer: 2, dpr, csx, csy: topY, ky: KY });
+    leafCtx.putImageData(leafImg, 0, 0);
+
+    partCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    partCtx.clearRect(0, 0, pw, ph);
+
+    // the footprint it was printed on, drawn first so the part hides it until the part shrinks away from it
+    partCtx.save();
+    partCtx.setLineDash([5, 4]); partCtx.lineWidth = 1.25; partCtx.strokeStyle = '#6F7F8A';
+    leafPath(partCtx, csyBase, 1); partCtx.stroke(); partCtx.restore();
+
+    // soft shadow on the ground
+    partCtx.fillStyle = 'rgba(20, 34, 43, 0.05)';
+    for (let k = 1; k <= 3; k++) { leafPath(partCtx, csyBase + 3 * k, s, 4 * k); partCtx.fill(); }
+
+    // side walls: the leaf's outline stacked layer by layer, lowest first. Only the strips on the camera side stay visible.
+    const wallA = lerp3([178, 70, 13], [196, 82, 18], c), wallB = lerp3([160, 61, 10], [196, 82, 18], c);
+    const dz = T / LAYERS;
+    partCtx.lineWidth = 0.8; partCtx.lineJoin = 'round';
+    partCtx.strokeStyle = 'rgba(255, 255, 255, ' + (0.05 + 0.5 * (1 - c)).toFixed(3) + ')';
+    for (let k = 0; k < LAYERS; k++) {
+      leafPath(partCtx, csyBase - k * dz * SINT, s);
+      partCtx.fillStyle = k % 2 ? wallB : wallA; partCtx.fill(); partCtx.stroke();
+    }
+    // the shadowed groove between roads, visible through the gaps in the top face
+    leafPath(partCtx, topY, s);
+    partCtx.fillStyle = lerp3([112, 44, 9], [200, 84, 19], Math.sqrt(c)); partCtx.fill();
+    partCtx.drawImage(leafCv, 0, 0, pw, ph);
+
+    // zoom box on the top face, squashed by the same tilt
+    boxH = BOX * KY;
+    bxC = csx + s * (ZOOM[0] * LW - geo.cent[0]); byC = topY + s * KY * (ZOOM[1] * LW - geo.cent[1]);
+    partCtx.lineJoin = 'miter';
+    partCtx.strokeStyle = '#fff'; partCtx.lineWidth = 4; partCtx.strokeRect(bxC - BOX / 2, byC - boxH / 2, BOX, boxH);
+    partCtx.strokeStyle = INK; partCtx.lineWidth = 1.5; partCtx.strokeRect(bxC - BOX / 2, byC - boxH / 2, BOX, boxH);
+    tag(partCtx, bxC - BOX / 2 - 14, byC - boxH / 2 - 14, 'A', 14);
+    scaleBar(partCtx, 18, ph - 16, 10 * (LW / LEAF_MM), '10 mm');
+    // legend
+    partCtx.save(); partCtx.font = '500 12px "Bricolage Grotesque", Arial, sans-serif'; partCtx.textAlign = 'right'; partCtx.textBaseline = 'middle';
+    const lx = pw - 12, ly = ph - 22, label = 'printed footprint', tw = partCtx.measureText(label).width;
+    partCtx.fillStyle = 'rgba(255,255,255,0.92)'; partCtx.fillRect(lx - tw - 44, ly - 12, tw + 52, 24);
+    partCtx.setLineDash([5, 4]); partCtx.strokeStyle = '#6F7F8A'; partCtx.lineWidth = 1.25; partCtx.beginPath(); partCtx.moveTo(lx - tw - 36, ly); partCtx.lineTo(lx - tw - 10, ly); partCtx.stroke();
+    partCtx.setLineDash([]); partCtx.fillStyle = SOFT; partCtx.fillText(label, lx, ly);
+    partCtx.restore();
+    return s;
+  }
+
+  /* ---------- the SPS die in 3D: a half-section seen from 22 degrees above ----------
+     The front half is cut away along the axis. The flat cut faces show the walls, punches and powder; the curved
+     inside of the bore and the rims show the depth. Heights shrink to 0.93 and circles become ellipses 0.37 as tall as wide. */
+  const SV = Math.cos(Math.PI * 22 / 180), EL = Math.sin(Math.PI * 22 / 180);
+  const DIE_COLD = [74, 80, 86], DIE_HOT = [82, 80, 79];
+  const RIM_COLD = [118, 126, 134], RIM_HOT = [122, 121, 120];
+  const PUNCH_COLD = [176, 186, 194], PUNCH_HOT = [204, 187, 174];
+  const CAPTOP_COLD = [214, 222, 228], CAPTOP_HOT = [222, 212, 202];
+  const CAP_COLD = [128, 140, 150], CAP_HOT = [158, 138, 122];
+  const POWDER_LOOSE = [241, 146, 92], POWDER_DENSE = [232, 100, 26];
+  // Pores in the powder. Each has a fixed place in the material and a threshold: the small ones close first.
+  const specks = (() => { const rnd = mulberry32(21), u = [], v = [], thr = []; for (let i = 0; i < 900; i++) { u.push(rnd()); v.push(rnd()); thr.push(Math.pow(rnd(), 0.8)); } return { u, v, thr }; })();
+
+  function arrow(c, x, y0, y1) {
+    const d = y1 > y0 ? 1 : -1;
+    // a white halo first, so the arrow stays readable over the dark inside of the bore
+    c.save(); c.strokeStyle = '#fff'; c.fillStyle = '#fff'; c.lineWidth = 4.5; c.lineJoin = 'round';
+    c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1 - d * 4); c.stroke();
+    c.beginPath(); c.moveTo(x, y1 + d * 1.5); c.lineTo(x - 6, y1 - d * 9.5); c.lineTo(x + 6, y1 - d * 9.5); c.closePath(); c.fill(); c.stroke();
+    c.restore();
+    c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1 - d * 4); c.stroke();
+    c.beginPath(); c.moveTo(x, y1); c.lineTo(x - 4.5, y1 - d * 8); c.lineTo(x + 4.5, y1 - d * 8); c.closePath(); c.fill();
+  }
+
+  function dieDraw() {
+    const c = partCtx;
+    const k = Math.min(1, Math.max(0.45, d0 / Math.max(dens, d0)));              // powder height now / height when loaded
+    const heat = smooth(t), f = Math.min(1, Math.max(0, (dens - d0) / (0.99 - d0)));
+    const Ri = dieW / 2, Ro = Ri + dieWall, yMid = dieMid;
+    const HdS = dieH * SV, h0S = dieH0 * SV, hS = h0S * k;                       // heights on screen
+    const yDieTop = yMid - HdS / 2, yDieBot = yMid + HdS / 2;                    // top and bottom of the die's cut face
+    const yTop = yMid - hS / 2, yBot = yMid + hS / 2;                            // the powder's two faces
+    const shiftS = (h0S - hS) / 2;                                               // how far each punch has travelled
+    const eTop = yMid - dieEnd + shiftS, eBot = yMid + dieEnd - shiftS;         // outer ends of the punches
+    const x0 = dieCx - Ri, x1 = dieCx + Ri;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, pw, ph);
+    c.lineJoin = 'miter'; c.lineWidth = 1; c.setLineDash([]);
+    const edge = '#2A3036';
+
+    // the die's top face, behind the cut: a half ring
+    c.fillStyle = lerp3(RIM_COLD, RIM_HOT, heat);
+    c.beginPath(); c.moveTo(dieCx - Ro, yDieTop); c.ellipse(dieCx, yDieTop, Ro, Ro * EL, 0, Math.PI, 2 * Math.PI);
+    c.lineTo(x1, yDieTop); c.ellipse(dieCx, yDieTop, Ri, Ri * EL, 0, 2 * Math.PI, Math.PI, true); c.closePath();
+    c.fill(); c.strokeStyle = edge; c.stroke();
+
+    // the inside of the bore: the far half of the cylinder, darker at the sides
+    const g = c.createLinearGradient(x0, 0, x1, 0);
+    g.addColorStop(0, '#242A2F'); g.addColorStop(0.5, '#4A525A'); g.addColorStop(1, '#242A2F');
+    c.fillStyle = g;
+    c.beginPath(); c.moveTo(x0, yDieTop); c.ellipse(dieCx, yDieTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.lineTo(x1, yDieBot); c.lineTo(x0, yDieBot); c.closePath(); c.fill();
+
+    // the cut faces of the two walls
+    c.fillStyle = lerp3(DIE_COLD, DIE_HOT, heat);
+    c.fillRect(dieCx - Ro, yDieTop, dieWall, HdS); c.fillRect(x1, yDieTop, dieWall, HdS);
+    c.strokeStyle = edge; c.strokeRect(dieCx - Ro, yDieTop, dieWall, HdS); c.strokeRect(x1, yDieTop, dieWall, HdS);
+
+    // punches: cut faces, with a round end cap on the upper one and a darker end on the lower one
+    c.fillStyle = lerp3(PUNCH_COLD, PUNCH_HOT, heat);
+    c.fillRect(x0, eTop, 2 * Ri, yTop - eTop); c.fillRect(x0, yBot, 2 * Ri, eBot - yBot);
+    c.fillStyle = lerp3(CAP_COLD, CAP_HOT, heat);
+    c.fillRect(x0, eBot - 6, 2 * Ri, 6);
+    c.fillStyle = lerp3(CAPTOP_COLD, CAPTOP_HOT, heat);
+    c.beginPath(); c.moveTo(x0, eTop); c.ellipse(dieCx, eTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.closePath(); c.fill();
+    c.strokeStyle = '#5E6E79';
+    c.strokeRect(x0, eTop, 2 * Ri, yTop - eTop); c.strokeRect(x0, yBot, 2 * Ri, eBot - yBot);
+    c.beginPath(); c.ellipse(dieCx, eTop, Ri, Ri * EL, 0, Math.PI, 2 * Math.PI); c.stroke();
+
+    // powder cut face, with pores that close from small to large and flatten along the pressing direction
+    c.fillStyle = lerp3(POWDER_LOOSE, POWDER_DENSE, f);
+    c.fillRect(x0, yTop, 2 * Ri, hS);
+    c.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    const sc = Math.max(0.6, (2 * Ri) / 130);
+    for (let i = 0; i < specks.u.length; i++) {
+      if (specks.thr[i] <= f) continue;
+      const rx = (0.7 + 2.0 * specks.thr[i] * specks.thr[i]) * sc * (1 - 0.4 * f), ry = rx * Math.max(0.55, k);
+      c.beginPath(); c.ellipse(x0 + (0.03 + 0.94 * specks.u[i]) * 2 * Ri, yTop + (0.04 + 0.92 * specks.v[i]) * hS, rx, ry, 0, 0, Math.PI * 2); c.fill();
+    }
+    c.strokeStyle = '#B34A0C'; c.lineWidth = 1; c.strokeRect(x0, yTop, 2 * Ri, hS);
+
+    // the load on the punches, riding on their outer ends
+    c.strokeStyle = INK; c.fillStyle = INK; c.lineWidth = 1.5;
+    arrow(c, dieCx, eTop - Ri * EL - 26, eTop - Ri * EL - 6); arrow(c, dieCx, eBot + 26, eBot + 6);
+
+    // zoom box on the powder, at a fixed place in the material
+    boxH = BOX;
+    bxC = x0 + 0.34 * 2 * Ri; byC = yTop + 0.35 * hS;
+    c.strokeStyle = '#fff'; c.lineWidth = 4; c.strokeRect(bxC - BOX / 2, byC - BOX / 2, BOX, BOX);
+    c.strokeStyle = INK; c.lineWidth = 1.5; c.strokeRect(bxC - BOX / 2, byC - BOX / 2, BOX, BOX);
+    tag(c, bxC - BOX / 2 - 14, byC - BOX / 2 - 14, 'A', 14);
+    scaleBar(c, 18, ph - 16, 5 * (dieW / 10), '5 mm');
+    return k;
+  }
+
+  function updateLinks() {
+    if (!twoCol.matches) { linkSvg.style.display = 'none'; return; }
+    linkSvg.style.display = 'block';
+    const x1 = partOff.x + bxC + BOX / 2, yT = partOff.y + byC - boxH / 2, yB = partOff.y + byC + boxH / 2;
+    linkPoly.setAttribute('points', `${x1},${yT} ${micOff.x},${micOff.y} ${micOff.x},${micOff.y + mh} ${x1},${yB}`);
   }
 
   function draw() {
-    const f = model.frame(t);
-    maskFor(f);
-    chamferDist(S, w, h, dist);
-    const r = rects(f.pos);
-    const rho = rhoMax * rm * Math.pow(t, EXP);
-
-    // Layer 1: material that has moved into shrinking pores, with a smooth edge.
-    const fd = fImg.data;
-    for (let i = 0, n = w * h; i < n; i++) fd[i * 4 + 3] = 0;
-    if (rho > 0) {
-      const x0 = Math.max(0, r.roi[0]), y0 = Math.max(0, r.roi[1]);
-      const x1 = Math.min(w, r.roi[2]), y1 = Math.min(h, r.roi[3]);
-      const under = Math.round(255 * Math.min(1, 2 * rho));
-      for (let y = y0; y < y1; y++) {
-        for (let x = x0; x < x1; x++) {
-          const i = y * w + x;
-          if (S[i]) { fd[i * 4 + 3] = under; continue; }
-          const a = rho - dist[i] + 1;
-          if (a > 0) fd[i * 4 + 3] = a >= 1 ? 255 : Math.round(a * 255);
-        }
-      }
-    }
-    fctx.putImageData(fImg, 0, 0);
-
-    ctx.clearRect(0, 0, W, H);
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(fc, 0, 0, w, h);
-
-    // Layer 2: particles and necks, drawn as crisp vector shapes.
-    ctx.fillStyle = FILL;
-    paintShapes(ctx, f);
-
-    // Layer 3: grain boundaries as vector lines, kept only where there is solid underneath.
-    const segs = grainEdges(f.pos, CELL * rm);
-    ctx.save();
-    ctx.globalCompositeOperation = 'source-atop';
-    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-    ctx.lineWidth = 1.5;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    for (let k = 0; k < segs.length; k += 4) { ctx.moveTo(segs[k], segs[k + 1]); ctx.lineTo(segs[k + 2], segs[k + 3]); }
-    ctx.stroke();
-    ctx.restore();
-
-    const frac = fractionForRho(S, dist, w, h, r.roi, r.region, rho + 0.5);
+    const frac = Math.min(0.99, microDraw());
+    dens = frac;
+    const s = mode === 'part' ? partDraw() : dieDraw();
+    updateLinks();
+    const shrink = mode === 'part' ? Math.round((1 - s) * 100) + '%' : Math.round((1 - s) * 100) + '% in height';
     densEl.textContent = Math.round(frac * 100) + '%';
-    let stage = 'Particles in contact';
-    if (t >= 0.03) {
-      if (frac < 0.65) stage = 'Neck growth';
-      else if (frac < 0.92) stage = 'Pores shrinking';
-      else stage = 'Pores closing';
-    }
+    shrEl.textContent = shrink;
+    let stage = mode === 'part' ? 'As printed' : 'Powder loaded';
+    if (t >= 0.03) stage = frac < 0.65 ? 'Neck growth' : frac < 0.92 ? 'Pores shrinking' : 'Pores closing';
     stageEl.textContent = stage;
-    slider.setAttribute('aria-valuetext', stage + ', ' + Math.round(frac * 100) + '% solid');
+    slider.setAttribute('aria-valuetext', stage + ', ' + Math.round(frac * 100) + '% dense, ' + shrink + ' shrinkage');
   }
 
-  slider.addEventListener('input', () => {
-    userTouched = true;
-    t = slider.value / 100;
+  /* ---------- layout ---------- */
+  function layout() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const pr = partCv.getBoundingClientRect(), mr = microCv.getBoundingClientRect(), sr = stageBox.getBoundingClientRect();
+    pw = Math.round(pr.width); ph = Math.round(pr.height); mw = Math.round(mr.width); mh = Math.round(mr.height);
+    partOff = { x: pr.left - sr.left, y: pr.top - sr.top }; micOff = { x: mr.left - sr.left, y: mr.top - sr.top };
+    for (const [cv, w, h] of [[partCv, pw, ph], [microCv, mw, mh]]) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+
+    // microstructure
+    mrm = mw < 420 ? 10 : 14;
+    mModel = createModel(Math.round(mw * 1.9), Math.round(mh * 1.9), mrm);
+    mOx = mModel.center.x - mw / 2; mOy = mModel.center.y - mh / 2;
+    mc = makeLayer(mw, mh); mctx = mc.getContext('2d', { willReadFrequently: true });
+    fc = makeLayer(mw, mh); fctx = fc.getContext('2d'); fImg = fctx.createImageData(mw, mh);
+    for (let i = 0, n = mw * mh; i < n; i++) { fImg.data[i * 4] = 232; fImg.data[i * 4 + 1] = 100; fImg.data[i * 4 + 2] = 26; }
+    S = new Uint8Array(mw * mh); dist = new Float32Array(mw * mh);
+    calibrate();
+    const keep = t; t = 0; d0 = microDraw(); t = keep;          // density at the start sets the shrinkage reference
+
+    // printed part
+    LW = Math.min(pw * 0.8, (ph - 56) / (LEAF_ASPECT * KY + THICK * SINT), 440);
+    P = Math.max(6.5, LW * 0.0175); g0 = P * 0.46;       // coarser roads with wider shaded gaps, so the lines survive the tilt
+    geo = leafGeometry(LW, dpr >= 2 ? 3 : 2);
+    leafImg = partCtx.createImageData(partCv.width, partCv.height);
+    leafCv = makeLayer(partCv.width, partCv.height); leafCtx = leafCv.getContext('2d');
+    dieW = Math.max(64, Math.min(pw * 0.16, 84)); dieWall = dieW * 1.26; dieH = ph * (ph < 360 ? 0.48 : 0.51); dieH0 = dieH * 0.72; dieCx = pw / 2;
+    // The punches' outer ends start far enough out that some of each punch still sticks out of the die at the end of sintering.
+    const travel = dieH0 * SV * 0.2375, stickOut = ph < 360 ? 20 : 24;        // how far each punch moves in, and how much is left outside at the end
+    dieEnd = dieH * SV / 2 + travel + stickOut;
+    dieMid = Math.max(ph / 2 - 6, dieEnd + 50);                                 // leave room above the upper punch for its arrow
+    csx = pw / 2 + geo.cent[0];
+    csyBase = ph / 2 - 10 + THICK * LW * SINT / 2 + KY * geo.cent[1];       // centre the whole tilted part, thickness included
     draw();
-  });
+  }
 
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(build, 150);
-  });
+  const CAPS = { die: 'Powder in the Die', part: 'As Printed Part' };
+  const ARIA = {
+    die: 'A cross-section of a spark plasma sintering die. A half-section of a spark plasma sintering die, seen from above at an angle. Powder sits between two cylindrical punches inside a thick die. As the slider moves, the punches slide inward, the powder loses its pores, and its height drops by about half. The die stays put, so the powder cannot shrink sideways.',
+    part: 'A whole maple leaf printed in layers, seen at an angle. As the slider moves, the gaps between the printed roads and the layer lines close, and the leaf shrinks inside a dashed outline of its printed footprint.'
+  };
+  function setMode(next) {
+    mode = next;
+    tabDie.setAttribute('aria-pressed', String(next === 'die')); tabPart.setAttribute('aria-pressed', String(next === 'part'));
+    capLeft.textContent = CAPS[next]; partCv.setAttribute('aria-label', ARIA[next]);
+    if (geo) draw();
+  }
+  tabDie.addEventListener('click', () => setMode('die')); tabPart.addEventListener('click', () => setMode('part'));
+  slider.addEventListener('input', () => { userTouched = true; t = slider.value / 100; draw(); });
+  let timer; window.addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(layout, 180); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (geo) draw(); });
 
-  build();
-
-  // One opening moment: the compact sinters from loose powder to dense solid once, then the visitor takes over.
-  if (reduce) {
-    t = 0.5; slider.value = 50; draw();
-  } else {
-    const start = performance.now(), dur = 6500;
+  layout();
+  if (reduce) { t = 0.5; slider.value = 50; draw(); }
+  else {
+    const start = performance.now(), dur = 7000;
     const step = now => {
       if (userTouched) return;
       const k = Math.min(1, Math.max(0, (now - start) / dur));
       t = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      slider.value = Math.round(t * 100);
-      draw();
+      slider.value = Math.round(t * 100); draw();
       if (k < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
