@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive simulators for learning how things are made, from the Sintering Materials Research Lab at the University of Saskatchewan.">
+<link rel="canonical" href="https://sintrlab.ca/simulators.html">
+<meta property="og:title" content="Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Interactive simulators for learning how things are made.">
+<meta property="og:url" content="https://sintrlab.ca/simulators.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site-shell.css">
+<style>
+.hub{padding:48px 0 8px}
+.hub .sub{font-size:1.2rem;color:var(--ink-soft);margin:16px 0 0;max-width:60ch}
+.sim-cards{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.sim-card{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:24px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.sim-card__top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sim-card h2{font-size:1.5rem;font-weight:700}
+.sim-card__tag{font-family:var(--head);font-weight:500;font-size:.78rem;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:1px 8px}
+.sim-card p{color:var(--ink-soft);flex:1}
+.sim-card__soon{font-family:var(--head);font-weight:500;color:var(--ink-soft)}
+.note{margin:28px 0 0;color:var(--ink-soft);font-size:.95rem;max-width:64ch}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+
+<main id="main">
+  <section class="hub">
+    <div class="wrap">
+      <h1>Manufacturing Simulator</h1>
+      <p class="sub">Interactive tools for learning how things are made. Each simulator is its own page, so you can open one directly or share a link to it.</p>
+      <ul class="sim-cards" data-sim-cards>
+        <noscript><li class="sim-card"><p>These simulators need JavaScript. <a href="simulators/casting.html">Open the casting simulator</a>.</p></li></noscript>
+      </ul>
+      <p class="note">More simulators will be added here as they are developed. They are teaching models, not validated engineering software.</p>
+    </div>
+  </section>
+</main>
+
+<div data-site-footer></div>
+<script src="site-nav.js" defer></script>
+</body>
+</html>

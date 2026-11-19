@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<!--
+  TEMPLATE FOR A NEW SIMULATOR
+  1. Copy this file to /simulators/ and rename it, for example machining.html.
+  2. Search for TITLE and replace each one. Replace the placeholder in <main> with the simulator.
+  3. Add one entry to /simulators.json:
+       { "title": "Machining", "file": "simulators/machining.html", "short": "...", "summary": "...", "status": "Beta" }
+  The Manufacturing Simulator dropdown and the All simulators page pick it up automatically.
+  The header, nav and footer come from site-nav.js, and the colours and fonts from site-shell.css.
+-->
+<title>TITLE | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="TITLE simulator from the Sintering Materials Research Lab at the University of Saskatchewan.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/FILENAME.html">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<style>
+/* Styles for this simulator only. Use the variables from site-shell.css (--accent, --ink, --line, --surface ...). */
+.tool-intro{padding:44px 0 20px}
+.crumb{font-family:var(--head);font-weight:500;font-size:.95rem;margin:0 0 10px}
+.badge{display:inline-block;font-family:var(--head);font-weight:500;font-size:.78rem;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:12px;vertical-align:middle}
+.sub{font-size:1.15rem;color:var(--ink-soft);margin:14px 0 0;max-width:62ch}
+.disclaimer{max-width:80ch;font-size:.9rem;color:var(--ink-soft);margin:28px 0 0}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+
+<main id="main">
+  <section class="tool-intro">
+    <div class="wrap">
+      <p class="crumb"><a href="../simulators.html">Manufacturing Simulator</a></p>
+      <h1>TITLE<span class="badge">Beta v0.1</span></h1>
+      <p class="sub">One or two sentences on what students do and learn here.</p>
+
+      <!-- The simulator goes here. -->
+
+      <p class="disclaimer">A teaching model, not validated engineering software.</p>
+    </div>
+  </section>
+</main>
+
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+</body>
+</html>
