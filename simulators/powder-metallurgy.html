@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Powder metallurgy | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive powder metallurgy and sintering simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Press and sinter metal powders, watch particles form necks and lose their pores, and compare conventional sintering of a ceramic with spark plasma sintering.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/powder-metallurgy.html">
+<meta property="og:title" content="Powder metallurgy | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Press and sinter a part; sinter a ceramic with spark plasma.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/powder-metallurgy.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Powder metallurgy simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,h4,.btn,.chip,table,select,.pill,.casebtn{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:16px 0 6px}h4{margin:10px 0 4px;font-size:.95rem}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:80ch;margin:6px 0 0}.fine{font-size:.88rem;color:var(--ink-soft)}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 10px}@media (max-width:760px){.cases{grid-template-columns:minmax(0,1fr)}}
+.casebtn{text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);line-height:1.3;position:relative}
+.casebtn b{display:block;font-size:1.05rem;margin-right:26px}.casebtn span:not(.tag){font:400 .88rem var(--body);color:var(--ink-soft)}
+.casebtn .tag{position:absolute;right:12px;top:10px;font:700 .85rem var(--head);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:24px}
+.casebtn:hover{border-color:var(--ink)}.casebtn[aria-pressed="true"]{border:2px solid var(--accent);padding:10px 13px;background:var(--accent-soft)}.casebtn[aria-pressed="true"] .tag{background:var(--accent)}
+.blurb{max-width:90ch;margin:8px 0 10px}
+.mission{padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.chain{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}.pill{padding:6px 12px 6px 28px;border:1px solid var(--line);border-radius:2px;background:var(--surface);font-size:.88rem;position:relative}
+.pill .dot{position:absolute;left:10px;top:11px;width:11px;height:11px;border-radius:50%;background:var(--ok)}.pill.warn .dot{background:var(--warn)}.pill.bad .dot{background:var(--bad)}.pill b{margin-right:3px}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*,.three>*{min-width:0}@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}.box{margin-bottom:16px}.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .84rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:6px 12px;font-size:.88rem;margin-top:8px}.btn:hover{background:rgba(20,34,43,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-deep)}.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:7px;font:500 .92rem var(--head)}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}@media (max-width:900px){.three{grid-template-columns:minmax(0,1fr)}}
+.col h4{margin:0 0 4px;font:700 .95rem var(--head)}.cap{font-size:.85rem;color:var(--ink-soft);margin:3px 0 0}
+.tl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;margin:6px 0 12px}.tl .stage{grid-column:1/-1;font:600 .95rem var(--head);color:var(--accent)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:right}th:first-child,td:first-child{text-align:left}th{font-weight:500;color:var(--ink-soft)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}.pill .dot{margin:0}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0;font-family:var(--head);font-size:.93rem}.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:8px 0 0;padding:0;list-style:none}.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+.notes li.head{background:transparent;border:0;padding:4px 0;font:700 .9rem var(--head);margin-top:6px}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}.insights p{margin:6px 0;max-width:80ch}.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Powder metallurgy and sintering lab<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Press a powder into a compact, burn off the lubricant, and sinter it. Watch the particles pack, form necks and lose their pores, then pull three tensile specimens to see what the pores cost you. A second case takes a ceramic to full density and compares a conventional furnace with spark plasma sintering.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Powder%20metallurgy%20(beta%20v0.1)">send feedback</a>.</p>
+  <div class="cases" id="cases"></div><p class="blurb" id="blurb"></p>
+  <section class="mission" id="mission"></section><div class="chain" id="chain"></div>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2>Inside the part</h2>
+      <div class="tl"><label for="tl" class="fine">Furnace cycle, third picture</label><input type="range" id="tl" min="0" max="100" value="100"><div class="stage" id="stage"></div></div>
+      <div class="three">
+        <div class="col"><h4 id="ttl0"></h4><canvas id="mic0" width="300" height="230" role="img" aria-label="Powder compact as pressed"></canvas><p class="cap" id="cap0"></p></div>
+        <div class="col"><h4 id="ttl1"></h4><canvas id="mic1" width="300" height="230" role="img" aria-label="Powder compact after a quarter of the hold"></canvas><p class="cap" id="cap1"></p></div>
+        <div class="col"><h4 id="ttl2"></h4><canvas id="mic2" width="300" height="230" role="img" aria-label="Powder compact through the furnace cycle"></canvas><p class="cap" id="cap2"></p></div>
+      </div>
+      <p class="fine">Schematic sections drawn from the model state, with the particle size setting the scale. Dark is pore. They show how necks form and pores close, not a real sample.</p></div>
+    <div class="box"><h2>Pressing</h2>
+      <div class="row2"><div><canvas id="cHeck" width="440" height="260"></canvas><p class="fine">Density rises with pressure, quickly at first and then more slowly as the particles deform.</p></div>
+        <div><canvas id="cDens" width="440" height="260"></canvas><p class="fine">Friction against the die wall uses up pressure, so the powder far from the moving punch is pressed less. Red is dense, blue is loose.</p></div></div>
+      <div id="kvP"></div></div>
+    <div class="box"><h2>The furnace</h2>
+      <div class="row2"><div><canvas id="cFurn" width="440" height="270"></canvas><p class="fine">The shaded band is the usual sintering range for this powder. The dashed red line is what the furnace can reach.</p></div>
+        <div><canvas id="cProg" width="440" height="270"></canvas><p class="fine">Neck growth comes first, density follows. The numbers mark the three conditions tested below.</p></div></div>
+      <div id="trajBox" style="display:none;margin-top:12px"><h3 style="margin-top:0">Density against grain size</h3><div class="row2"><div><canvas id="cTraj" width="440" height="280"></canvas></div><p class="fine" style="margin-top:0">The path runs from the green compact to the end of your cycle. You want to reach the green box: dense with fine grains. A path that bends sharply to the right of the box has densified slowly and let the grains grow on the way.</p></div></div>
+      <div id="kvS"></div></div>
+    <div class="box"><h2>Tensile test</h2>
+      <div class="btns"><button class="btn tbtn" data-i="0" type="button">Test 1</button><button class="btn tbtn" data-i="1" type="button">Test 2</button><button class="btn tbtn" data-i="2" type="button">Test 3</button><button class="btn primary" id="allBtn" type="button">Test all three</button><label class="chk" style="margin-left:8px"><input type="checkbox" id="scat"> five specimens each</label></div>
+      <div class="row2"><div><canvas id="spec" width="460" height="130" role="img" aria-label="Test specimen"></canvas><p class="fine">The specimen is drawn stretched more than real. A green compact and a ceramic break with no neck at all.</p></div>
+        <div><canvas id="ss" width="520" height="340" role="img" aria-label="Stress-strain curves"></canvas></div></div></div>
+    <div class="box"><h2>Results</h2>
+      <div class="row2"><div><div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul><button class="btn small" id="saveBtn" type="button">Save result (JSON)</button></div>
+        <div><h4 style="margin-top:0">Strength against density</h4><canvas id="cMap" width="460" height="320"></canvas></div></div>
+      <div class="tw"><table id="tbl"></table></div><div class="insights" id="insights"></div></div>
+    <p class="disclaimer">A teaching model, not validated process software. Compaction follows a Heckel-type curve, sintering uses a diffusion-rate integral with typical activation energies, and strength and ductility fall exponentially with porosity. The constants are typical values for these powders, not your lot, furnace or atmosphere; the spark plasma speed-up is a simple multiplier. The sections are schematic. Check any number you rely on against data sheets and test pieces.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: powder compaction and sintering ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const RG=8.314, OD=20, TOLREL=0.0025, PRESSCAP=400;    // kN press capacity
+const FURN={belt:{n:'Belt furnace (to 1150 °C)',Tmax:1150,rate:25},hi:{n:'High-temperature furnace (to 1400 °C)',Tmax:1400,rate:45},kiln:{n:'Ceramic kiln (to 1750 °C)',Tmax:1750,rate:60},sps:{n:'Spark plasma sintering unit (to 2000 °C)',Tmax:2000,rate:120}};
+const PMAT={
+  fe:{n:'Iron powder (water-atomized)',cer:false,rho:7.87,K:0.00273,fill:0.38,d0:75,dr:[20,150],Tref:1120,Tr:[950,1300],Qd:280,Qg:230,tau0:53,Dlim:0.96,YS:200,UTS:300,EL:30,E:200000,b:4.5,c:13,price:1.5,sb:0.0025,ID:10,nit:0.15},
+  bronze:{n:'Bronze powder (Cu-10Sn)',cer:false,rho:8.8,K:0.0049,fill:0.34,d0:63,dr:[20,120],Tref:830,Tr:[700,900],Qd:200,Qg:170,tau0:30,Dlim:0.88,YS:150,UTS:300,EL:20,E:110000,b:4.5,c:12,price:9,sb:0.0015,ID:10,nit:0.1},
+  ss316:{n:'316L stainless steel powder',cer:false,rho:7.99,K:0.0020,fill:0.325,d0:45,dr:[10,100],Tref:1280,Tr:[1100,1380],Qd:300,Qg:260,tau0:90,Dlim:0.97,YS:210,UTS:560,EL:50,E:195000,b:4.5,c:12,price:8,sb:0.004,ID:10,nit:0.35},
+  alumina:{n:'Alumina powder (Al2O3)',cer:true,rho:3.98,fill:0.50,d0:0.4,dr:[0.1,2],Tref:1550,Tr:[1250,1750],Qd:550,Qg:450,tau0:35,Dlim:0.995,E:380000,sig:500,Kg:0.0048,price:12,sb:0.004,ID:0},
+  zirconia:{n:'Zirconia powder (3Y-TZP)',cer:true,rho:6.05,fill:0.50,d0:0.1,dr:[0.05,1],Tref:1450,Tr:[1250,1650],Qd:480,Qg:380,tau0:25,Dlim:0.995,E:210000,sig:900,Kg:0.00025,price:60,sb:0.004,ID:0}
+};
+function geom(m,P){const id=m.ID,area=Math.PI/4*(OD*OD-id*id),Dh=id>0?(OD-id):OD;return {id,area,Dh};}
+
+/* ---------- compaction ---------- */
+function dens(m,P,press){            // relative density reached at a local pressure (MPa)
+  const f=m.fill*Math.pow(P.d/m.d0,0.06)*(1-0.012*(m.cer?P.lub/2:P.lub));
+  if(m.cer)return clamp(f+0.045*Math.log(Math.max(press,1)/40),f-0.05,0.66);
+  const K=m.K*(1+0.15*Math.log(m.d0/P.d)),A=Math.log(1/(1-clamp(f,0.2,0.6)));
+  return clamp(1-Math.exp(-(A+K*press)),f,0.985);
+}
+function compact(P){
+  const m=PMAT[P.mat],g=geom(m,P),lubE=Math.min(1,P.lub/(m.cer?2.5:0.8)),mu=0.22*(1-0.55*lubE),k=0.45,Hf=P.act==='double'?P.H/2:P.H;
+  const N=21,prof=[];let sum=0;
+  for(let i=0;i<N;i++){const z=i/(N-1)*P.H,zz=P.act==='double'?Math.min(z,P.H-z):z,Pl=P.press*Math.exp(-4*mu*k*zz/g.Dh);const D=dens(m,P,Pl);prof.push({z,P:Pl,D});sum+=D;}
+  const Davg=sum/N,Dtop=prof[0].D,Dbot=P.act==='double'?prof[Math.floor(N/2)].D:prof[N-1].D;
+  const sg=m.cer?(0.4+1.6*P.lub)*Math.pow(Dbot/0.5,2):100*Math.pow(Math.max(0,Dbot-0.6),1.6)*(1+0.3*lubE*0.4);
+  const force=P.press*g.area/1000,Dg=Davg;
+  return {m,g,prof,Davg,Dtop,Dbot,spread:Dtop-Dbot,sg,force,Hf,mu};
+}
+
+/* ---------- the furnace cycle and the sintering state ---------- */
+function simulate(P,cp){
+  const m=PMAT[P.mat],ser=[],dt=0.5,Ts=P.Ts,rate=P.ramp,sps=P.route==='sps';
+  const Tref=m.Tref+273.15,boost=sps?1+3.5*P.papp:1;
+  let t=0,T=20,thd=0,thg=0;const thdA=[],thgA=[],Tt=[];let tRampEnd=0,tHoldEnd=0,tDl0=0,tDl1=0,phase=0,hold=0,dl=0;
+  const useDl=!sps&&P.dl>0&&P.Ts>450;
+  const dlEnd=useDl?P.dl:0;
+  while(t<4000){
+    if(phase===0){ // heating (with optional delube hold at 450 C)
+      if(useDl&&T<450){T=Math.min(450,T+rate*dt);if(T>=450){phase=1;tDl0=t;}}
+      else{T=Math.min(Ts,T+rate*dt);if(T>=Ts){phase=2;tRampEnd=t;}}
+    } else if(phase===1){dl+=dt;if(dl>=dlEnd){phase=0;tDl1=t;useDlDone();}}
+    else if(phase===2){hold+=dt;if(hold>=P.hold){tHoldEnd=t;phase=3;}}
+    else{T-=20*dt;if(T<=0.55*Ts){ser.push([t,T]);thdA.push(thd);thgA.push(thg);break;}}
+    const Tk=T+273.15;
+    thd+=Math.exp(-m.Qd*1000/RG*(1/Tk-1/Tref))*dt*boost;
+    thg+=Math.exp(-m.Qg*1000/RG*(1/Tk-1/Tref))*dt;
+    t+=dt;ser.push([t,T]);thdA.push(thd);thgA.push(thg);
+  }
+  function useDlDone(){}
+  return {ser,thdA,thgA,tRampEnd,tHoldEnd,tDl0,tDl1,dt,total:t,boost};
+}
+function stateAt(m,P,cp,sim,i,green){
+  const thd=green?0:sim.thdA[Math.min(i,sim.thdA.length-1)],thg=green?0:sim.thgA[Math.min(i,sim.thgA.length-1)];
+  const tau=m.tau0*Math.pow(P.d/m.d0,3.3),S=thd<=0?0:1-Math.exp(-Math.pow(thd/tau,0.6));
+  const ox=m.cer?0:(P.atm==='air'?1:(P.atm==='n2'?m.nit:0));
+  const Dlim=m.Dlim*(1-0.03*ox),Dg=cp.Davg,Sd=m.cer?S:S*S,D=Dg+(Math.max(Dlim,Dg)-Dg)*Sd,X=0.8*Math.pow(S,0.4);
+  let G=P.d;if(m.cer){const boostG=1+4*Math.max(0,D-0.92)/0.08;G=Math.cbrt(Math.pow(P.d,3)+m.Kg*thg*boostG);}
+  const lin=Math.pow(Dg/D,1/3)-1;
+  return {S,X,D,Dg,G,lin,ox,thd,thg,tau};
+}
+function propsOf(m,st,P,cp,res,green){
+  const phi=1-st.D;
+  if(green||st.X<0.02){return {YS:cp.sg,UTS:cp.sg,EL:0.1,E:m.E,HV:0,brittle:true,green:true};}
+  const fneck=clamp(Math.pow(st.X/0.8,1.5),0,1);
+  if(m.cer){const sig=m.sig*Math.sqrt(1/st.G)*Math.exp(-5*phi)*fneck*fneck;const s=Math.max(sig,cp.sg);return {YS:s,UTS:s,EL:0.1,E:m.E,HV:0,brittle:true};}
+  const kox=1-0.6*st.ox,kr=1-0.5*res;
+  const YS=m.YS*fneck*Math.exp(-m.b*phi)*kox*kr,UTS=Math.max(YS,m.UTS*fneck*Math.exp(-m.b*phi)*kox*kr),EL=m.EL*fneck*fneck*Math.exp(-m.c*phi)*(1-res)*(1-0.8*st.ox);
+  const s=Math.max(UTS,cp.sg);return {YS:Math.max(YS,cp.sg*0.9),UTS:s,EL:Math.max(0.1,EL),E:m.E*(1-1.6*phi),HV:0.33*UTS,brittle:EL<0.5};
+}
+
+/* ---------- everything for one recipe ---------- */
+function analyze(P){
+  const m=PMAT[P.mat],cp=compact(P),sim=simulate(P,cp),fu=FURN[P.furnace];
+  const lubReq=m.cer?0:(10+30*P.lub*(P.H/20))*(P.ramp/10),bin=m.cer?(10+14*P.lub*(P.H/20))*(P.ramp/10):0;
+  const dlNeed=m.cer?bin:lubReq,useDl=!(P.route==='sps')&&P.Ts>450;
+  const res=P.route==='sps'?clamp((P.lub/3)*0.4,0,0.4):(P.lub<=0?0:clamp(1-(useDl?P.dl:0)/Math.max(dlNeed,1),0,1));
+  const iEnd=Math.min(sim.thdA.length-1,Math.round(sim.tHoldEnd/sim.dt)),iQ=Math.min(iEnd,Math.round((sim.tRampEnd+0.25*(sim.tHoldEnd-sim.tRampEnd))/sim.dt));
+  const idx=[0,iQ,iEnd],conds=[],states=[];
+  idx.forEach((i,k)=>{const st=stateAt(m,P,cp,sim,i,k===0);states.push(st);conds.push(propsOf(m,st,P,cp,res,k===0));});
+  const st=states[2],pr=conds[2];
+  const spsDie=P.route==='sps',lin=st.lin,sb=m.sb,dimMM=spsDie?0:OD*((1+P.comp/100)*(1+sb)*(1+lin)-1),taperMM=spsDie?0:OD*0.7*cp.spread/(3*st.D);
+  const tolMM=(m.cer?0.01:TOLREL)*OD,flags=[],add=(s,l,t)=>flags.push([s,l,t]);
+  const hours=(sim.total)/60,mass=Math.PI/4*(OD*OD-m.ID*m.ID)*P.H/1000*m.rho*st.D,cost=m.price*(mass/1000)*1.05+fu.rate*hours/200+0.03;     // grams
+  const oil=P.mat==='bronze'?(1-st.D)*0.9*100:0;
+  // compaction flags
+  if(cp.force>PRESSCAP)add(1,'bad','The press needs '+cp.force.toFixed(0)+' kN and the press is rated for '+PRESSCAP+' kN. Lower the pressure or the part area.');
+  if(!m.cer&&cp.Dtop>0.94)add(1,'warn','The top of the part is pressed to '+(cp.Dtop*100).toFixed(0)+' % density. Over-pressing springs the part open when the punch lifts (lamination cracks). Back off the pressure.');
+  if(cp.spread>0.10)add(1,'bad','The density varies by '+(cp.spread*100).toFixed(0)+' points from one end to the other, because die-wall friction eats the pressure. The soft end will be weak and shrink differently. '+(P.act==='single'?'Press from both ends, shorten the part, or add lubricant.':'Shorten the part or add lubricant.'));
+  else if(cp.spread>0.05)add(1,'warn','The density varies by '+(cp.spread*100).toFixed(0)+' points over the height. Expect a taper after sintering.');
+  if(P.route!=='sps'&&cp.sg<(m.cer?1.5:4))add(1,'warn','The green compact is only about '+cp.sg.toFixed(0)+' MPa strong. It will chip when it is ejected and handled.');
+  if(P.lub<0.3&&!m.cer)add(1,'warn','With almost no lubricant the powder galls the die and the ejection force is high.');
+  if(P.lub>1.2&&!m.cer)add(1,'warn','A lot of lubricant ('+P.lub+' wt %) takes the place of metal, lowers the green density, and needs a longer burn-off.');
+  // delube
+  if(P.route!=='sps'&&res>0.6)add(2,'bad','The lubricant or binder is not fully burnt off: it needs about '+dlNeed.toFixed(0)+' min at 450 °C and you gave '+(useDl?P.dl:0)+'. Trapped residue blisters the part and leaves soot in the pores.');
+  else if(P.route!=='sps'&&res>0.25)add(2,'warn','Burn-off is incomplete ('+Math.round(res*100)+' % left behind). It needs about '+dlNeed.toFixed(0)+' min at 450 °C.');
+  if(P.route!=='sps'&&P.ramp>20&&P.lub>0.5)add(2,'warn','Heating at '+P.ramp+' °C/min through the burn-off range makes the lubricant boil out too fast.');
+  // sintering
+  if(P.Ts>fu.Tmax)add(3,'bad',fu.n+' cannot reach '+P.Ts+' °C.');
+  if(P.Ts<m.Tr[0]&&P.route!=='sps')add(3,'warn','At '+P.Ts+' °C this powder hardly sinters: the usual range is '+m.Tr[0]+' to '+m.Tr[1]+' °C.');
+  if(P.mat==='bronze'&&P.Ts>900)add(3,'bad','Above 900 °C too much of the bronze melts: the part slumps and bloats and loses its shape.');
+  if(!m.cer&&P.atm==='air')add(3,'bad','Sintering '+m.n.split(' (')[0].toLowerCase()+' in air oxidizes it. The oxide coats every particle and stops the necks from forming.');
+  else if(!m.cer&&P.atm==='n2'&&st.ox>0.2)add(3,'warn','Nitrogen alone leaves some oxide'+(P.mat==='ss316'?' and forms nitrides, which cut the ductility and corrosion resistance':'')+'. A nitrogen-hydrogen mix reduces the oxide.');
+  if(st.X<0.45&&P.Ts>=m.Tr[0])add(3,'warn','The necks have only grown to '+(st.X*100).toFixed(0)+' % of the particle radius. The part is under-sintered and weak.');
+  if(m.cer&&st.G>2*P.d*2.5)add(3,'warn','The grains have coarsened to '+st.G.toFixed(2)+' µm. Coarse grains mean a weaker ceramic.');
+  const lh=Math.abs(dimMM)>tolMM||taperMM>0.3;
+  if(Math.abs(dimMM)>tolMM)add(4,'bad','The finished diameter is '+(dimMM>=0?'+':'')+dimMM.toFixed(2)+' mm from nominal, outside ±'+tolMM.toFixed(2)+' mm. The part shrinks '+(-lin*100).toFixed(2)+' % when it sinters (springs open '+(sb*100).toFixed(2)+' % when ejected). Change the die oversize by about '+(-((1+sb)*(1+lin)-1)*100-P.comp).toFixed(2)+' %.');
+  if(taperMM>0.15)add(4,taperMM>0.3?'bad':'warn','The density gradient makes the part about '+taperMM.toFixed(2)+' mm taper from one end to the other after sintering'+(taperMM>0.3?'. That is too much to size out.':'. Sizing would correct this.'));
+  const nBad=flags.filter(f=>f[1]==='bad').length;
+  // mission
+  const D_=st.D,crit=[],C=(l,v,need,u,pass,dec)=>crit.push({l,v,need,u,pass,dec:dec===undefined?0:dec});
+  let ms;
+  if(P.mat==='fe'){ms=['density 89 % or more of solid iron','tensile strength 150 MPa or more','elongation 3 % or more'];C('density',D_*100,89,'%',D_>=0.89,1);C('tensile strength',pr.UTS,150,'MPa',pr.UTS>=150);C('elongation',pr.EL,3,'%',pr.EL>=3,1);}
+  else if(P.mat==='bronze'){ms=['porosity 18 to 25 % so it can hold oil','tensile strength 70 MPa or more','oil capacity 16 % or more by volume'];C('porosity',(1-D_)*100,'18 to 25','%',(1-D_)>=0.18&&(1-D_)<=0.25,1);C('tensile strength',pr.UTS,70,'MPa',pr.UTS>=70);C('oil capacity',oil,16,'%',oil>=16,1);}
+  else if(P.mat==='ss316'){ms=['density 90 % or more','tensile strength 260 MPa or more','elongation 5 % or more'];C('density',D_*100,90,'%',D_>=0.90,1);C('tensile strength',pr.UTS,260,'MPa',pr.UTS>=260);C('elongation',pr.EL,5,'%',pr.EL>=5,1);}
+  else if(P.mat==='alumina'){ms=['density 98 % or more','grain size 1.0 micrometre or less','strength 350 MPa or more'];C('density',D_*100,98,'%',D_>=0.98,1);C('grain size',st.G,'1.0 or less','µm',st.G<=1.0,2);C('strength',pr.UTS,350,'MPa',pr.UTS>=350);}
+  else{ms=['density 98 % or more','grain size 0.4 micrometre or less','strength 800 MPa or more'];C('density',D_*100,98,'%',D_>=0.98,1);C('grain size',st.G,'0.4 or less','µm',st.G<=0.4,2);C('strength',pr.UTS,800,'MPa',pr.UTS>=800);}
+  const short=crit.filter(c=>!c.pass).map(c=>c.l+' is '+c.v.toFixed(c.dec)+' '+c.u+' (needs '+c.need+')');
+  const ok=crit.every(c=>c.pass)&&nBad===0&&!lh;
+  const mis=P.mat==='fe'?{D:0.89,S:150}:P.mat==='bronze'?{D0:0.75,D1:0.82,D:0.75,S:70}:P.mat==='ss316'?{D:0.90,S:260}:P.mat==='alumina'?{D:0.98,G:1.0,S:350}:{D:0.98,G:0.4,S:800};
+  const status=[1,2,3,4].map(k=>flags.some(f=>f[0]===k&&f[1]==='bad')?'bad':(flags.some(f=>f[0]===k)?'warn':'ok'));
+  return {short,mis,m,cp,sim,conds,states,st,pr,res,dlNeed,flags,nBad,mission:ms,ok,status,dimMM,taperMM,tolMM,lin,oil,mass,cost,hours,iQ,iEnd,fu,idx};
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt,xmap){
+  ctx.clearRect(0,0,W,H);const mx=xmap||(v=>v),a0=mx(x0),a1=mx(x1);
+  const sx=v=>L+(R-L)*(mx(v)-a0)/(a1-a0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(+(+v).toFixed(2),sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function pline(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>{const x=f.sx(p[0]),y=f.sy(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+
+/* ---------- stress-strain and specimen (same as the other labs) ---------- */
+function curveOf(pr){
+  const E=pr.E,sy=pr.YS,su=pr.UTS;
+  if(pr.brittle||pr.EL<0.5){const ef=su/E;return {epsF:Math.max(ef,1e-4),epsU:ef,brittle:true,f:e=>Math.min(su,E*e),sigF:su};}
+  const epsF=pr.EL/100+0.9*su/E,e0=0.9*sy/E,epsU=e0+0.8*(epsF-e0),k=4/(epsU-e0),s0=0.9*sy,sigF=su*(pr.EL>3?0.82:0.95);
+  const f=e=>{if(e<=e0)return E*e;if(e<=epsU)return s0+(su-s0)*(1-Math.exp(-k*(e-e0)))/(1-Math.exp(-k*(epsU-e0)));return su+(sigF-su)*(e-epsU)/(epsF-epsU);};
+  return {epsF,epsU,brittle:false,f,sigF};
+}
+function scatterSet(pr,seed,n){
+  const r=mulberry32(seed),out=[],cv=0.10+0.30*(1-Math.min(1,pr.EL/6))+(pr.brittle?0.25:0);
+  for(let i=0;i<n;i++){const z1=gauss(r),z2=gauss(r);out.push(Object.assign({},pr,{YS:pr.YS*(1+0.03*z1),UTS:pr.UTS*(1+0.04*z1+0.01*gauss(r)),EL:Math.max(0.1,pr.EL*Math.exp(cv*z2))}));}
+  return out.map(p=>{p.UTS=Math.max(p.UTS,p.YS);return p;});
+}
+function drawSpecimen(ctx,W,H,cv,eps,fractured,tBreak){
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2,gx0=70,L0=W-2*gx0-80,w0=46,stretch=cv.brittle?30:5,vis=Math.min(eps*stretch,0.3),L=L0*(1+vis),x0=gx0-10,neckC=x0+L/2;
+  const neckT=cv.brittle||eps<=cv.epsU?0:Math.max(0,Math.min(1,(eps-cv.epsU)/(cv.epsF-cv.epsU)))*0.55;
+  const hw=x=>{let h=w0/2*(1-0.22*Math.min(1,eps*stretch/1.4));if(neckT>0){const d=(x-neckC)/(L*0.1);h*=1-neckT*Math.exp(-d*d);}return h;};
+  const grad=ctx.createLinearGradient(0,cy-w0/2,0,cy+w0/2);grad.addColorStop(0,'#eef1f4');grad.addColorStop(0.5,'#b7bfc7');grad.addColorStop(1,'#8a949e');
+  ctx.fillStyle='#3a4650';ctx.fillRect(4,cy-34,gx0-10,68);ctx.fillRect(x0+L+10,cy-34,gx0+6,68);
+  ctx.fillStyle='#4d5b67';ctx.fillRect(gx0-14,cy-w0/2-8,12,w0+16);ctx.fillRect(x0+L+10,cy-w0/2-8,12,w0+16);
+  const body=(xa,xb)=>{ctx.beginPath();const n=40;for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy-hw(x));}for(let i=n;i>=0;i--){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy+hw(x));}ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#5d6872';ctx.lineWidth=1.2;ctx.stroke();};
+  if(!fractured)body(x0,x0+L);
+  else{const gap=Math.min(40,tBreak*40);ctx.save();ctx.beginPath();ctx.rect(0,0,neckC-gap/2,H);ctx.clip();body(x0,x0+L);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(neckC+gap/2,0,W,H);ctx.clip();ctx.translate(gap,0);body(x0,x0+L);ctx.restore();
+    ctx.fillStyle='#e0261c';ctx.font='700 13px sans-serif';ctx.textAlign='center';ctx.fillText(cv.brittle?'brittle fracture: flat, no neck':'ductile fracture: necked',W/2,18);}
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('strain '+(eps*100).toFixed(2)+' %',gx0,H-6);
+}
+
+/* ---------- the powder section: particles, necks and pores ---------- */
+function latticeSites(W,H){const cols=9,sp=W/cols,rows=Math.ceil(H/(sp*0.866))+1,rnd=mulberry32(5),out=[];
+  for(let r=0;r<rows;r++)for(let c=-1;c<=cols;c++){const x=(c+0.5*(r%2)+0.5)*sp+(rnd()-0.5)*0.22*sp,y=(r+0.4)*sp*0.866+(rnd()-0.5)*0.22*sp;if(x>-sp&&x<W+sp&&y>-sp&&y<H+sp)out.push({x,y,u:rnd(),tone:rnd()});}
+  return {sites:out,sp};}
+const LAT={};
+function renderPowder(ctx,W,H,P,m,st,res){
+  const k=W+'x'+H;if(!LAT[k])LAT[k]=latticeSites(W,H);const {sites,sp}=LAT[k];
+  const D=Math.min(0.995,st.D),vac=Math.max(0,Math.min(0.5,1-D/0.93)),present=sites.filter(s=>s.u>vac),xs=new Float32Array(present.length),ys=new Float32Array(present.length);
+  present.forEach((s,i)=>{xs[i]=s.x;ys[i]=s.y;});
+  const n=present.length,N=W*H,d1=new Float32Array(N),d2=new Float32Array(N),id=new Int16Array(N);
+  for(let y=0,i=0;y<H;y++)for(let x=0;x<W;x++,i++){let a=1e9,b=1e9,ai=0;for(let q=0;q<n;q++){const dx=x-xs[q],dy=y-ys[q],d=dx*dx+dy*dy;if(d<a){b=a;a=d;ai=q;}else if(d<b)b=d;}d1[i]=Math.sqrt(a);d2[i]=Math.sqrt(b);id[i]=ai;}
+  const wn=st.X*0.5*sp*0.5,frac=r=>{let c=0;for(let i=0;i<N;i+=3){if(d1[i]<r||((d2[i]-d1[i])<2*wn&&d1[i]<1.5*r))c++;}return c/(N/3);};
+  let lo=0.3*sp,hi=0.62*sp;for(let it=0;it<12;it++){const mid=(lo+hi)/2;if(frac(mid)<D)lo=mid;else hi=mid;}
+  const r=(lo+hi)/2;
+  // grains for the ceramics
+  let gc=null;if(m.cer&&st.D>0.88){const ratio=Math.min(1,Math.pow(P.d/st.G,2)),sel=present.filter((s,i)=>s.tone<ratio);if(sel.length>=3&&ratio<0.95)gc=sel;else if(ratio>=0.95)gc=null;}
+  const img=ctx.createImageData(W,H),Dt=img.data;
+  const gx=gc?Float32Array.from(gc.map(s=>s.x)):null,gy=gc?Float32Array.from(gc.map(s=>s.y)):null;
+  for(let i=0,o=0;i<N;i++,o+=4){
+    const solid=d1[i]<r||((d2[i]-d1[i])<2*wn&&d1[i]<1.5*r);
+    let R_=18,G_=22,B_=28;
+    if(solid){
+      const t=present[id[i]].tone;let tone=196+t*30;R_=tone;G_=tone+3;B_=tone+8;
+      let edge=(d2[i]-d1[i])<1.2;
+      if(gc){let a=1e9,b=1e9,ai=0;const x=i%W,y=(i/W)|0;for(let q=0;q<gx.length;q++){const dx=x-gx[q],dy=y-gy[q],d=dx*dx+dy*dy;if(d<a){b=a;a=d;ai=q;}else if(d<b)b=d;}edge=(Math.sqrt(b)-Math.sqrt(a))<1.4;const tt=gc[ai].tone;tone=200+tt*28;R_=tone;G_=tone+3;B_=tone+8;}
+      if(edge){const f=st.ox>0.3?[130,84,56]:[90,98,106];R_=f[0];G_=f[1];B_=f[2];}
+    } else if(res>0.3&&((i*2654435761>>>0)%97)<res*14){R_=60;G_=44;B_=34;}
+    Dt[o]=R_;Dt[o+1]=G_;Dt[o+2]=B_;Dt[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  // scale bar
+  const fov=9*P.d,pxum=W/fov,nice=[0.1,0.2,0.5,1,2,5,10,20,50,100,200,500],len=nice.filter(v=>v*pxum<W*0.34).pop()||nice[0];
+  ctx.fillStyle='#fff';ctx.fillRect(8,H-22,len*pxum+12,18);ctx.fillStyle='#14222B';ctx.fillRect(12,H-10,len*pxum,3);ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText(len+' µm',12,H-13);
+}
+
+/* ---------- how the density varies through the pressed part ---------- */
+function drawDensityMap(c,cp,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const x0=90,w=90,y0=24,h=H-48;
+  const dmin=Math.min(...cp.prof.map(p=>p.D)),dmax=Math.max(...cp.prof.map(p=>p.D)),span=Math.max(0.04,dmax-dmin);
+  cp.prof.forEach((p,i)=>{const nx=cp.prof[i+1]?cp.prof[i+1].z:P.H,yA=y0+h*p.z/P.H,yB=y0+h*nx/P.H;const u=(p.D-dmin)/span;
+    const st=[[43,108,176],[88,160,140],[238,200,70],[215,100,40],[180,30,25]],x=Math.max(0,Math.min(1,u))*4,k=Math.min(3,Math.floor(x)),t=x-k,a=st[k],b=st[k+1];
+    ctx.fillStyle='rgb('+Math.round(a[0]+(b[0]-a[0])*t)+','+Math.round(a[1]+(b[1]-a[1])*t)+','+Math.round(a[2]+(b[2]-a[2])*t)+')';ctx.fillRect(x0,yA,w,Math.max(2,yB-yA+1));});
+  ctx.strokeStyle='#3a4650';ctx.lineWidth=2;ctx.strokeRect(x0,y0,w,h);
+  ctx.fillStyle='#5d6872';ctx.fillRect(x0-6,y0-12,w+12,10);if(P.act==='double')ctx.fillRect(x0-6,y0+h+2,w+12,10);
+  ctx.fillStyle='#14222B';ctx.font='12px sans-serif';ctx.textAlign='left';ctx.fillText('upper punch',x0+w+16,y0-3);ctx.fillText(P.act==='double'?'lower punch moves too':'fixed die floor',x0+w+16,y0+h+10);
+  ctx.font='600 13px sans-serif';ctx.fillText((cp.Dtop*100).toFixed(0)+' % at the top',x0+w+16,y0+18);ctx.fillText((cp.Dbot*100).toFixed(0)+' % at the '+(P.act==='double'?'middle':'bottom'),x0+w+16,y0+h-8);
+  ctx.save();ctx.translate(16,y0+h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.font='12px sans-serif';ctx.fillText('height of the part, '+P.H+' mm',0,0);ctx.restore();
+}
+function drawHeckel(c,cp,P,m){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,pm=m.cer?400:1000;
+  const f=chartFrame(ctx,W,H,50,W-14,14,H-40,0,pm,40,100,'compaction pressure, MPa','relative density, %',niceTicks(pm,5),[40,60,80,100]);
+  const pts=[];for(let p=0;p<=pm;p+=pm/80)pts.push([p,dens(m,P,p)*100]);pline(ctx,pts,f,'#c0271b',3);
+  ctx.setLineDash([5,4]);ctx.strokeStyle='#8d99a3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(f.sx(P.press),14);ctx.lineTo(f.sx(P.press),H-40);ctx.stroke();ctx.setLineDash([]);
+  [[cp.Dtop,'#1f6f47','top'],[cp.Dbot,'#a86a00',P.act==='double'?'middle':'bottom']].forEach(a=>{ctx.fillStyle=a[1];ctx.beginPath();ctx.arc(f.sx(P.press),f.sy(a[0]*100),5,0,6.283);ctx.fill();});
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText('density at the pressure the powder sees',60,22);
+}
+function drawFurnace(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,sim=A.sim,ser=sim.ser,tEnd=ser[ser.length-1][0]/60,ymax=Math.max(1000,P.Ts+120);
+  const f=chartFrame(ctx,W,H,52,W-14,24,H-40,0,tEnd,0,ymax,'time, hours','temperature, °C',niceTicks(tEnd,6),niceTicks(ymax,5));
+  const m=A.m;ctx.fillStyle='rgba(31,111,71,.12)';ctx.fillRect(f.sx(0),f.sy(m.Tr[1]),f.sx(tEnd)-f.sx(0),f.sy(m.Tr[0])-f.sy(m.Tr[1]));
+  ctx.fillStyle='rgba(168,106,0,.14)';if(sim.tDl1>sim.tDl0)ctx.fillRect(f.sx(sim.tDl0/60),24,f.sx(sim.tDl1/60)-f.sx(sim.tDl0/60),H-64);
+  ctx.setLineDash([5,4]);ctx.strokeStyle='#b3261e';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(A.fu.Tmax));ctx.lineTo(f.sx(tEnd),f.sy(A.fu.Tmax));ctx.stroke();ctx.setLineDash([]);
+  pline(ctx,ser.filter((s,i)=>i%2===0).map(s=>[s[0]/60,s[1]]),f,'#c0271b',3);
+  ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#1f6f47';ctx.fillText('usual sintering range',f.sx(0)+6,f.sy(m.Tr[1])-4);ctx.fillStyle='#b3261e';ctx.fillText('furnace limit',f.sx(0)+6,f.sy(A.fu.Tmax)-4);
+  if(sim.tDl1>sim.tDl0){ctx.fillStyle='#a86a00';ctx.fillText('burn-off',f.sx(sim.tDl0/60)+3,38);}
+}
+function drawProgress(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,sim=A.sim,m=A.m,cp=A.cp,n=sim.thdA.length,iEnd=A.iEnd,tEnd=sim.ser[Math.min(iEnd+Math.round(10/sim.dt),n-1)][0]/60;
+  const stp=Math.max(1,Math.floor(n/160)),D=[],X=[],G=[];
+  for(let i=0;i<n;i+=stp){const s=stateAt(m,P,cp,sim,i,false);const t=sim.ser[Math.min(i,sim.ser.length-1)][0]/60;if(t>tEnd)break;D.push([t,s.D*100]);X.push([t,s.X*100]);G.push([t,s.G]);}
+  const f=chartFrame(ctx,W,H,52,W-14,20,H-40,0,Math.max(0.1,tEnd),40,100,'time, hours','percent',niceTicks(tEnd,6),[40,60,80,100]);
+  pline(ctx,D,f,'#c0271b',3);pline(ctx,X,f,'#2b6cb0',2.6);
+  A.idx.forEach((i,k)=>{const t=sim.ser[Math.min(i,sim.ser.length-1)][0]/60;ctx.strokeStyle='#8d99a3';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(f.sx(t),20);ctx.lineTo(f.sx(t),H-40);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(String(k+1),f.sx(t),16);});
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';[['#c0271b','density, % of solid'],['#2b6cb0','neck radius, % of particle radius']].forEach((l,i)=>{ctx.fillStyle=l[0];ctx.fillRect(60,H-96+i*16,14,4);ctx.fillStyle='#14222B';ctx.fillText(l[1],80,H-91+i*16);});
+}
+function drawTrajectory(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,sim=A.sim,m=A.m,cp=A.cp,n=sim.thdA.length,xm=v=>Math.log(v);
+  const gmin=Math.max(0.03,P.d*0.8),gmax=Math.max(3,A.st.G*1.4);
+  const f=chartFrame(ctx,W,H,56,W-14,14,H-40,0.45,1.0,gmin,gmax,'relative density','grain size, µm (log scale)',[0.5,0.6,0.7,0.8,0.9,1],[+gmin.toFixed(2),+(Math.sqrt(gmin*gmax)).toFixed(2),+gmax.toFixed(1)]);
+  const ymap=v=>14+(H-54)*(1-(Math.log(v)-Math.log(gmin))/(Math.log(gmax)-Math.log(gmin))),xmap=v=>56+(W-70)*(v-0.45)/0.55;
+  const mis=A.mis;ctx.fillStyle='rgba(31,111,71,.12)';ctx.strokeStyle='#1f6f47';ctx.setLineDash([6,5]);ctx.lineWidth=1.4;const ry=ymap(Math.min(gmax,mis.G));ctx.fillRect(xmap(mis.D),ry,xmap(1)-xmap(mis.D),H-40-ry);ctx.strokeRect(xmap(mis.D),ry,xmap(1)-xmap(mis.D),H-40-ry);ctx.setLineDash([]);
+  ctx.beginPath();ctx.strokeStyle='#c0271b';ctx.lineWidth=3;let first=true;const stp=Math.max(1,Math.floor(n/200));
+  for(let i=0;i<=A.iEnd;i+=stp){const s=stateAt(m,P,cp,sim,i,false),x=xmap(Math.min(1,s.D)),y=ymap(Math.max(gmin,s.G));if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);}ctx.stroke();
+  A.idx.forEach((i,k)=>{const s=A.states[k];ctx.fillStyle=['#6d7b86','#d9822b','#c0271b'][k];ctx.beginPath();ctx.arc(xmap(Math.min(1,s.D)),ymap(Math.max(gmin,s.G)),6,0,6.283);ctx.fill();ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(String(k+1),xmap(Math.min(1,s.D))+9,ymap(Math.max(gmin,s.G))-6);});
+  ctx.fillStyle='#1f6f47';ctx.font='600 11px sans-serif';ctx.textAlign='right';ctx.fillText('goal',W-20,ry-5);
+}
+function drawStrengthMap(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,m=A.m,PR=A.conds,ymax=Math.max(m.cer?m.sig*0.9:m.UTS,Math.max(...PR.map(p=>p.UTS)))*1.1;
+  const f=chartFrame(ctx,W,H,56,W-14,16,H-40,0.45,1.0,0,ymax,'relative density','strength, MPa',[0.5,0.6,0.7,0.8,0.9,1],niceTicks(ymax,5));
+  const pts=[];for(let D=0.5;D<=1.0001;D+=0.01){const phi=1-D;pts.push([D,m.cer?m.sig*Math.sqrt(1/Math.max(A.st.G,0.05))*Math.exp(-5*phi):m.UTS*Math.exp(-m.b*phi)]);}
+  pline(ctx,pts,f,'#8d99a3',2,[6,4]);
+  const mis=A.mis;ctx.fillStyle='rgba(31,111,71,.12)';ctx.strokeStyle='#1f6f47';ctx.setLineDash([6,5]);ctx.lineWidth=1.4;const x0=f.sx(mis.D0||mis.D),x1=f.sx(mis.D1||1),y0=f.sy(Math.min(ymax,mis.S));ctx.fillRect(x0,y0,x1-x0,H-40-y0);ctx.strokeRect(x0,y0,x1-x0,H-40-y0);ctx.setLineDash([]);
+  ctx.beginPath();ctx.strokeStyle='#6d7b86';ctx.lineWidth=1.6;PR.forEach((p,i)=>{const x=f.sx(A.states[i].D),y=f.sy(p.UTS);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+  PR.forEach((p,i)=>{ctx.fillStyle=['#6d7b86','#d9822b','#c0271b'][i];ctx.beginPath();ctx.arc(f.sx(A.states[i].D),f.sy(p.UTS),7,0,6.283);ctx.fill();ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(String(i+1),f.sx(A.states[i].D)+10,f.sy(p.UTS)-8);});
+  ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('dashed: fully bonded material',62,26);
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const COL=['#6d7b86','#d9822b','#c0271b'];
+const MATD={fe:{press:600,lub:0.75,hold:30,ramp:10,furnace:'hi',dl:30,H:15},bronze:{press:200,lub:0.75,hold:30,ramp:10,furnace:'belt',dl:30,H:15},ss316:{press:700,lub:0.75,hold:60,ramp:10,furnace:'hi',dl:30,H:15},
+  alumina:{press:100,lub:2,hold:120,ramp:5,furnace:'kiln',dl:60,H:8},zirconia:{press:100,lub:2,hold:120,ramp:5,furnace:'kiln',dl:60,H:8}};
+function applyMat(P){const m=PMAT[P.mat],d=MATD[P.mat];P.d=m.d0;P.Ts=m.Tref;Object.assign(P,d);P.comp=0;P.atm=m.cer?'air':'red';if(m.cer){P.route='conv';P.papp=50;}}
+const matOpts=ks=>ks.map(k=>[k,PMAT[k].n]);
+const CASES={
+ A:{tag:'A',title:'Press and sinter a part',sub:'Iron, bronze or 316L stainless bushing',
+  blurb:'Press metal powder in a die to a green compact, burn off the lubricant, then sinter it below its melting point so the particles bond at necks. Density, strength and ductility all come from how many pores are left. A bronze bushing wants pores (to hold oil); an iron or stainless part wants as few as it can get.',
+  ladder:['Green compact (as pressed)','After a quarter of your hold','After your full cycle'],mats:['fe','bronze','ss316'],
+  ctrl:[{g:'Powder',k:'mat',type:'select',l:'Material',opts:matOpts(['fe','bronze','ss316'])},
+        {g:'Powder',k:'d',type:'range',l:'Particle size',range:P=>PMAT[P.mat].dr,step:5,fmt:v=>fx(v,0)+' µm'},
+        {g:'Powder',k:'lub',type:'range',l:'Lubricant (zinc stearate)',min:0,max:1.5,step:0.05,fmt:v=>fx(v,2)+' wt %'},
+        {g:'Pressing',k:'H',type:'range',l:'Part height (20 mm diameter)',min:5,max:40,step:1,fmt:v=>v+' mm'},
+        {g:'Pressing',k:'act',type:'seg',l:'Pressing',opts:[['single','One punch moves'],['double','Both punches move']]},
+        {g:'Pressing',k:'press',type:'range',l:'Compaction pressure',min:100,max:900,step:10,fmt:v=>v+' MPa'},
+        {g:'Pressing',k:'comp',type:'range',l:'Die oversize (for shrinkage)',min:0,max:6,step:0.05,fmt:v=>fx(v,2)+' %'},
+        {g:'Burn-off and sintering',k:'furnace',type:'select',l:'Furnace',opts:[['belt',FURN.belt.n],['hi',FURN.hi.n]]},
+        {g:'Burn-off and sintering',k:'atm',type:'seg',l:'Atmosphere',opts:[['red','N₂–H₂'],['n2','Nitrogen'],['air','Air']]},
+        {g:'Burn-off and sintering',k:'dl',type:'range',l:'Burn-off hold at 450 °C',min:0,max:120,step:5,fmt:v=>v+' min'},
+        {g:'Burn-off and sintering',k:'ramp',type:'range',l:'Heating rate',min:2,max:30,step:1,fmt:v=>v+' °C/min'},
+        {g:'Burn-off and sintering',k:'Ts',type:'range',l:'Sintering temperature',range:P=>[PMAT[P.mat].Tr[0]-150,PMAT[P.mat].Tr[1]+100],step:10,fmt:v=>v+' °C'},
+        {g:'Burn-off and sintering',k:'hold',type:'range',l:'Hold at temperature',min:5,max:240,step:5,fmt:v=>v+' min'}]},
+ B:{tag:'B',title:'Sinter a ceramic',sub:'Alumina or zirconia: density against grain size, and spark plasma sintering',
+  blurb:'A ceramic has to reach nearly full density, but the longer and hotter it is held, the more its grains grow, and coarse grains make it weaker. The way through is to densify fast. Compare a conventional furnace cycle with spark plasma sintering, which adds pressure and heats in minutes.',
+  ladder:['Green compact (as pressed)','After a quarter of your hold','After your full cycle'],mats:['alumina','zirconia'],
+  ctrl:[{g:'Powder',k:'mat',type:'select',l:'Material',opts:matOpts(['alumina','zirconia'])},
+        {g:'Powder',k:'d',type:'range',l:'Particle size',range:P=>PMAT[P.mat].dr,step:0.05,fmt:v=>fx(v,2)+' µm'},
+        {g:'Powder',k:'lub',type:'range',l:'Binder',min:0,max:4,step:0.1,fmt:v=>fx(v,1)+' wt %'},
+        {g:'Pressing',k:'H',type:'range',l:'Pellet height (20 mm diameter)',min:3,max:20,step:1,fmt:v=>v+' mm'},
+        {g:'Pressing',k:'act',type:'seg',l:'Pressing',opts:[['single','One punch moves'],['double','Both punches move']]},
+        {g:'Pressing',k:'press',type:'range',l:'Compaction pressure',min:20,max:300,step:10,fmt:v=>v+' MPa'},
+        {g:'Pressing',k:'comp',type:'range',l:'Die oversize (for shrinkage)',min:0,max:30,step:0.5,fmt:v=>fx(v,1)+' %',show:P=>P.route!=='sps'},
+        {g:'Sintering',k:'route',type:'seg',l:'Route',opts:[['conv','Conventional'],['sps','Spark plasma']]},
+        {g:'Sintering',k:'papp',type:'range',l:'Applied pressure during sintering',min:10,max:100,step:5,fmt:v=>v+' MPa',show:P=>P.route==='sps'},
+        {g:'Sintering',k:'dl',type:'range',l:'Binder burn-off hold at 450 °C',min:0,max:120,step:5,fmt:v=>v+' min',show:P=>P.route==='conv'},
+        {g:'Sintering',k:'ramp',type:'range',l:'Heating rate',range:P=>P.route==='sps'?[20,300]:[1,20],step:P=>1,fmt:v=>v+' °C/min'},
+        {g:'Sintering',k:'Ts',type:'range',l:'Sintering temperature',range:P=>[PMAT[P.mat].Tr[0]-150,PMAT[P.mat].Tr[1]+150],step:10,fmt:v=>v+' °C'},
+        {g:'Sintering',k:'hold',type:'range',l:'Hold at temperature',range:P=>P.route==='sps'?[1,60]:[5,600],step:1,fmt:v=>v+' min'}]}
+};
+const DEFA={mat:'fe',d:75,lub:0.75,H:15,act:'double',press:600,comp:0,furnace:'hi',atm:'red',dl:30,ramp:10,Ts:1120,hold:30,route:'conv',papp:50};
+const DEFB={mat:'alumina',d:0.4,lub:2,H:8,act:'double',press:100,comp:0,furnace:'kiln',atm:'air',dl:60,ramp:5,Ts:1550,hold:120,route:'conv',papp:50};
+let CK='A',P=Object.assign({},DEFA),A=null,TL=1,TD=[null,null,null],TSEL=2,ANIM=null,pend=false;
+
+function setCase(k){CK=k;P=Object.assign({},k==='A'?DEFA:DEFB);TL=1;TD=[null,null,null];stopAnim();
+  document.querySelectorAll('.casebtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('blurb').textContent=CASES[k].blurb;
+  $('trajBox').style.display=k==='B'?'':'none';$('tl').value=100;buildControls();changed();}
+function buildControls(){
+  const C=CASES[CK],box=$('controls');box.innerHTML='';let lastG='',n=0;
+  C.ctrl.forEach(c=>{
+    if(c.show&&!c.show(P))return;
+    if(c.g!==lastG){const h=document.createElement('h3');h.textContent=(++n)+'. '+c.g;box.appendChild(h);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(P[c.k]===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+      w.querySelector('select').addEventListener('change',e=>{P[c.k]=e.target.value;if(c.k==='mat')applyMat(P);buildControls();changed();});}
+    else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;if(c.k==='route'){if(P.route==='sps'){P.ramp=100;P.Ts=PMAT[P.mat].Tref-100;P.hold=10;P.papp=50;}else{P.ramp=5;P.Ts=PMAT[P.mat].Tref;P.hold=120;}buildControls();changed();return;}w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else{const r=c.range?c.range(P):[c.min,c.max];P[c.k]=Math.max(r[0],Math.min(r[1],P[c.k]));const stp=typeof c.step==='function'?c.step(P):c.step;
+      w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+r[0]+'" max="'+r[1]+'" step="'+stp+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;outs();changed();});}
+    box.appendChild(w);
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},CK==='A'?DEFA:DEFB);buildControls();changed();});box.appendChild(b);outs();
+}
+function outs(){CASES[CK].ctrl.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k]);}});}
+function changed(){TD=[null,null,null];stopAnim();if(CK==='B')P.furnace=P.route==='sps'?'sps':'kiln';A=analyze(P);draw();}
+
+function kv(rows){return '<dl class="kv">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl>';}
+function stateLabel(i){const sim=A.sim,j=Math.min(i,sim.ser.length-1),t=sim.ser[j][0],T=sim.ser[j][1];return 'furnace at '+fx(T,0)+' °C after '+fx(t/60,1)+' h';}
+function drawMicros(){
+  const m=A.m,res=A.res;
+  const iTL=Math.round(TL*A.iEnd),sT=stateAt(m,P,A.cp,A.sim,iTL,iTL===0);
+  [[A.states[0],'mic0','cap0',0],[A.states[1],'mic1','cap1',1],[sT,'mic2','cap2',2]].forEach(([s,id,cid,k])=>{
+    renderPowder($(id).getContext('2d'),$(id).width,$(id).height,P,m,s,k===0?0:res);
+    $(cid).innerHTML='density '+fx(s.D*100,1)+' % · necks '+fx(s.X*100,0)+' %'+(m.cer?' · grains '+fx(s.G,2)+' µm':'');
+  });
+  $('ttl0').textContent='1. '+CASES[CK].ladder[0];$('ttl1').textContent='2. '+CASES[CK].ladder[1];$('ttl2').textContent='3. '+(TL<1?'Through the cycle':CASES[CK].ladder[2]);
+  $('stage').textContent=TL<1?stateLabel(iTL):'full cycle: '+stateLabel(A.iEnd);
+}
+function draw(){
+  const m=A.m;
+  $('mission').innerHTML='<b>Mission: '+(CK==='A'?'press and sinter a good '+({fe:'iron',bronze:'bronze bearing',ss316:'stainless steel'}[P.mat])+' part':'sinter a dense, fine-grained '+m.n.split(' ')[0].toLowerCase()+' pellet')+'</b>'+A.mission.map(x=>'<span class="chip">'+x+'</span>').join('')+'<span class="chip">size within ±'+fx(A.tolMM,2)+' mm</span>';
+  $('chain').innerHTML=['Powder and pressing','Burn-off','Sintering','Part size'].map((s,i)=>'<span class="pill '+A.status[i]+'"><span class="dot"></span><b>'+(i+1)+'</b> '+s+'</span>').join('');
+  drawMicros();
+  drawHeckel($('cHeck'),A.cp,P,m);drawDensityMap($('cDens'),A.cp,P);
+  $('kvP').innerHTML=kv([['Press force',fx(A.cp.force,0)+' kN of '+PRESSCAP+' kN'],['Green density (average)',fx(A.cp.Davg*100,1)+' % of solid'],['Top to bottom difference',fx(A.cp.spread*100,1)+' points'],['Green strength',fx(A.cp.sg,0)+' MPa'],['Die wall friction coefficient',fx(A.cp.mu,2)]]);
+  drawFurnace($('cFurn'),A,P);drawProgress($('cProg'),A,P);if(CK==='B')drawTrajectory($('cTraj'),A,P);
+  $('kvS').innerHTML=kv([['Cycle length',fx(A.hours,1)+' h'],['Neck radius at the end',fx(A.st.X*100,0)+' % of particle radius'],['Final density',fx(A.st.D*100,1)+' % ('+fx(A.st.D*m.rho,2)+' g/cm³)'],[P.route==='sps'?'Shrinkage (height only, rigid die)':'Linear shrinkage',fx(-A.lin*100,2)+' %'],['Burn-off left behind',fx(A.res*100,0)+' %'],A.m.cer?['Final grain size',fx(A.st.G,2)+' µm']:(P.mat==='bronze'?['Oil the pores hold',fx(A.oil,0)+' % by volume']:['Cost per part','$'+fx(A.cost,2)])]);
+  drawSS();drawStrengthMap($('cMap'),A,P);results();drawSpec(TSEL,0,false,0);updBtns();
+}
+function drawSS(){
+  const c=$('ss'),ctx=c.getContext('2d'),W=c.width,H=c.height,cvs=A.conds.map(curveOf),xm=Math.max(0.3,Math.max(...cvs.map(v=>v.epsF*100))*1.1),ym=Math.max(20,Math.max(...A.conds.map(p=>p.UTS))*1.15);
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,0,xm,0,ym,'strain, %','engineering stress, MPa',niceTicks(xm,6),niceTicks(ym,5));
+  const draw=(cv,frac,col,w,alpha)=>{const em=cv.epsF*frac;ctx.strokeStyle=col;ctx.globalAlpha=alpha;ctx.lineWidth=w;ctx.beginPath();const n=140;for(let i=0;i<=n;i++){const e=em*i/n;i?ctx.lineTo(f.sx(e*100),f.sy(cv.f(e))):ctx.moveTo(f.sx(0),f.sy(0));}ctx.stroke();ctx.globalAlpha=1;};
+  TD.forEach((t,i)=>{if(!t)return;(t.scat||[]).forEach(sc=>draw(sc.cv,t.frac,COL[i],1.2,0.35));draw(cvs[i],t.frac,COL[i],3,1);
+    if(t.frac>=1){const cv=cvs[i];ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(cv.epsF*100),f.sy(cv.sigF),5,0,6.283);ctx.fill();ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(A.conds[i].brittle?fx(A.conds[i].UTS,0)+' MPa, brittle':fx(A.conds[i].EL,1)+' % elongation',Math.min(f.sx(cv.epsF*100)+8,W-130),f.sy(cv.sigF)-8);}});
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';CASES[CK].ladder.forEach((l,i)=>{ctx.fillStyle=COL[i];ctx.fillRect(66,22+i*17,14,4);ctx.fillStyle='#14222B';ctx.fillText((i+1)+'. '+l,86,27+i*17);});
+  if(!TD.some(Boolean)){ctx.fillStyle='#4b5a64';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Run a test to draw the curves',W/2,H/2+30);}
+}
+function results(){
+  const m=A.m,C=CASES[CK];
+  $('verdict').className='verdict '+(A.ok?'ok':'bad');$('verdict').innerHTML=A.ok?'Mission met':'Not there yet';
+  const names=['Powder and pressing','Burn-off','Sintering','Part size'];
+  let h='';[1,2,3,4].forEach(k=>{const fl=A.flags.filter(f=>f[0]===k);if(fl.length)h+='<li class="head">'+k+'. '+names[k-1]+'</li>'+fl.map(f=>'<li class="'+f[1]+'">'+f[2]+'</li>').join('');});
+  if(!A.ok&&A.short.length)h='<li class="head">Short of the mission</li><li class="warn">'+A.short.join('; ')+'.</li>'+h;
+  $('flags').innerHTML=h||'<li class="ok">No problems found with this recipe.</li>';
+  const strong=m.cer;
+  $('tbl').innerHTML='<tr><th></th><th>Density, % solid</th><th>Neck radius, %</th><th>Shrinkage, %</th>'+(strong?'<th>Strength, MPa</th>':'<th>Yield, MPa</th><th>Tensile, MPa</th><th>Elongation, %</th>')+'</tr>'+
+    A.conds.map((p,i)=>{const s=A.states[i];return '<tr><td><span class="dot" style="background:'+COL[i]+'"></span>'+(i+1)+'. '+C.ladder[i]+'</td><td>'+fx(s.D*100,1)+'</td><td>'+fx(s.X*100,0)+'</td><td>'+fx((1-Math.pow(s.Dg/s.D,1/3))*100,2)+'</td>'+(strong?'<td>'+fx(p.UTS,0)+'</td>':'<td>'+fx(p.YS,0)+'</td><td>'+fx(p.UTS,0)+'</td><td>'+(p.green?'—':fx(p.EL,1))+'</td>')+'</tr>';}).join('');
+  const pr=A.pr,st=A.st;let ins=[];
+  if(!m.cer){ins.push('<b>Pressing:</b> the green compact is '+fx(A.cp.Davg*100,0)+' % dense and only '+fx(A.cp.sg,0)+' MPa strong, held together by friction between the particles. <b>Sintering:</b> necks grew to '+fx(st.X*100,0)+' % of the particle radius, density rose to '+fx(st.D*100,1)+' %, and the strength rose to '+fx(pr.UTS,0)+' MPa.');
+    ins.push('<b>Pores cost ductility:</b> fully dense '+m.n.split(' (')[0].toLowerCase()+' stretches '+m.EL+' %. This part stretches '+fx(pr.EL,1)+' %, because each pore concentrates the strain and the necks are thin. Strength fell to '+fx(pr.UTS/m.UTS*100,0)+' % of the dense value.');
+    if(P.mat==='bronze')ins.push('The pores are the point of a bronze bearing: with '+fx((1-st.D)*100,0)+' % porosity it soaks up about '+fx(A.oil,0)+' % of its volume in oil, which is why porous bronze bushings are self-lubricating.');}
+  else{ins.push('<b>Density against grain size:</b> the pellet reached '+fx(st.D*100,1)+' % density with grains of '+fx(st.G,2)+' µm. Strength follows both: pores cut it, and coarse grains cut it again.');
+    ins.push(P.route==='sps'?'<b>Spark plasma:</b> the applied pressure and fast heating densify the powder before the grains have time to grow, at a much lower temperature than a conventional furnace.':'<b>Conventional furnace:</b> to close the last pores the part has to be held hot, and then the grains coarsen. A finer powder, a hotter and shorter cycle, or spark plasma sintering can get both.');}
+  $('insights').innerHTML=ins.map(t=>'<p>'+t+'</p>').join('');
+}
+function drawSpec(i,frac,broken,tb){const cv=curveOf(A.conds[i]);drawSpecimen($('spec').getContext('2d'),460,130,cv,frac*cv.epsF,broken,tb);}
+function updBtns(){document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.i)===TSEL&&!ANIM));}
+function stopAnim(){if(ANIM){cancelAnimationFrame(ANIM.raf);ANIM=null;}}
+function runTests(list){stopAnim();const scat=$('scat').checked;list.forEach(i=>{TD[i]={frac:0,scat:scat?scatterSet(A.conds[i],100+i,4).map(p=>({cv:curveOf(p)})):[]};});ANIM={list,pos:0,t0:performance.now()};TSEL=list[0];step();}
+function step(){const a=ANIM;if(!a)return;const now=performance.now(),i=a.list[a.pos],cv=curveOf(A.conds[i]),dur=cv.brittle?2000:3400,frac=Math.min(1,(now-a.t0)/dur);TD[i].frac=frac;TSEL=i;
+  const broken=frac>=1,tb=broken?Math.min(1,(now-a.t0-dur)/500):0;drawSpec(i,frac,broken,Math.max(0,tb));drawSS();
+  if(frac>=1&&now-a.t0>dur+900){a.pos++;if(a.pos>=a.list.length){ANIM=null;updBtns();return;}a.t0=performance.now();}updBtns();a.raf=requestAnimationFrame(step);}
+function save(){const C=CASES[CK],rec={tool:'Powder metallurgy lab (standalone beta v0.1)',saved:new Date().toISOString(),case:C.title,settings:P,
+  conditions:A.conds.map((p,i)=>({condition:C.ladder[i],density_pct:+fx(A.states[i].D*100,1),neck_pct:+fx(A.states[i].X*100,0),strength_MPa:+fx(p.UTS,0),elongation_pct:+fx(p.EL,1)})),
+  result:{missionMet:A.ok,final_density_pct:+fx(A.st.D*100,1),linear_shrinkage_pct:+fx(-A.lin*100,2),size_error_mm:+fx(A.dimMM,3),cycle_h:+fx(A.hours,1),cost_per_part:+fx(A.cost,2)},flags:A.flags.map(f=>'step '+f[0]+' '+f[1]+': '+f[2])};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='powder-metallurgy-lab-'+CK+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);}
+(function init(){
+  const box=$('cases');['A','B'].forEach(k=>{const C=CASES[k],b=document.createElement('button');b.type='button';b.className='casebtn';b.dataset.k=k;b.innerHTML='<span class="tag">'+C.tag+'</span><b>'+C.title+'</b><span>'+C.sub+'</span>';b.addEventListener('click',()=>setCase(k));box.appendChild(b);});
+  $('tl').addEventListener('input',e=>{TL=+e.target.value/100;if(!pend){pend=true;requestAnimationFrame(()=>{pend=false;drawMicros();});}});
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>runTests([+b.dataset.i])));
+  $('allBtn').addEventListener('click',()=>runTests([0,1,2]));$('saveBtn').addEventListener('click',save);
+  setCase('A');
+})();
+
+})();
+</script>
+</body>
+</html>

@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Heat treatment | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
-<meta name="description" content="Interactive heat treatment simulator for aluminum castings, from the Sintering Materials Research Lab at the University of Saskatchewan. Choose solution treatment, quench and aging, and see the strength, distortion and machining consequences.">
+<meta name="description" content="Interactive heat treatment simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Propose a heat treatment for white cast iron, A356 aluminum or an aluminum-copper alloy, see the microstructure change through the furnace cycle, and run tensile tests to see what it did to strength and ductility.">
 <link rel="canonical" href="https://sintrlab.ca/simulators/heat-treatment.html">
 <meta property="og:title" content="Heat treatment | Manufacturing Simulator | Sintering Materials Research Lab">
-<meta property="og:description" content="Take an aluminum casting through solution treatment, quench and aging and see what each choice does.">
+<meta property="og:description" content="Propose a heat treatment, watch the microstructure change, and pull three tensile specimens.">
 <meta property="og:url" content="https://sintrlab.ca/simulators/heat-treatment.html">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#EEF0F1">
@@ -21,499 +21,665 @@
   The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
 -->
 <style>
-
-h2{font-size:1.45rem;font-weight:700;margin:0 0 8px}
-h3{font-size:1.05rem;font-weight:700;margin:18px 0 6px}
-/* Intro */
-.tool-intro{padding:44px 0 20px}
-.tool-intro .sub{font-size:1.15rem;color:var(--ink-soft);margin:14px 0 0;max-width:62ch}
-.badge{display:inline-block;font-family:var(--head);font-weight:500;font-size:.78rem;letter-spacing:0;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:12px;vertical-align:middle}
-.tool-intro .fb{font-size:.95rem;color:var(--ink-soft);margin:12px 0 0}
-.crumb{font-family:var(--head);font-weight:500;font-size:.95rem;color:var(--ink-soft);margin:0 0 10px}
-
-/* Steps and mission */
-.tabs{display:inline-flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:18px 0 14px;flex-wrap:wrap}
-.tab{font-family:var(--head);font-weight:500;font-size:.98rem;padding:9px 20px;border:0;background:transparent;color:var(--ink);cursor:pointer}
-.tab+.tab{border-left:1px solid var(--ink)}
-.tab[aria-current="step"]{background:var(--ink);color:#fff}
-.tab:not([aria-current="step"]):not(:disabled):hover{background:rgba(20,34,43,.08)}
-.tab:disabled{opacity:.42;cursor:default}
-.tab.done::after{content:" \2713"}
-.mission{padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
-.mission b{font:700 1.05rem var(--head);margin-right:6px}
-.chip{font-family:var(--head);font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
-
-/* Layout */
-.grid{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;margin-top:16px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:1fr}.stagecol{order:-1}.site-header .wrap{min-height:72px}.brand-symbol{height:46px}.brand-word{height:36px}.nav{gap:16px}}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:20px}
-.pane{display:none}.pane.on{display:block}
-.lead{color:var(--ink-soft)}
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,.btn,.casebtn,.chip,summary,table{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}
+h2{font-size:1.25rem;margin:0 0 6px}
+h3{font-size:1.02rem;margin:18px 0 6px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:75ch;margin:6px 0 0}
 .fine{font-size:.85rem;color:var(--ink-soft)}
-.presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.presets button{padding:5px 11px;font-size:.88rem;font-weight:500;border:1px solid var(--line);background:var(--bg);border-radius:2px;cursor:pointer;color:var(--ink)}
-.presets button:hover{border-color:var(--accent)}
-.mixrow{display:grid;grid-template-columns:1fr 46px;gap:5px 10px;align-items:center;margin:0 0 12px}
-.mixrow select{grid-column:1/-1;padding:7px 8px;background:var(--bg);border:1px solid var(--line);border-left:8px solid var(--line);border-radius:2px;color:var(--ink);font-size:.95rem}
-.mixrow input[type=range]{width:100%}
-.mixrow output{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-family:var(--head)}
-input[type=range]{accent-color:var(--accent)}
-.bar{display:flex;height:14px;border-radius:2px;overflow:hidden;border:1px solid var(--line);margin:2px 0 12px}
-.bar div{height:100%}
-.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0 12px;font-family:var(--head);font-size:.95rem}
-.kv dt{color:var(--ink-soft)}
-.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.notes,.checks{margin:0 0 12px;padding:0;list-style:none}
-.notes li,.checks li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
-li.ok{border-left-color:var(--ok);background:var(--ok-soft)}
-li.warn{border-left-color:var(--warn);background:var(--warn-soft)}
-li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
-.btn{display:inline-block;font-family:var(--head);font-weight:500;font-size:1rem;padding:11px 20px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;text-decoration:none}
-.btn.small{padding:5px 11px;font-size:.88rem}
-.btn:hover:not(:disabled){background:rgba(20,34,43,.08)}
-.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn.primary:hover:not(:disabled){background:var(--accent-deep);border-color:var(--accent-deep)}
-.btn.danger{background:#B4470C;color:#fff;border-color:#B4470C}
-.btn.danger:hover:not(:disabled){background:#963A08}
-.btn:disabled{opacity:.45;cursor:default}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
-.seg button{flex:1;padding:7px 8px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font-weight:500;font-size:.92rem;white-space:nowrap}
-.seg button:last-child{border-right:0}
-.seg button:hover{background:rgba(20,34,43,.08)}
-.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
-.seg.small{margin:0}.seg.small button{padding:5px 10px;font-size:.88rem}
-.shapes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 14px}
-.shape{text-align:left;padding:9px 11px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;line-height:1.3;color:var(--ink)}
-.shape b{display:block;font-family:var(--head);font-weight:700}
-.shape span{font-family:var(--body);font-size:.85rem;color:var(--ink-soft)}
-.shape:hover{border-color:var(--ink)}
-.shape[aria-pressed="true"]{border:2px solid var(--accent);padding:8px 10px;background:var(--accent-soft)}
-.slider{margin:0 0 10px}
-.slider label{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500}
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 10px}
+@media (max-width:760px){.cases{grid-template-columns:1fr}}
+.casebtn{text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);line-height:1.3;position:relative}
+.casebtn b{display:block;font-size:1.05rem;margin-right:26px}
+.casebtn span:not(.tag){font:400 .88rem var(--body);color:var(--ink-soft)}
+.casebtn .tag{position:absolute;right:12px;top:10px;font:700 .85rem var(--head);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:24px}
+.casebtn:hover{border-color:var(--ink)}
+.casebtn[aria-pressed="true"]{border:2px solid var(--accent);padding:10px 13px;background:var(--accent-soft)}
+.casebtn[aria-pressed="true"] .tag{background:var(--accent)}
+.blurb{max-width:90ch;margin:8px 0 10px}
+.mission{padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}
+.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*,.three>*{min-width:0}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}
+.box{margin-bottom:16px}
+.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head)}
 .slider label span{font-weight:700;font-variant-numeric:tabular-nums}
-.slider input{width:100%}
-details{margin:14px 0 0;font-size:.92rem;border-top:1px solid var(--line-soft);padding-top:8px}
-summary{cursor:pointer;font-family:var(--head);font-weight:500;color:var(--accent)}
-details p{margin:6px 0 0;color:var(--ink-soft)}
-.stagecol{min-width:0}
-.cardstage{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 20px}
-.cardstage svg{width:100%;height:auto;display:block}
-.ax{stroke:var(--ink-soft);stroke-width:1}
-.gl{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
-.tk{fill:var(--ink-soft);font:11px var(--head)}
-.lb{fill:var(--ink);font:600 12px var(--head)}
-.band{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
-.curve{fill:none;stroke:var(--accent);stroke-width:2.6;stroke-linejoin:round}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 10px;font-size:.9rem}
-.toolbar .cutpos{display:flex;align-items:center;gap:6px}
-.toolbar .cutpos input{width:130px}
-.toolbar label.chk{display:flex;align-items:center;gap:5px;color:var(--ink-soft)}
-.cvwrap{background:var(--stage);border-radius:2px;overflow:hidden;line-height:0;border:1px solid var(--line)}
-#cv{width:100%;height:auto;display:block;touch-action:none;cursor:grab}
-#cv.dragging{cursor:grabbing}
-.cap{margin:8px 2px 0;font-size:.92rem;color:var(--ink-soft);min-height:2.7em}
-.legend{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin:6px 2px 0;font-family:var(--head);font-size:.85rem;color:var(--ink-soft)}
-.grad{width:240px;height:10px;border-radius:2px;border:1px solid var(--line);background:linear-gradient(90deg,#9ca2aa 0%,#963224 28%,#cd3e22 52%,#ff8c28 70%,#ffe8aa 100%)}
-.sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.lower{display:grid;grid-template-columns:minmax(180px,34%) 1fr;gap:12px;margin-top:12px}
-@media (max-width:700px){.lower{grid-template-columns:1fr}}
-.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:10px 12px}
-.box canvas{width:100%;height:auto;display:block}
-.box p{margin:4px 0 0;font-size:.85rem;color:var(--ink-soft)}
-#sec{image-rendering:pixelated;background:#202731;border-radius:2px}
-.status{padding:9px 12px;border-radius:2px;background:var(--accent-soft);border-left:4px solid var(--accent);margin:8px 0 10px;font-family:var(--head);font-weight:500}
-.status.solid{background:var(--ok-soft);border-left-color:var(--ok)}
-.status.bad{background:var(--bad-soft);border-left-color:var(--bad)}
-.verdict{padding:12px 14px;border-radius:2px;font:700 1.25rem var(--head);margin:6px 0 10px}
-.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}
-.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
-.verdict small{display:block;font:400 .9rem var(--body);color:var(--ink-soft);margin-top:2px}
-table.spec{width:100%;border-collapse:collapse;font-family:var(--head);font-size:.92rem;margin:6px 0 10px}
-table.spec th,table.spec td{padding:6px 6px;border-bottom:1px solid var(--line-soft);text-align:right;font-variant-numeric:tabular-nums}
-table.spec th:first-child,table.spec td:first-child{text-align:left}
-table.spec th{font-weight:500;color:var(--ink-soft)}
-td.pass{color:var(--ok);font-weight:700}td.fail{color:var(--bad);font-weight:700}
-.disclaimer{max-width:80ch;font-size:.9rem;color:var(--ink-soft);margin:28px 0 56px}
-
-.results{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
-@media (max-width:900px){.results{grid-template-columns:1fr}}
-.results h3{margin-top:0}
-.stagecol{min-width:0}
-canvas{max-width:100%}
-.box canvas{width:100%;height:auto;display:block}
-.hint{font-size:.85rem;color:var(--ink-soft);margin:2px 0 8px}
-.seg.q4 button{padding:7px 4px;font-size:.85rem}
-.seqs{display:grid;gap:8px;margin:0 0 12px}
-.seq{text-align:left;padding:9px 11px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;line-height:1.3;color:var(--ink)}
-.seq b{display:block;font-family:var(--head);font-weight:700}
-.seq span{font-family:var(--body);font-size:.85rem;color:var(--ink-soft)}
-.seq:hover{border-color:var(--ink)}
-.seq[aria-pressed="true"]{border:2px solid var(--accent);padding:8px 10px;background:var(--accent-soft)}
-.dim{opacity:.45;pointer-events:none}
-table.spec td.pass,table.spec td.fail{font-weight:700}
-.kv.two{grid-template-columns:1fr auto 1fr auto;column-gap:14px}
-@media (max-width:700px){.kv.two{grid-template-columns:1fr auto}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .85rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:7px;margin:6px 0 10px;font:500 .92rem var(--head)}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:5px 11px;font-size:.88rem;margin-top:8px}
+.btn:hover{background:rgba(20,34,43,.08)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-deep)}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.tl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;margin:6px 0 12px}
+.tl .stage{grid-column:1/-1;font:600 .95rem var(--head);color:var(--accent)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.three{grid-template-columns:minmax(0,1fr)}}
+.col h4{margin:0 0 4px;font:700 .95rem var(--head)}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.cap{font-size:.85rem;color:var(--ink-soft);margin:3px 0 0;min-height:2.6em}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start}
+@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:6px 0 10px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}th{font-weight:500;color:var(--ink-soft)}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}
+.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:0 0 12px;padding:0;list-style:none}
+.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.insights p{margin:6px 0;max-width:80ch}
+.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
 </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to main content</a>
 <div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Heat treatment lab<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Propose a heat treatment, watch the microstructure change through the furnace cycle, then pull three tensile specimens to see what it did to strength and ductility. Pick a case below.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Heat%20treatment%20(beta%20v0.1)">send feedback</a>.</p>
+  <div class="cases" id="cases"></div>
+  <p class="blurb" id="blurb"></p>
+  <section class="mission" id="mission" aria-live="polite"></section>
+</div></div>
 
-<main id="main">
-  <section class="tool-intro">
-    <div class="wrap">
-      <p class="crumb">Manufacturing Simulator</p>
-      <h1>Heat treatment<span class="badge">Beta v0.1</span></h1>
-      <p class="sub">Take an aluminum casting through solution treatment, quench and aging. See how each step changes the strength, how the quench distorts the part, and why the order of heat treatment and machining matters.</p>
-      <p class="fb">This is a beta. It models an A356-type aluminum-silicon-magnesium casting alloy with typical textbook behaviour, not your supplier's data sheet, so check any number you rely on. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Heat%20treatment%20(beta%20v0.1)">send feedback</a>.</p>
-      <section class="mission" id="mission" aria-live="polite" style="margin-top:18px"></section>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box">
+      <h2>Microstructure through the cycle</h2>
+      <div class="tl"><label for="tl" class="fine">Furnace cycle, third picture</label><input type="range" id="tl" min="0" max="1" step="0.005" value="1"><div class="stage" id="stage"></div></div>
+      <div class="three">
+        <div class="col"><h4 id="ttl0"></h4><canvas id="mic0" width="320" height="240" role="img" aria-label="Microstructure as cast"></canvas><canvas id="nano0" width="320" height="150" style="margin-top:6px"></canvas><p class="cap" id="cap0"></p></div>
+        <div class="col"><h4 id="ttl1"></h4><canvas id="mic1" width="320" height="240" role="img" aria-label="Microstructure after the first step"></canvas><canvas id="nano1" width="320" height="150" style="margin-top:6px"></canvas><p class="cap" id="cap1"></p></div>
+        <div class="col"><h4 id="ttl2"></h4><canvas id="mic2" width="320" height="240" role="img" aria-label="Microstructure after the full treatment"></canvas><canvas id="nano2" width="320" height="150" style="margin-top:6px"></canvas><p class="cap" id="cap2"></p></div>
+      </div>
+      <p class="fine" id="nanoHead" style="margin-top:8px"></p>
+      <p class="fine">Schematic micrographs, generated from the model state with a fixed pattern so the three pictures show the same piece of metal. They illustrate trends, not a real sample.</p>
+    </div>
 
-      <div class="grid">
-        <aside class="panel" id="panel">
-          <h2>1. Part and casting</h2>
-          <div class="shapes" id="parts"></div>
-          <div class="slider"><label for="thk" id="thkLabel">Thickness <span id="thkOut"></span></label><input type="range" id="thk" min="3" max="15" step="0.5"></div>
-          <div class="slider"><label for="por">Porosity in the casting <span id="porOut"></span></label><input type="range" id="por" min="0" max="4" step="0.1"></div>
-          <p class="hint">Gas porosity comes from the casting step. Heat treatment cannot repair it.</p>
-
-          <h2 style="margin-top:20px">2. Order of operations</h2>
-          <div class="seqs" id="seqs"></div>
-          <div class="slider" id="stockRow"><label for="stock" id="stockLabel">Machining stock left on <span id="stockOut"></span></label><input type="range" id="stock" min="0.2" max="3" step="0.1"></div>
-
-          <h2 style="margin-top:20px">3. Solution treatment</h2>
-          <div class="slider"><label for="Tsol">Temperature <span id="TsolOut"></span></label><input type="range" id="Tsol" min="480" max="560" step="5"></div>
-          <div class="slider"><label for="tSol">Time at temperature <span id="tSolOut"></span></label><input type="range" id="tSol" min="0" max="16" step="0.5"></div>
-
-          <h2 style="margin-top:20px">4. Quench</h2>
-          <div class="fine" style="font-weight:500;color:var(--ink)">Quench medium</div>
-          <div class="seg q4" id="medSeg"><button data-v="cold">Cold water</button><button data-v="hot">Hot water</button><button data-v="polymer">Polymer</button><button data-v="air">Forced air</button></div>
-          <div class="slider"><label for="delay">Delay before the quench <span id="delayOut"></span></label><input type="range" id="delay" min="2" max="60" step="1"></div>
-
-          <h2 style="margin-top:20px">5. Aging</h2>
-          <div class="slider"><label for="Tage">Temperature <span id="TageOut"></span></label><input type="range" id="Tage" min="100" max="250" step="5"></div>
-          <div class="slider"><label for="tAge">Time <span id="tAgeOut"></span></label><input type="range" id="tAge" min="0" max="24" step="0.5"></div>
-          <button class="btn small" id="resetBtn" type="button">Reset to untreated</button>
-
-          <details>
-            <summary>How this model works</summary>
-            <p>Solution treatment dissolves the hardening phase (magnesium silicide) into the aluminum. The temperature sets how much can dissolve and the time sets how far it gets, and thick sections go slower. The quench has to be fast enough to trap it in solution, and a faster quench also means more thermal stress and distortion. Aging then lets the hardening phase come back as fine precipitates. Hold too short and the part is under-aged, hold too long or too hot and the precipitates coarsen and the strength falls. Porosity lowers strength after all of this.</p>
-            <p>The curves are simple textbook-style models fitted to typical values. Distortion is an indicative size, not a prediction for a real part.</p>
-          </details>
-        </aside>
-
-        <section class="stagecol">
-          <div class="results" style="margin-top:0">
-            <div class="box">
-              <div id="verdict" class="verdict"></div>
-              <ul class="notes" id="flags"></ul>
-              <button class="btn primary" id="saveBtn" type="button">Save result (JSON)</button>
-            </div>
-            <div class="box">
-              <h3>Result against the requirements</h3>
-              <table class="spec" id="spec"></table>
-            </div>
-          </div>
-          <div class="box" style="margin-top:14px"><h3 style="margin-top:0">The furnace cycle</h3><canvas id="cSched" width="900" height="250" role="img" aria-label="Furnace temperature and part temperature through solution treatment, quench and aging"></canvas>
-            <p class="hint">Dashed line: furnace temperature. Solid line: the part. The quench is the steep drop in the middle.</p></div>
-          <div class="results">
-            <div class="box"><h3 style="margin-top:0">The quench</h3><canvas id="cQuench" width="440" height="250" role="img" aria-label="Part temperature during the quench for each medium"></canvas>
-              <p class="hint">The shaded band is the critical range (400 to 290 °C), where the part must cool fast to keep the hardening phase dissolved.</p></div>
-            <div class="box"><h3 style="margin-top:0">Aging curve</h3><canvas id="cAge" width="440" height="250" role="img" aria-label="Hardness against aging time at several temperatures"></canvas>
-              <p class="hint">Hotter aging peaks sooner and lower, then falls as the precipitates coarsen. The vertical line is your aging time.</p></div>
-          </div>
-          <div class="box" style="margin-top:14px"><h3 style="margin-top:0">More numbers</h3><dl class="kv two" id="metrics"></dl></div>
-          <div class="box" style="margin-top:14px"><h3 style="margin-top:0">Distortion and machining</h3><canvas id="cDist" width="900" height="150" role="img" aria-label="Quench distortion and the position error after machining"></canvas>
-            <p class="hint" id="distNote"></p></div>
-          <p class="disclaimer">A teaching model, not validated process software. Check the schedule against your alloy supplier's data and a test casting before treating real parts.</p>
-        </section>
+    <div class="box">
+      <h2>Tensile test</h2>
+      <div class="btns">
+        <button class="btn tbtn" data-i="0" type="button">Test 1</button>
+        <button class="btn tbtn" data-i="1" type="button">Test 2</button>
+        <button class="btn tbtn" data-i="2" type="button">Test 3</button>
+        <button class="btn primary" id="allBtn" type="button">Test all three</button>
+        <label class="chk" style="margin:0 0 0 8px"><input type="checkbox" id="scat"> five specimens each</label>
+      </div>
+      <div class="row2">
+        <div><canvas id="spec" width="460" height="130" role="img" aria-label="Tensile specimen"></canvas>
+          <h4 style="margin:10px 0 4px;font:700 .95rem var(--head)" id="testTitle"></h4>
+          <canvas id="testMic" width="440" height="330" role="img" aria-label="Microstructure inside the specimen with damage"></canvas>
+          <p class="fine">Red marks show particles cracking and pores growing as the strain rises. The specimen is drawn stretched more than real to make it visible.</p></div>
+        <div><canvas id="ss" width="520" height="340" role="img" aria-label="Stress-strain curves"></canvas></div>
       </div>
     </div>
-  </section>
-</main>
 
+    <div class="box">
+      <h2>Results</h2>
+      <div class="row2">
+        <div><div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul><button class="btn" id="saveBtn" type="button">Save result (JSON)</button></div>
+        <div><h4 style="margin:0 0 4px;font:700 .95rem var(--head)">Strength and ductility map</h4><canvas id="map" width="460" height="340" role="img" aria-label="Elongation against yield strength"></canvas></div>
+      </div>
+      <div class="tw"><table id="tbl"></table></div>
+      <div class="insights" id="insights"></div>
+    </div>
+    <p class="disclaimer">A teaching model, not validated process software. The property models are built from microstructure state variables with typical textbook values, not a specific supplier's data, and the micrographs are schematic. Check any number you rely on against data sheets and test pieces.</p>
+  </div>
+</div></main>
 <div data-site-footer></div>
 <script src="../site-nav.js" defer></script>
 <script>
 (function(){
 'use strict';
-// ==== HEAT TREATMENT CORE ====
+// ==== MODEL ====
 const KEL=273.15;
-const AL={rho:2700,c:900,k:150,alphaTh:6e-5,E:70000,alphaExp:23e-6};          // J/kg K units in SI except E in MPa
-const MED={
-  cold:   {name:'Cold water (20 °C)',h:4000,T:20},
-  hot:    {name:'Hot water (65 °C)',h:2500,T:65},
-  polymer:{name:'Polymer quench (30 °C)',h:1500,T:30},
-  air:    {name:'Forced air',h:60,T:25}
-};
-const BASE={YSas:100,YSt6:190,UTSas:160,UTSt6:245,ELas:5.0,HBas:55,HBt6:80};   // typical sand-cast A356 values: replace with supplier data
-const TARGET={ys:160,el:2.0,hb:68,timeH:20};
-const AGE={t0:5.0,T0:155,Q:12000};                                             // time to peak strength at 155 °C, in hours
-const SOL={tau:2.0,Q:14400,Tref:540,tauS:5.0};
-
-/* ---------- the parts: simple rules for the thickest section and the shape ---------- */
-const PARTS={
-  star:{name:'Star ornament',blurb:'Flat star with a hanging eyelet',thk:{min:3,max:15,def:9,label:'Star thickness'},tol:0.3,Am:900,
-    M:t=>Math.max(t/2*0.95,2.2),tmin:t=>t,Lmax:()=>69,asym:0.6,vol:t=>1038*t},
-  bauble:{name:'Hollow bauble',blurb:'Thin-walled sphere with an eyelet',thk:{min:1.5,max:10,def:3,label:'Wall thickness'},tol:0.3,Am:400,
-    M:t=>Math.max(t/2,2.2),tmin:t=>t,Lmax:()=>57,asym:0.3,vol:t=>4/3*Math.PI*(27**3-(27-t)**3)+1412},
-  bracket:{name:'L-bracket',blurb:'Tall arm meeting a flat base',thk:{min:6,max:24,def:15,label:'Wall thickness'},tol:0.1,Am:3024,
-    M:t=>t/2*0.9,tmin:t=>t,Lmax:()=>72,asym:1.0,vol:t=>(72*t+(60-t)*t)*42},
-  mount:{name:'Pump mount',blurb:'Thin plate carrying one heavy boss',thk:{min:3,max:15,def:9,label:'Plate thickness'},tol:0.1,Am:3024,
-    M:t=>Math.max(t/2,6.75),tmin:t=>t,Lmax:()=>72,asym:0.8,vol:t=>72*42*t+Math.PI*13.5**2*(42-t)}
-};
-const SEQ={A:'Heat treat, then machine',B:'Machine to size, then heat treat',C:'Rough machine, heat treat, finish machine'};
-
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const arr=(T)=>1/(T+KEL);
-function tauD(T,M){return SOL.tau*Math.exp(SOL.Q*(arr(T)-arr(SOL.Tref)))*Math.sqrt(M/4.5);}
-function tauSph(T){return SOL.tauS*Math.exp(SOL.Q*(arr(T)-arr(SOL.Tref)));}
-function tPeak(T){return AGE.t0*Math.exp(AGE.Q*(arr(T)-arr(AGE.T0)));}
-function peakScale(T){return T>AGE.T0?Math.max(0.35,1-0.0035*(T-AGE.T0)):Math.max(0.6,1-0.0015*(AGE.T0-T));}
-function gAge(x){ if(x<=0)return 0; if(x<=1)return (1-Math.exp(-3*x))/(1-Math.exp(-3)); return 1/(1+0.45*Math.pow(x-1,1.1)); }
-function medH(m,M){const h=MED[m].h,Mm=M/1000;return h/(1+h*Mm/AL.k);}                 // effective surface coefficient with internal conduction
-function quenchT(m,M,T0,t){const tau=AL.rho*AL.c*(M/1000)/medH(m,M);return MED[m].T+(T0-MED[m].T)*Math.exp(-t/tau);}
+const arr=T=>1/(T+KEL);
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 
-function analyze(partKey,P){
-  const part=PARTS[partKey], t=P.thk, M=part.M(t), vol=part.vol(t), mass=vol*2.68e-3;       // mm, mm3, grams
-  const Tf=P.Tsol, tHold=P.tSol;
-  // heating up
-  const tauH=AL.rho*AL.c*(M/1000)/40; const tHeat=Math.max(0,tauH*Math.log((Tf-25)/5))/3600;     // hours to come within 5 K
-  // dissolution and spheroidising
-  const fmax=clamp((Tf-480)/(535-480),0,1), td=tauD(Tf,M);
-  const fd=fmax*(1-Math.exp(-tHold/td)), fsph=1-Math.exp(-tHold/tauSph(Tf));
-  // quench
-  const delay=P.delay, tauAir=AL.rho*AL.c*(M/1000)/15;
-  const Tq0=Tf-(Tf-25)*(1-Math.exp(-delay/tauAir));
-  const tauQ=AL.rho*AL.c*(M/1000)/medH(P.med,M), rate=Math.max(0,(345-MED[P.med].T)/tauQ);       // K/s through the critical range
-  const fq=1-Math.exp(-rate/25), fdel=delay<=15?1:Math.exp(-(delay-15)/40);
-  const dTg=rate*(M/1000)*(M/1000)/(2*AL.alphaTh), sigma=2.4*dTg;                                      // MPa
-  const delta=sigma/AL.E*(Math.pow(part.Lmax(),2)/part.tmin(t))*part.asym;                              // mm, indicative
-  // ageing
-  const tp=tPeak(P.Tage), x=P.tAge/tp, ps=peakScale(P.Tage);
-  const Hartif=fd*fq*fdel*ps*gAge(x), Hnat=0.08*fd*fq*fdel, H=Math.max(Hartif,Hnat);
-  const pm=Math.exp(-0.07*P.por), pe=Math.exp(-0.12*P.por);
-  const YS=(BASE.YSas+(BASE.YSt6-BASE.YSas)*H)*pm, UTS=(BASE.UTSas+(BASE.UTSt6-BASE.UTSas)*H)*pm;
-  const EL=BASE.ELas*(1-0.4*H)*(1+0.5*fsph)*pe, HB=BASE.HBas+(BASE.HBt6-BASE.HBas)*H;
-  const finishIdx=0.5+0.5*H, wearIdx=1+0.2*H;
-  // blistering and overheating
-  const blister=clamp((P.por-0.8)/1.2,0,1)*clamp((Tf-515)/25,0,1)*clamp(tHold/2,0,1);
-  // sequence: what the machining does to the distortion
-  const tol=part.tol, stock=P.seq==='B'?0.5:P.stock, setups=P.seq==='C'?2:1;
-  let finalDev,cleanup=true;
-  if(P.seq==='A'){cleanup=stock>=1.3*delta;finalDev=0.4*delta;}
-  else if(P.seq==='B'){finalDev=delta+0.01;}
-  else {cleanup=stock>=1.3*delta;finalDev=0.15*delta;}
-  const stockG=part.Am*stock*2.68e-3*(P.seq==='C'?1.0:1.0);
-  // time and energy
-  const tQ=0.02, tAgeTot=P.tAge>0?P.tAge+0.3:0, timeTot=tHeat+tHold+tQ+tAgeTot;
+/* ---------- shared aluminium helpers ---------- */
+const MED={cold:{n:'Cold water (20 °C)',h:4000,T:20},hot:{n:'Hot water (65 °C)',h:2500,T:65},polymer:{n:'Polymer (30 °C)',h:1500,T:30},air:{n:'Forced air',h:60,T:25}};
+const AL={rho:2700,c:900,k:150};
+const modOf=t=>Math.max(t/2*0.95,2.2);                 // thickest-section modulus, mm
+const dasOf=M=>18+4*M;                                 // dendrite arm spacing, micrometres
+function quenchRate(med,M){const h=MED[med].h,Mm=M/1000,he=h/(1+h*Mm/AL.k),tau=AL.rho*AL.c*Mm/he;return Math.max(0,(345-MED[med].T)/tau);}
+const peakScale=(T,T0)=>T>T0?Math.max(0.35,1-0.0035*(T-T0)):Math.max(0.6,1-0.0015*(T0-T));
+function gAge(x){if(x<=0)return 0;if(x<=1)return Math.sqrt((1-Math.exp(-4*x))*Math.pow(x,1/3))/Math.sqrt(1-Math.exp(-4));return Math.pow(x,-1/3);}
+const tPeak=(T,t0,T0)=>t0*Math.exp(12000*(arr(T)-arr(T0)));
 
-  const flags=[]; const add=(l,s)=>flags.push([l,s]);
-  if(Tf>550)add('bad','Overheated: '+Tf+' °C is past the point where the eutectic starts to melt (about 550 °C for this alloy). The casting blisters, loses strength and is scrap.');
-  else if(Tf>545)add('warn','Very close to incipient melting (about 550 °C). A furnace that overshoots by a few degrees would ruin the parts.');
-  if(Tf<500)add('warn','Solution temperature '+Tf+' °C is low: little magnesium can dissolve, so there is not much to harden later.');
-  if(fd<0.85&&Tf<=550)add(fd<0.6?'bad':'warn','Only '+Math.round(fd*100)+' % of the hardening phase went into solution. '+(Tf<525?'A higher temperature':'A longer hold')+' helps. Thick sections dissolve more slowly.');
-  if(fq<0.8)add('bad','Quench too slow: the part cools through the critical range at about '+rate.toFixed(0)+' K/s. Hardening phase precipitates on the way down and only '+Math.round(fq*100)+' % of the strength is retained.'+(P.med==='cold'?' Even cold water is not fast enough for a '+M.toFixed(1)+' mm section: this part is too thick to heat treat fully. Reduce the section thickness.':' A faster quench medium would help.'));
-  else if(fq<0.92)add('warn','The quench is a little slow ('+rate.toFixed(0)+' K/s) for this section thickness, and retains '+Math.round(fq*100)+' % of the strength.');
-  if(delay>15)add(delay>30?'bad':'warn','Quench delay of '+delay+' s is long. The part cools in air first and loses some of its response. Keep it to about 15 s or less.');
-  if(P.tAge>0){
-    if(x<0.5)add('warn','Under-aged: the aging time is only '+x.toFixed(1)+' times the time to peak strength at '+P.Tage+' °C ('+tp.toFixed(1)+' h). The part has not finished hardening.');
-    else if(x>2)add('warn','Over-aged: '+x.toFixed(1)+' times the time to peak strength. The precipitates have coarsened and the strength is falling.');
-  } else add('warn','No artificial aging, so the part keeps only the small natural-aging gain.');
-  if(blister>0.4)add('bad','Blister risk: gas porosity of '+P.por.toFixed(1)+' % expands at '+Tf+' °C and lifts the skin of the casting. Lower the porosity in the casting, or solution treat cooler.');
-  if(P.seq==='A'&&!cleanup)add('bad','Machining stock is too thin: the quench distortion (about '+delta.toFixed(2)+' mm) is larger than the '+stock.toFixed(1)+' mm you leave to cut away, so some faces will not clean up.');
-  if(P.seq==='C'&&!cleanup)add('bad','The finish allowance of '+stock.toFixed(1)+' mm is smaller than the distortion (about '+delta.toFixed(2)+' mm), so the finish cut will not clean up.');
-  if(finalDev>tol)add('bad','The finished part is about '+finalDev.toFixed(2)+' mm out of position, over the ±'+tol+' mm tolerance. '+(P.seq==='B'?'Heat treating after final machining moves the machined faces.':'Cutting a stressed casting lets the stress out and the part moves. Quench more gently or machine in two stages.'));
-  if(YS<TARGET.ys&&!flags.some(f=>f[0]==='bad'&&/Quench too slow|Overheated/.test(f[1])))add('warn','Yield strength is '+YS.toFixed(0)+' MPa, under the '+TARGET.ys+' MPa target.');
-  if(P.por>2)add('warn','Porosity of '+P.por.toFixed(1)+' % in the casting cuts the strength by '+Math.round((1-pm)*100)+' %. Heat treatment cannot repair it.');
-  if(timeTot>TARGET.timeH)add('warn','The cycle takes '+timeTot.toFixed(1)+' h, over the '+TARGET.timeH+' h budget.');
-  const nBad=flags.filter(f=>f[0]==='bad').length;
-  if(!flags.length)add('ok','No problems found with this heat treatment.');
-  let score=100-nBad*28;
-  if(YS<TARGET.ys)score-=Math.min(20,(TARGET.ys-YS)/TARGET.ys*60);
-  if(EL<TARGET.el)score-=Math.min(10,(TARGET.el-EL)*6);
-  if(HB<TARGET.hb)score-=Math.min(10,(TARGET.hb-HB)*0.8);
-  if(timeTot>TARGET.timeH)score-=Math.min(10,(timeTot-TARGET.timeH)*1.5);
-  score=Math.max(0,Math.round(score));
-  const accepted=nBad===0&&YS>=TARGET.ys&&EL>=TARGET.el&&HB>=TARGET.hb&&timeTot<=TARGET.timeH;
-  return {M,mass,tHeat,fd,fsph,fmax,td,Tq0,rate,fq,fdel,dTg,sigma,delta,tp,x,H,YS,UTS,EL,HB,finishIdx,wearIdx,blister,tol,stock,setups,finalDev,cleanup,stockG,
-    timeTot,flags,nBad,score,accepted,pm,tauH};
+/* ---------- Case B: A356 (Al-Si-Mg) ---------- */
+function stateB(P,g){
+  const M=modOf(P.thk),DAS=dasOf(M),T=P.Tsol,tS=(P.tSol||0)*g.sol,k=Math.exp(14400*(arr(T)-arr(540)));
+  const fmax=clamp((T-480)/55,0,1),tauD=2.0*k*Math.sqrt(M/4.5);
+  const fd=tS>0?fmax*(1-Math.exp(-tS/tauD)):0, fsph=1-Math.exp(-tS/(5.0*k));
+  const AR0=P.sr?3.0:6.0,L0=(P.sr?5:12)*Math.sqrt(DAS/36);
+  const AR=AR0+(1.3-AR0)*fsph, L=L0*(1-0.45*fsph)*Math.pow(1+tS/(12*k),1/3);
+  const rate=quenchRate(P.med,M),fq=g.q?(1-Math.exp(-rate/25)):1;
+  const css=(g.q||tS>0)?fd*fq:0;
+  let x=0,delta=0,fv=0,tp=tPeak(P.Tage,5,155);
+  if(g.q&&g.age>0){x=P.tAge*g.age/tp;delta=gAge(x)*peakScale(P.Tage,155)*css;fv=css*(1-Math.exp(-4*x));}
+  else if(g.q){delta=0.08*css;}
+  return {M,DAS,AR,L,fd,fsph,fq,css,x,delta,fv,rate,tp,quenched:g.q,aging:g.q&&g.age>0,hot:!g.q&&tS>0,Si:true};
+}
+function propsB(s,P){
+  const pm=Math.exp(-0.07*P.por),pe=Math.exp(-0.12*P.por);
+  const sSi=28*Math.pow(8/s.L,0.15),sDAS=12*Math.sqrt(30/s.DAS),sSS=22*s.css*(1-s.fv);
+  const YS=(55+sSi+sDAS+sSS+100*s.delta)*pm;
+  const UTS=YS+(66-10*s.delta)*pm;
+  const eSi=1/(1+0.35*(s.AR-1))*Math.pow(6/s.L,0.3);
+  const EL=10*eSi*(1-0.30*s.delta)*pe*Math.pow(30/s.DAS,0.2);
+  return {YS,UTS,EL,HB:0.33*UTS,E:70000,brittle:EL<0.5,mach:null};
 }
 
-/* ---------- curves for the charts ---------- */
-function agingCurve(Tage,fqfd,n){ // hardness against aging time, log spaced 0.1 to 100 h
-  const out=[];for(let i=0;i<=n;i++){const t=0.1*Math.pow(1000,i/n);const H=fqfd*peakScale(Tage)*gAge(t/tPeak(Tage));out.push([t,BASE.HBas+(BASE.HBt6-BASE.HBas)*H]);}return out;}
-function quenchCurve(m,M,T0,tmax,n){const out=[];for(let i=0;i<=n;i++){const t=tmax*i/n;out.push([t,quenchT(m,M,T0,t)]);}return out;}
-// ==== END HEAT TREATMENT CORE ====
-
-// ==== UI ====
-const $=id=>document.getElementById(id);
-const S={part:'star',thk:9,por:1.0,seq:'B',stock:0.5,Tsol:500,tSol:2,med:'air',delay:30,Tage:205,tAge:3};
-const UNTREATED={Tsol:500,tSol:0,med:'air',delay:30,Tage:150,tAge:0};
-let AN=null,pending=false;
-const params=()=>({thk:S.thk,por:S.por,seq:S.seq,stock:S.stock,Tsol:S.Tsol,tSol:S.tSol,med:S.med,delay:S.delay,Tage:S.Tage,tAge:S.tAge});
-
-/* ---------- controls ---------- */
-(function build(){
-  Object.keys(PARTS).forEach(k=>{
-    const b=document.createElement('button');b.type='button';b.className='shape';b.dataset.part=k;
-    b.innerHTML='<b>'+PARTS[k].name+'</b><span>'+PARTS[k].blurb+'</span>';
-    b.addEventListener('click',()=>{S.part=k;S.thk=PARTS[k].thk.def;sync();request();});$('parts').appendChild(b);
-  });
-  const desc={A:'Cast, heat treat, then cut to final size. Leave stock to cut the distortion away.',B:'Cut to final size first, then heat treat the finished part.',C:'Leave a finish allowance, heat treat, then take the final cut.'};
-  Object.keys(SEQ).forEach(k=>{
-    const b=document.createElement('button');b.type='button';b.className='seq';b.dataset.v=k;
-    b.innerHTML='<b>'+SEQ[k]+'</b><span>'+desc[k]+'</span>';
-    b.addEventListener('click',()=>{S.seq=k;sync();request();});$('seqs').appendChild(b);
-  });
-})();
-function slider(id,key){$(id).addEventListener('input',()=>{S[key]=+$(id).value;sync();request();});}
-['thk','por','stock','Tsol','tSol','delay','Tage','tAge'].forEach(k=>slider(k,k));
-$('medSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.med=b.dataset.v;sync();request();});
-$('resetBtn').addEventListener('click',()=>{Object.assign(S,UNTREATED);sync();request();});
-$('saveBtn').addEventListener('click',save);
-function sync(){
-  const t=PARTS[S.part].thk;
-  document.querySelectorAll('#parts .shape').forEach(b=>b.setAttribute('aria-pressed',b.dataset.part===S.part));
-  document.querySelectorAll('#seqs .seq').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.seq));
-  document.querySelectorAll('#medSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.med));
-  const th=$('thk');th.min=t.min;th.max=t.max;th.value=S.thk;$('thkLabel').firstChild.nodeValue=t.label+' ';$('thkOut').textContent=S.thk.toFixed(1)+' mm';
-  $('por').value=S.por;$('porOut').textContent=S.por.toFixed(1)+' %';
-  $('stock').value=S.stock;$('stockOut').textContent=S.stock.toFixed(1)+' mm';
-  $('stockLabel').firstChild.nodeValue=(S.seq==='C'?'Finish allowance left on ':'Machining stock left on ');
-  $('stockRow').classList.toggle('dim',S.seq==='B');
-  $('Tsol').value=S.Tsol;$('TsolOut').textContent=S.Tsol+' °C';
-  $('tSol').value=S.tSol;$('tSolOut').textContent=S.tSol.toFixed(1)+' h';
-  $('delay').value=S.delay;$('delayOut').textContent=S.delay+' s';
-  $('Tage').value=S.Tage;$('TageOut').textContent=S.Tage+' °C';
-  $('tAge').value=S.tAge;$('tAgeOut').textContent=S.tAge.toFixed(1)+' h';
+/* ---------- Case C: Al-4.5Cu (206 type) ---------- */
+function stateC(P,g){
+  const M=modOf(P.thk),DAS=dasOf(M),T=P.Tsol,tS=(P.tSol||0)*g.sol,k=Math.exp(14400*(arr(T)-arr(530)));
+  const fmax=clamp((T-490)/40,0,1),tauD=3.0*k*Math.sqrt(M/4.5);
+  const fd=tS>0?fmax*(1-Math.exp(-tS/tauD)):0;
+  const N=0.9*Math.pow(1-fd,1.5);
+  const rate=quenchRate(P.med,M),fq=g.q?(1-Math.exp(-rate/25)):1;
+  const css=g.q?Math.max(0.25,fd*fq):(tS>0?Math.max(0.25,fd):0.25);
+  let x=0,delta=0,fv=0,tp=tPeak(P.Tage,8,190);
+  if(g.q&&g.age>0){x=P.tAge*g.age/tp;delta=gAge(x)*peakScale(P.Tage,190)*css;fv=Math.exp(-4*x)>0?(1-Math.exp(-4*x))*css:0;}
+  return {M,DAS,N,fd,fq,css,x,delta,fv,rate,tp,quenched:g.q,aging:g.q&&g.age>0,hot:!g.q&&tS>0,natural:g.q&&!(g.age>0)};
 }
-function request(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;recompute();});}
+function propsC(s,P){
+  const pm=Math.exp(-0.07*P.por),pe=Math.exp(-0.12*P.por);
+  const nat=s.natural?25*s.css:0;
+  const YS=(65+12*Math.sqrt(30/s.DAS)+110*s.css*(1-s.fv)+300*s.delta+nat)*pm;
+  const UTS=YS+(45+100*s.css*(1-0.7*s.delta))*pm;
+  const gnet=1/(1+5*Math.pow(s.N,1.3));
+  const EL=12*gnet*(1-0.55*s.delta)*pe*Math.pow(30/s.DAS,0.3);
+  return {YS,UTS,EL,HB:0.30*UTS,E:70000,brittle:EL<0.5,mach:null};
+}
 
-/* ---------- results ---------- */
-function recompute(){AN=analyze(S.part,params());updateResults();drawAll();}
-function updateResults(){
-  const a=AN,part=PARTS[S.part];
-  $('mission').innerHTML='<b>Mission: heat treat the '+part.name.toLowerCase()+'</b><span class="chip">yield strength '+TARGET.ys+' MPa or more</span><span class="chip">elongation '+TARGET.el+' % or more</span><span class="chip">hardness '+TARGET.hb+' HB or more</span><span class="chip">finished position within ±'+a.tol+' mm</span><span class="chip">cycle '+TARGET.timeH+' h or less</span>';
-  const row=(n,v,req,ok)=>'<tr><td>'+n+'</td><td>'+v+'</td><td>'+req+'</td><td class="'+(ok?'pass':'fail')+'">'+(ok?'pass':'fail')+'</td></tr>';
-  $('spec').innerHTML='<tr><th></th><th>Result</th><th>Needed</th><th></th></tr>'+
-    row('Yield strength',a.YS.toFixed(0)+' MPa','≥ '+TARGET.ys+' MPa',a.YS>=TARGET.ys)+
-    row('Elongation',a.EL.toFixed(1)+' %','≥ '+TARGET.el+' %',a.EL>=TARGET.el)+
-    row('Hardness',a.HB.toFixed(0)+' HB','≥ '+TARGET.hb+' HB',a.HB>=TARGET.hb)+
-    row('Finished position error',a.finalDev.toFixed(2)+' mm','≤ '+a.tol+' mm',a.finalDev<=a.tol&&(S.seq==='B'||a.cleanup))+
-    row('Furnace cycle',a.timeTot.toFixed(1)+' h','≤ '+TARGET.timeH+' h',a.timeTot<=TARGET.timeH);
-  const kv=[
-    ['Tensile strength',a.UTS.toFixed(0)+' MPa'],
-    ['Hardening phase dissolved',Math.round(a.fd*100)+' %'],
-    ['Strength kept through the quench',Math.round(a.fq*100)+' %'],
-    ['Cooling rate in the critical range',a.rate.toFixed(0)+' K/s'],
-    ['Aging time against the peak',a.x.toFixed(1)+' × ('+a.tp.toFixed(1)+' h at '+S.Tage+' °C)'],
-    ['Quench stress (peak)',a.sigma.toFixed(0)+' MPa'],
-    ['Quench distortion (indicative)',a.delta.toFixed(2)+' mm'],
-    ['Machining after treatment','finish quality '+Math.round(a.finishIdx*100)+' %, tool wear '+a.wearIdx.toFixed(2)+' ×'],
-    ['Stock to remove',a.stockG.toFixed(1)+' g, '+a.setups+(a.setups===1?' setup':' setups')],
-    ['Part mass',a.mass.toFixed(0)+' g']
-  ];
-  $('metrics').innerHTML=kv.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('');
-  $('verdict').className='verdict '+(a.accepted?'ok':'bad');
-  $('verdict').innerHTML=(a.accepted?'Heat treatment accepted':'Not ready')+'<small>Score '+a.score+' out of 100</small>';
-  $('flags').innerHTML=a.flags.map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
-  const note={A:'Cutting after heat treatment removes the distortion if the stock is thick enough, but cutting lets the quench stress out, so the part moves a little afterwards (drawn here as about 40 % of the quench distortion).',
-    B:'Heat treating after final machining means nothing removes the distortion, so the finished part carries all of it.',
-    C:'Roughing first removes the bulk, the finish cut then takes off the distortion, and little stress is left to move the part afterwards.'}[S.seq];
-  $('distNote').textContent=note;
+/* ---------- Case A: white cast iron to malleable iron ---------- */
+function stateA(P,g){
+  const T=P.T1,tS=(P.t1||0)*g.s1,thk=P.thk;
+  const tauG=8*Math.exp(36000*(arr(T)-arr(940)))*Math.pow(thk/10,0.7);
+  const G=tS>0?1-Math.exp(-tS/tauG):0;
+  const rate=g.rate||P.rate, tc=90/rate;
+  const falphaFinal=Math.pow(G,1.5)*(1-Math.exp(-tc/4));
+  const lam=clamp(0.6*Math.pow(50/rate,0.35),0.2,1.2);
+  return {G,tauG,phiC:0.38*(1-G),phiG:0.07*G,fa:falphaFinal*g.cool,faFinal:falphaFinal,lam,rate,thk,cooled:g.cool>0,tS};
+}
+function propsA(s,P){
+  const fa=s.cooled?s.fa:0, pearl=!s.cooled;
+  const lam=s.cooled?s.lam:0.25;
+  const ysM=fa*250+(1-fa)*(280+90/Math.sqrt(lam));
+  const utsM=fa*380+(1-fa)*(420+90/Math.sqrt(lam));
+  const elM=fa*14+(1-fa)*3.0;
+  const HmM=fa*110+(1-fa)*(160+40/Math.sqrt(lam));
+  const phiC=s.phiC,phiG=s.phiG;
+  let YS=(1-phiC)*ysM*(1-0.8*phiG), UTS=(1-2.2*phiC)*utsM*(1-0.8*phiG)+400*phiC*0.5, EL=elM*Math.exp(-12*phiC);
+  const HB=(1-phiC)*HmM*(1-phiG)+phiC*850;
+  if(EL<0.5){EL=Math.max(0.1,EL);UTS=Math.max(240,Math.min(UTS,420));YS=UTS;}
+  UTS=Math.max(UTS,YS);
+  const mach=Math.max(0,Math.min(100,100*Math.exp(-(HB-120)/90)/(1+8*phiC)));
+  return {YS,UTS,EL,HB,E:170000,brittle:EL<0.5,mach};
+}
+
+/* ---------- stress-strain curve from the properties ---------- */
+function curveOf(pr){
+  const E=pr.E,sy=pr.YS,su=pr.UTS;
+  if(pr.brittle){const ef=su/E;return {epsF:ef,epsU:ef,brittle:true,f:e=>Math.min(su,E*e),sigF:su};}
+  const epsF=pr.EL/100+0.9*su/E, e0=0.9*sy/E, epsU=e0+0.8*(epsF-e0), k=4/(epsU-e0), s0=0.9*sy, sigF=su*(pr.EL>3?0.82:0.95);
+  const f=e=>{ if(e<=e0)return E*e; if(e<=epsU)return s0+(su-s0)*(1-Math.exp(-k*(e-e0)))/(1-Math.exp(-k*(epsU-e0))); return su+(sigF-su)*(e-epsU)/(epsF-epsU); };
+  return {epsF,epsU,brittle:false,f,sigF};
+}
+function scatterSet(pr,seed,n){
+  const r=mulberry32(seed),out=[];
+  const cv=0.10+0.30*(1-Math.min(1,pr.EL/6))+(pr.brittle?0.25:0);
+  for(let i=0;i<n;i++){
+    const z1=gauss(r),z2=gauss(r);
+    out.push(Object.assign({},pr,{YS:pr.YS*(1+0.02*z1),UTS:pr.UTS*(1+0.02*z1+0.01*gauss(r)),EL:Math.max(0.1,pr.EL*Math.exp(cv*z2))}));
+  }
+  return out.map(p=>{p.UTS=Math.max(p.UTS,p.YS);return p;});
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+const FIELDS={};
+function smoothNoise(W,H,rnd,cell){
+  const gw=Math.ceil(W/cell)+2,gh=Math.ceil(H/cell)+2,g=new Float32Array(gw*gh);for(let i=0;i<g.length;i++)g[i]=rnd();
+  const out=new Float32Array(W*H);
+  for(let y=0,i=0;y<H;y++){const fy=y/cell,y0=fy|0,ty=fy-y0,sy=ty*ty*(3-2*ty);
+    for(let x=0;x<W;x++,i++){const fx=x/cell,x0=fx|0,tx=fx-x0,sx=tx*tx*(3-2*tx);
+      const a=g[y0*gw+x0],b=g[y0*gw+x0+1],c=g[(y0+1)*gw+x0],d=g[(y0+1)*gw+x0+1];
+      out[i]=(a+(b-a)*sx)*(1-sy)+(c+(d-c)*sx)*sy;}}
+  return out;
+}
+function getField(key,W,H,nCells,seed,fovUm){
+  const k=key+'|'+W+'x'+H+'|'+nCells;if(FIELDS[k])return FIELDS[k];
+  const rnd=mulberry32(seed),cols=Math.max(2,Math.round(Math.sqrt(nCells*W/H))),rows=Math.max(2,Math.round(nCells/cols));
+  const cx=[],cy=[];
+  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){cx.push((i+0.5+(rnd()-0.5)*0.85)*W/cols);cy.push((j+0.5+(rnd()-0.5)*0.85)*H/rows);}
+  const N=W*H,nc=cx.length,d1=new Float32Array(N),d2=new Float32Array(N),n1=new Float32Array(N);
+  for(let y=0,i=0;y<H;y++)for(let x=0;x<W;x++,i++){let a=1e9,b=1e9;for(let q=0;q<nc;q++){const dx=x-cx[q],dy=y-cy[q],d=dx*dx+dy*dy;if(d<a){b=a;a=d;}else if(d<b)b=d;}d1[i]=Math.sqrt(a);d2[i]=Math.sqrt(b);n1[i]=rnd();}
+  const ns=smoothNoise(W,H,rnd,9),nsb=smoothNoise(W,H,rnd,14);
+  const rcell=Math.sqrt(W*H/(nc*Math.PI)),px=W/fovUm;
+  const pts=[];let tries=0;
+  while(pts.length<1000&&tries<80000){tries++;const x=rnd()*W,y=rnd()*H,i=(y|0)*W+(x|0),b=d2[i]-d1[i];if(b<0.45*rcell)pts.push({x,y,b,i,a:rnd()*Math.PI,u:rnd(),v:rnd()});}
+  pts.sort((p,q)=>p.b-q.b);
+  const pores=[];for(let i=0;i<18;i++)pores.push({x:rnd()*W,y:rnd()*H,u:rnd(),v:rnd()});
+  const nod=[];tries=0;
+  while(nod.length<48&&tries<20000){tries++;const x=rnd()*W,y=rnd()*H,i=(y|0)*W+(x|0);if(d2[i]-d1[i]<0.7*rcell)nod.push({x,y,u:rnd(),v:rnd(),w:rnd()});}
+  const dn=new Float32Array(N);
+  for(let y=0,i=0;y<H;y++)for(let x=0;x<W;x++,i++){let a=1e9;for(let q=0;q<nod.length;q++){const dx=x-nod[q].x,dy=y-nod[q].y,d=dx*dx+dy*dy;if(d<a)a=d;}dn[i]=Math.sqrt(a);}
+  const sorted=Float32Array.from(dn).sort(),dnq=[];for(let q=0;q<=100;q++)dnq.push(sorted[Math.min(N-1,Math.floor(q/100*(N-1)))]);
+  return FIELDS[k]={W,H,d1,d2,n1,ns,nsb,rcell,px,pts,pores,nod,dn,dnq,fovUm};
+}
+const nCellsAl=(DAS,W,H,fov)=>clamp(Math.round((fov*fov*H/W)/(DAS*DAS)),4,70);
+function scaleBar(ctx,W,H,px,um,dark){
+  const L=um*px,x=12,y=H-14;ctx.fillStyle=dark?'#fff':'#14222B';ctx.fillRect(x,y,L,3);ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText(um+' µm',x,y-4);
+}
+
+/* ---------- aluminium micrograph (cases B and C) ---------- */
+function siParticles(F,s){
+  if(!s.Si)return[];const out=[],L=s.L*F.px,w=Math.max(1.1,L/s.AR),we=0.22*F.rcell*1.35;
+  for(const p of F.pts){if(out.length>=430)break;if(p.b>we)continue;out.push({x:p.x,y:p.y,a:p.a,rx:L*(0.45+0.55*p.u)/2,ry:w*(0.6+0.8*p.v)/2});}
+  return out;
+}
+function interm(F){return F.pts.slice(120,170).map(p=>({x:p.x,y:p.y,a:p.a,rx:2.5+3.5*p.u,ry:1.2+1.2*p.v}));}
+function netPoints(F,s){
+  const out=[],we=0.22*F.rcell*(1-0.5*s.fd)*0.9;
+  for(const p of F.pts){if(out.length>=90)break;if(p.b<we&&F.nsb[p.i]<s.N)out.push({x:p.x,y:p.y,a:p.a,rx:F.rcell*0.14*(0.6+0.8*p.u),ry:2});}
+  return out;
+}
+function renderAl(ctx,W,H,F,s,cid,P){
+  const img=ctx.createImageData(W,H),D=img.data,rc=F.rcell;
+  const we=(cid==='C'?0.22*(1-0.5*s.fd):0.22)*rc, seg=Math.max(0,1-0.85*s.fd), N=cid==='C'?s.N:1;
+  for(let i=0,o=0;i<W*H;i++,o+=4){
+    const b=F.d2[i]-F.d1[i],core=1-F.d1[i]/rc;
+    let m=206+(F.ns[i]-0.5)*9+seg*(core*16-7),r=m,g=m+3,bl=m+8;
+    const wi=we*(0.7+0.6*F.ns[i]);
+    if(b<1.6){r-=10;g-=10;bl-=10;}
+    if(b<wi){
+      if(cid==='C'){ if(F.nsb[i]<N){r=82;g=72;bl=70;} }
+      else {r=160;g=163;bl=170;}
+    }
+    D[o]=r;D[o+1]=g;D[o+2]=bl;D[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  if(cid==='B'){ctx.fillStyle='rgba(52,56,74,.93)';for(const p of siParticles(F,s)){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.beginPath();ctx.ellipse(0,0,p.rx,p.ry,0,0,6.283);ctx.fill();ctx.restore();}}
+  if(cid==='C'){ctx.fillStyle='rgba(46,44,48,.95)';for(const p of interm(F)){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillRect(-p.rx,-p.ry,2*p.rx,2*p.ry);ctx.restore();}}
+  const nPor=Math.round(4+14*Math.min(1,P.por/3));
+  if(P.por>0.05)for(let k=0;k<nPor;k++){const p=F.pores[k],r=F.px*(0.8+6*Math.sqrt(P.por))*(0.5+p.u)*0.55;
+    const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);gr.addColorStop(0,'rgba(24,26,32,.95)');gr.addColorStop(0.8,'rgba(60,64,72,.8)');gr.addColorStop(1,'rgba(120,124,130,.0)');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(p.x,p.y,r,0,6.283);ctx.fill();}
+  scaleBar(ctx,W,H,F.px,50,false);
+}
+
+/* ---------- cast iron micrograph (case A) ---------- */
+function renderFe(ctx,W,H,F,s,P){
+  const img=ctx.createImageData(W,H),D=img.data,rc=F.rcell;
+  const wc=0.42*rc*(s.phiC/0.38), thr=F.dnq[Math.round(clamp(s.fa,0,1)*100)];
+  for(let i=0,o=0;i<W*H;i++,o+=4){
+    const b=F.d2[i]-F.d1[i];let r,g,bl;
+    if(s.phiC>0.004&&b<wc*(0.7+0.6*F.ns[i])){const t=(F.n1[i]-0.5)*10;r=236+t;g=234+t;bl=224+t;}
+    else if(s.fa>0.005&&F.dn[i]<thr){const t=(F.n1[i]-0.5)*8;r=208+t;g=208+t;bl=203+t;}
+    else{const t=(F.ns[i]-0.5)*34+(F.n1[i]-0.5)*10;r=92+t;g=90+t;bl=96+t;}
+    D[o]=r;D[o+1]=g;D[o+2]=bl;D[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  if(s.G>0.02){const rnd=mulberry32(99);
+    for(const p of F.nod){const r0=(2+5*Math.sqrt(s.G))*(0.7+0.6*p.u),n=12;ctx.fillStyle='rgba(22,22,26,.96)';ctx.beginPath();
+      for(let k=0;k<=n;k++){const a=k/n*6.283,rr=r0*(0.78+0.45*rnd());k?ctx.lineTo(p.x+Math.cos(a)*rr,p.y+Math.sin(a)*rr):ctx.moveTo(p.x+Math.cos(a)*rr,p.y+Math.sin(a)*rr);}ctx.fill();}}
+  scaleBar(ctx,W,H,F.px,50,false);
+}
+function carbidePoints(F,s){const out=[],wc=0.42*F.rcell*(s.phiC/0.38)*0.8;if(s.phiC<0.02)return out;
+  for(const p of F.pts){if(out.length>=90)break;if(p.b<wc)out.push({x:p.x,y:p.y,a:p.a,rx:F.rcell*0.16*(0.6+0.8*p.u),ry:2});}return out;}
+
+/* ---------- nano and matrix detail panels ---------- */
+function renderAlNano(ctx,W,H,s,cid){
+  ctx.fillStyle='#dfe3ea';ctx.fillRect(0,0,W,H);
+  const rnd=mulberry32(cid==='C'?5:7),px=W/200;
+  const pre=[];for(let i=0;i<420;i++)pre.push({x:rnd()*W,y:rnd()*H,o:rnd()<0.5?0:1,u:rnd(),v:rnd()});
+  const bx=W*0.2,pf=s.quenched?(6+90*(1-s.fq)+(s.x>1?14*Math.pow(s.x-1,0.4):0)):0;
+  // grain boundary and precipitate-free zone
+  if(s.quenched||s.hot){ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillRect(bx-pf*0.6,0,pf*1.2,H);ctx.strokeStyle='#5a6070';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx,0);ctx.lineTo(bx+12,H);ctx.stroke();}
+  // solute atoms
+  ctx.fillStyle='rgba(90,100,120,.55)';const ns=Math.round(140*s.css);for(let i=0;i<ns;i++){const p=pre[i];ctx.beginPath();ctx.arc(p.x,p.y,1.1,0,6.283);ctx.fill();}
+  let label='No strengthening precipitates yet';
+  if(s.aging||s.natural){
+    const x=Math.max(s.x,0.0001),Lnm=(cid==='C'?4+16*Math.pow(x,1/3):3+11*Math.pow(x,1/3));
+    if(s.aging){
+      const n=Math.round(clamp(380*s.fv/(1+Math.pow(Lnm/14,2.4)),0,380));ctx.strokeStyle='#24305c';
+      for(let i=0;i<n;i++){const p=pre[i],L=Lnm*px*(0.7+0.6*p.u);if(Math.abs(p.x-bx)<pf)continue;ctx.lineWidth=Math.max(1.3,L*0.09);ctx.beginPath();
+        if(p.o){ctx.moveTo(p.x-L/2,p.y);ctx.lineTo(p.x+L/2,p.y);}else{ctx.moveTo(p.x,p.y-L/2);ctx.lineTo(p.x,p.y+L/2);}ctx.stroke();}
+      const nb=Math.round(6+18*(1-s.fq)+(s.x>1.5?8:0));ctx.fillStyle='#24305c';for(let i=0;i<nb;i++){const yy=(i+0.5)/nb*H,r=2+4*(1-s.fq)+(s.x>1?1.5*Math.pow(s.x,0.3):0);ctx.beginPath();ctx.arc(bx+12*yy/H,yy,r,0,6.283);ctx.fill();}
+      label=s.x<0.4?'Aging: fine, dense zones, easily sheared by dislocations':s.x<=1.6?'Peak aging: fine plates and rods, dense, strongest':'Over-aged: coarse, widely spaced, dislocations bypass them';
+    } else {
+      ctx.fillStyle='#3a4670';const n=Math.round(190*s.delta/0.08*0.7);for(let i=0;i<Math.min(n,300);i++){const p=pre[i];if(Math.abs(p.x-bx)<pf)continue;ctx.beginPath();ctx.arc(p.x,p.y,1.7,0,6.283);ctx.fill();}
+      label='Natural aging: tiny solute clusters (GP zones)';
+    }
+  }
+  ctx.fillStyle='#14222B';ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText('about 200 nm across, schematic',8,H-8);
+  return label;
+}
+function renderFeDetail(ctx,W,H,s){
+  const rnd=mulberry32(21),ns=8,seeds=[];for(let i=0;i<ns;i++)seeds.push({x:rnd()*W,y:rnd()*H,th:rnd()*Math.PI,r:rnd()});
+  const phiC=s.phiC,fa=s.cooled?s.fa:0,lam=(s.cooled?s.lam:0.25)*70,rel=Array(ns);
+  seeds.forEach((q,i)=>{q.type=q.r<phiC*1.1?'C':((q.r-phiC*1.1)/(1-phiC*1.1)<fa?'F':'P');});
+  const img=ctx.createImageData(W,H),D=img.data,id=new Uint8Array(W*H);
+  for(let y=0,i=0;y<H;y++)for(let x=0;x<W;x++,i++){let a=1e9,k=0;for(let q=0;q<ns;q++){const dx=x-seeds[q].x,dy=y-seeds[q].y,d=dx*dx+dy*dy;if(d<a){a=d;k=q;}}id[i]=k;}
+  for(let y=0,i=0,o=0;y<H;y++)for(let x=0;x<W;x++,i++,o+=4){
+    const q=seeds[id[i]];let c;
+    if(q.type==='C')c=234;
+    else if(q.type==='F')c=212;
+    else{const u=(x*Math.cos(q.th)+y*Math.sin(q.th))/lam,f=u-Math.floor(u);c=f<0.17?62:200;}
+    if((x<W-1&&id[i]!==id[i+1])||(y<H-1&&id[i]!==id[i+W]))c=70;
+    D[o]=c;D[o+1]=c;D[o+2]=c-4;D[o+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  ctx.fillStyle='rgba(255,255,255,.8)';ctx.fillRect(4,H-22,170,18);ctx.fillStyle='#14222B';ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText('about 4.5 µm across, schematic',8,H-9);
+  return phiC>0.1?'Hard white cementite with fine pearlite':(fa>0.7?'Ferrite grains: soft and ductile':(fa>0.25?'Ferrite and pearlite mixed':'Pearlite: alternating ferrite and cementite plates, spacing '+(s.lam).toFixed(2)+' µm'));
+}
+
+/* ---------- damage overlay used during the tensile test ---------- */
+function drawDamage(ctx,W,H,F,s,cid,P,frac,brittle){
+  let feats;
+  if(cid==='B')feats=siParticles(F,s).slice().sort((a,b)=>b.rx-a.rx).slice(0,160);
+  else if(cid==='C')feats=netPoints(F,s).concat(interm(F));
+  else{feats=carbidePoints(F,s);if(!feats.length)feats=F.nod.slice(0,50).map(p=>({x:p.x,y:p.y,a:p.u*3,rx:8*(0.6+p.v),ry:2}));}
+  const n=feats.length,cracked=[];
+  ctx.lineCap='round';
+  feats.forEach((p,k)=>{const rk=k/Math.max(1,n),thr=brittle?0.86+0.14*rk:0.25+0.7*Math.pow(rk,0.8);
+    if(frac>thr){cracked.push(p);const L=Math.max(5,p.ry*3.2+4);ctx.strokeStyle='#e0261c';ctx.lineWidth=2;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a+Math.PI/2);ctx.beginPath();ctx.moveTo(-L/2,0);ctx.lineTo(L/2,0);ctx.stroke();ctx.restore();}});
+  if(P.por>0.05&&cid!=='A'){const nPor=Math.round(4+14*Math.min(1,P.por/3));for(let k=0;k<nPor;k++){const p=F.pores[k],r=F.px*(0.8+6*Math.sqrt(P.por))*(0.5+p.u)*0.55*(1+1.6*frac*frac);ctx.strokeStyle='rgba(224,38,28,.85)';ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(p.x,p.y,r,0,6.283);ctx.stroke();}}
+  const start=brittle?0.97:0.9;
+  if(frac>start&&cracked.length>3){
+    const xs=cracked.map(p=>p.x).sort((p,q)=>p-q),xc=xs[xs.length>>1],k=clamp((frac-start)/(1-start),0,1),n=26,m=Math.round(n*k);
+    ctx.strokeStyle='#ff2a1a';ctx.lineWidth=3;ctx.beginPath();
+    for(let i=0;i<=m;i++){const y=H*i/n,x=xc+14*Math.sin(i*1.7)+8*Math.sin(i*3.9+1);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();
+  }
+}
+
+/* ---------- the specimen ---------- */
+function drawSpecimen(ctx,W,H,cv,eps,fractured,tBreak){
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2,gx0=70,L0=W-2*gx0-80,w0=46,stretch=cv.brittle?30:5;
+  const vis=Math.min(eps*stretch,0.3),L=L0*(1+vis);
+  const x0=gx0-10,neckC=x0+L/2;
+  const neckT=cv.brittle||eps<=cv.epsU?0:clamp((eps-cv.epsU)/(cv.epsF-cv.epsU),0,1)*0.55;
+  const hw=x=>{let h=w0/2*(1-0.22*Math.min(1,eps*stretch/1.4));if(neckT>0){const d=(x-neckC)/(L*0.1);h*=1-neckT*Math.exp(-d*d);}return h;};
+  const grad=ctx.createLinearGradient(0,cy-w0/2,0,cy+w0/2);grad.addColorStop(0,'#eef1f4');grad.addColorStop(0.5,'#b7bfc7');grad.addColorStop(1,'#8a949e');
+  const css=getComputedStyle(document.documentElement);
+  // grips
+  ctx.fillStyle='#3a4650';ctx.fillRect(4,cy-34,gx0-14+4,68);ctx.fillRect(x0+L+10,cy-34,gx0+6,68);
+  ctx.fillStyle='#4d5b67';ctx.fillRect(gx0-14,cy-w0/2-8,12,w0+16);ctx.fillRect(x0+L+2+8,cy-w0/2-8,12,w0+16);
+  const body=(xa,xb,jag,side)=>{ctx.beginPath();const n=40;for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy-hw(x));}
+    for(let i=n;i>=0;i--){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy+hw(x));}ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#5d6872';ctx.lineWidth=1.2;ctx.stroke();};
+  if(!fractured){body(x0,x0+L);}
+  else{
+    const gap=Math.min(40,tBreak*40),xb=neckC,hh=hw(neckC);
+    // left half
+    ctx.save();ctx.beginPath();ctx.rect(0,0,xb-gap/2,H);ctx.clip();body(x0,x0+L);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(xb+gap/2,0,W,H);ctx.clip();ctx.translate(gap,0);body(x0,x0+L);ctx.restore();
+    ctx.fillStyle='#e0261c';ctx.font='700 13px sans-serif';ctx.textAlign='center';ctx.fillText(cv.brittle?'brittle fracture: flat, no neck':'ductile fracture: necked',W/2,18);
+  }
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('strain '+(eps*100).toFixed(2)+' %',gx0,H-6);
 }
 
 /* ---------- charts ---------- */
-const css=()=>{const c=getComputedStyle(document.documentElement);return {ink:c.getPropertyValue('--ink').trim(),soft:c.getPropertyValue('--ink-soft').trim(),line:c.getPropertyValue('--line').trim(),acc:c.getPropertyValue('--accent').trim(),ok:c.getPropertyValue('--ok').trim(),bad:c.getPropertyValue('--bad').trim()};};
-function frame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,opt){
-  const C=css(),sx=v=>L+(R-L)*(v-x0)/(x1-x0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
-  ctx.clearRect(0,0,W,H);ctx.strokeStyle=C.soft;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
-  ctx.fillStyle=C.soft;ctx.font='12px sans-serif';ctx.textAlign='right';
-  (opt.yt||[]).forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle=C.line;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
-  ctx.textAlign='center';(opt.xt||[]).forEach(v=>{ctx.fillStyle=C.soft;ctx.fillText(v[1],sx(v[0]),B+16);});
-  ctx.fillText(opt.xl||'',(L+R)/2,H-6);ctx.save();ctx.translate(12,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(opt.yl||'',0,0);ctx.restore();
-  return {sx,sy,C};
+const COL=['#6d7b86','#d9822b','#c0271b'];
+function chartFrame(ctx,W,H,L,R,T,B,x1,y1,xl,yl,xt,yt){
+  ctx.clearRect(0,0,W,H);const sx=v=>L+(R-L)*v/x1,sy=v=>B-(B-T)*v/y1;
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillText(v,sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
 }
-function poly(ctx,pts,sx,sy,color,w,dash){ctx.strokeStyle=color;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(sx(p[0]),sy(p[1])):ctx.moveTo(sx(p[0]),sy(p[1])));ctx.stroke();ctx.setLineDash([]);}
-function drawAll(){drawSched();drawQuench();drawAge();drawDist();}
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+// ==== END RENDER ====
 
-function drawSched(){
-  const a=AN,c=$('cSched'),ctx=c.getContext('2d'),W=c.width,H=c.height;
-  const tH=a.tHeat,hold=S.tSol,tQ=0.02,tAg=S.tAge>0?S.tAge+0.3:0,tot=Math.max(0.5,a.timeTot);
-  const f=frame(ctx,W,H,52,W-14,14,H-42,0,tot*1.04,0,620,{yt:[0,200,400,600],xt:[0,0.25,0.5,0.75,1].map(v=>[v*tot,(v*tot).toFixed(1)]),xl:'time, hours',yl:'temperature, °C'});
-  const Tf=S.tSol>0?S.Tsol:25,t1=tH+hold,tauh=a.tauH/3600,Tm=MED[S.med].T;
-  const part=[],fur=[[0,25]];
-  if(S.tSol>0){
-    fur.push([0,Tf],[t1,Tf]);
-    for(let i=0;i<=24;i++){const t=tH*i/24;part.push([t,25+(Tf-25)*(1-Math.exp(-t/Math.max(tauh,1e-4)))]);}
-    part.push([t1,Tf]);part.push([t1+tQ,Tm]);
-  } else {part.push([0,25]);}
-  const t2=(S.tSol>0?t1+tQ:0);
-  if(S.tAge>0){
-    fur.push([t2,S.Tage],[t2+tAg,S.Tage],[t2+tAg,25]);
-    for(let i=0;i<=16;i++){const s=0.3*i/16;part.push([t2+s,Tm+(S.Tage-Tm)*(1-Math.exp(-s/0.08))]);}
-    part.push([t2+tAg,S.Tage]);part.push([t2+tAg+0.02,25]);
+// ==== CASES ====
+const $=id=>document.getElementById(id);
+const f0=v=>v.toFixed(0), f1=v=>v.toFixed(1);
+const GAL=[{sol:0,q:false,age:0},{sol:1,q:true,age:0},{sol:1,q:true,age:1}];
+const GFE=[{s1:0,cool:0},{s1:1,cool:1,rate:300},{s1:1,cool:1}];
+const gAtAl=(P,p)=>p<0.45?{sol:p/0.45,q:false,age:0}:(p<0.5?{sol:1,q:true,age:0}:{sol:1,q:true,age:(p-0.5)/0.5});
+const gAtFe=(P,p)=>p<0.6?{s1:p/0.6,cool:0}:{s1:1,cool:(p-0.6)/0.4};
+const MEDOPT=[['cold','Cold water'],['hot','Hot water'],['polymer','Polymer'],['air','Forced air']];
+
+function alFlags(cid,P,s,pr){
+  const out=[],add=(l,t)=>out.push([l,t]);
+  const Tbad=cid==='C'?545:550,Twarn=cid==='C'?540:545,Tlow=cid==='C'?510:500;
+  if(P.Tsol>Tbad)add('bad','Overheated: '+P.Tsol+' °C is past the point where low-melting phases at the grain boundaries start to melt. The casting is burnt: brittle, blistered and scrap.');
+  else if(P.Tsol>Twarn)add('warn','Very close to incipient melting. A furnace that overshoots by a few degrees would ruin the parts.');
+  if(P.Tsol<Tlow&&P.tSol>0)add('warn','Solution temperature '+P.Tsol+' °C is low: little of the hardening solute can dissolve.');
+  if(P.tSol>0&&s.fd<0.85&&P.Tsol<=Tbad)add(s.fd<0.6?'bad':'warn','Only '+Math.round(s.fd*100)+' % of the hardening phase dissolved. '+(P.Tsol<525?'A higher temperature':'A longer hold')+' helps, and thick sections are slower.');
+  if(P.tSol===0)add('warn','No solution treatment: the as-cast structure is untouched.');
+  if(s.fq<0.8)add('bad','Quench too slow ('+f0(s.rate)+' K/s): the solute precipitates coarsely on the way down and only '+Math.round(s.fq*100)+' % of the strength is kept.'+(P.med==='cold'?' This section is too thick to quench fast enough.':' A faster medium would help.'));
+  else if(s.fq<0.92)add('warn','The quench is a little slow ('+f0(s.rate)+' K/s) for this thickness and keeps '+Math.round(s.fq*100)+' % of the strength.');
+  if(P.tAge>0){ if(s.x<0.5)add('warn','Under-aged: '+s.x.toFixed(1)+' times the time to peak at '+P.Tage+' °C ('+f1(s.tp)+' h).'); else if(s.x>2)add('warn','Over-aged: '+s.x.toFixed(1)+' times the time to peak. The precipitates have coarsened and the strength is falling.'); }
+  else add('warn','No artificial aging: the part stays in the solution-treated, naturally aged condition.');
+  if(cid==='B'){const bl=clamp((P.por-0.8)/1.2,0,1)*clamp((P.Tsol-515)/25,0,1)*clamp(P.tSol/2,0,1);if(bl>0.4)add('bad','Blister risk: gas porosity of '+P.por.toFixed(1)+' % expands at '+P.Tsol+' °C and lifts the skin of the casting.');}
+  if(cid==='C'&&P.tSol>0&&s.N>0.15&&P.Tsol<=Tbad)add('warn',Math.round(s.N*100)+' % of the brittle grain-boundary network is still there, so ductility stays low.');
+  if(P.por>2)add('warn','Porosity of '+P.por.toFixed(1)+' % cuts strength and ductility. Heat treatment cannot repair it.');
+  return out;
+}
+const CASES={
+ A:{id:'A',kind:'fe',tag:'A',title:'Make it machinable',sub:'White cast iron: heat treat to soften it',
+  blurb:'As cast, this iron is white: hard iron carbide (cementite) runs through it, so it is brittle and wrecks cutting tools. A long malleabilizing anneal turns the carbide into graphite nodules in a softer matrix. The cooling rate afterwards decides the matrix: slow gives soft ferrite, fast gives stronger pearlite.',
+  ctrl:[{k:'thk',g:'Casting',l:'Section thickness',min:6,max:30,step:1,fmt:v=>v+' mm'},
+        {k:'target',g:'Casting',l:'Grade you are aiming for',type:'seg',opts:[['fer','Ferritic (soft)'],['pea','Pearlitic (strong)']]},
+        {k:'T1',g:'Stage 1: graphitize',l:'Temperature',min:850,max:1000,step:5,fmt:v=>v+' °C'},
+        {k:'t1',g:'Stage 1: graphitize',l:'Time at temperature',min:0,max:60,step:1,fmt:v=>v+' h'},
+        {k:'lrate',g:'Stage 2: cool through 770 to 680 °C',l:'Cooling rate',min:0,max:2.5,step:0.05,fmt:(v,P)=>f1(P.rate)+' °C/h'}],
+  def:{thk:12,target:'fer',T1:940,t1:24,lrate:Math.log10(8)},
+  derive:P=>{P.rate=Math.pow(10,P.lrate);},
+  state:stateA,props:propsA,ladder:['As cast (white iron)','Graphitized, cooled fast','Full cycle (your cooling)'],G:GFE,gAt:gAtFe,
+  labels:['white cast iron, as cast','after stage 1, cooled fast','after your full cycle'],
+  field:(P,W,H)=>{const Dc=25+2*P.thk,n=clamp(Math.round((300*300*H/W)/(Dc*Dc)),5,40);return getField('Fe',W,H,n,37,300);},
+  micro:(ctx,W,H,F,s,P)=>renderFe(ctx,W,H,F,s,P),detail:(ctx,W,H,s)=>renderFeDetail(ctx,W,H,s),detailTitle:'Matrix detail',
+  stageLabel:(P,p)=>p<0.6?'Stage 1 at '+P.T1+' °C: '+f1(P.t1*p/0.6)+' of '+P.t1+' h':'Cooling through the eutectoid at '+f1(P.rate)+' °C/h: '+Math.round((p-0.6)/0.4*100)+' % done',
+  mission:(P,PR)=>{const fer=P.target==='fer',r=PR[2];
+    const ch=fer?['machinability rating 60 or more','yield 220 MPa or more','tensile 340 MPa or more','elongation 8 % or more']:['machinability rating 20 or more','yield 300 MPa or more','tensile 450 MPa or more','elongation 2.5 % or more'];
+    const ok=fer?(r.mach>=60&&r.YS>=220&&r.UTS>=340&&r.EL>=8):(r.mach>=20&&r.YS>=300&&r.UTS>=450&&r.EL>=2.5);
+    return {chips:ch,ok,region:fer?{ys:220,el:8}:{ys:300,el:2.5},title:'Mission: '+(fer?'a soft, ductile, machinable malleable iron':'a strong, machinable pearlitic malleable iron')};},
+  flags:(P,S,PR)=>{const s=S[2],pr=PR[2],out=[],add=(l,t)=>out.push([l,t]);
+    if(P.T1<880)add('warn','At '+P.T1+' °C graphitization is very slow: about '+f0(s.tauG)+' h for the carbide to fall to 37 % of its start.');
+    if(P.T1>1000)add('warn','Above 1000 °C the graphite coarsens, the surface scales and the castings can sag. Furnace cost rises too.');
+    if(s.phiC>0.03)add(pr.mach<20?'bad':'warn','Carbide remains ('+(s.phiC*100).toFixed(1)+' % by volume). Hardness is still '+f0(pr.HB)+' HB, machinability '+f0(pr.mach)+' out of 100.');
+    if(P.target==='fer'&&s.faFinal<0.85&&s.G>0.9)add('warn','Too much pearlite for a ferritic grade ('+Math.round((1-s.faFinal)*100)+' %). Slow the cooling through 770 to 680 °C.');
+    if(P.target==='pea'&&s.faFinal>0.4&&s.G>0.9)add('warn','Too much ferrite for a pearlitic grade ('+Math.round(s.faFinal*100)+' %). Cool faster through 770 to 680 °C.');
+    const total=P.t1+90/P.rate;if(total>70)add('warn','The cycle takes about '+f0(total)+' h of furnace time, which is expensive.');
+    return out;},
+  insights:(P,S,PR)=>{const [a,b,c]=PR,[s1,s2,s3]=S;return [
+    '<b>Stage 1, graphitizing:</b> carbide falls from '+(s1.phiC*100).toFixed(0)+' % to '+(s2.phiC*100).toFixed(1)+' % by volume. Hardness drops from '+f0(a.HB)+' to '+f0(b.HB)+' HB and the machinability rating rises from '+f0(a.mach)+' to '+f0(b.mach)+'. Elongation goes from '+a.EL.toFixed(1)+' % to '+b.EL.toFixed(1)+' %.',
+    '<b>Stage 2, your cooling rate ('+f1(P.rate)+' °C/h):</b> the matrix is '+Math.round(s3.faFinal*100)+' % ferrite. Hardness '+f0(b.HB)+' to '+f0(c.HB)+' HB, yield '+f0(b.YS)+' to '+f0(c.YS)+' MPa, elongation '+b.EL.toFixed(1)+' % to '+c.EL.toFixed(1)+' %.',
+    'The point of the three tests: the first step turns a part you cannot machine into one you can; the second step decides whether it is strong or ductile. Strength and ductility trade against each other.'];}
+ },
+ B:{id:'B',kind:'al',tag:'B',title:'Make it strong',sub:'A356 aluminum: soft as cast, age hardening',
+  blurb:'A356 (Al-Si-Mg) is soft as cast. Solution treatment dissolves magnesium silicide and rounds the silicon, the quench traps the solute, and aging precipitates fine particles that block dislocations. A strontium melt treatment changes the silicon before any heat treatment starts.',
+  ctrl:[{k:'thk',g:'Casting',l:'Section thickness',min:3,max:25,step:0.5,fmt:v=>f1(v)+' mm'},
+        {k:'por',g:'Casting',l:'Porosity',min:0,max:4,step:0.1,fmt:v=>f1(v)+' %'},
+        {k:'sr',g:'Casting',l:'Strontium-modified melt',type:'toggle'},
+        {k:'Tsol',g:'Solution treatment',l:'Temperature',min:480,max:560,step:5,fmt:v=>v+' °C'},
+        {k:'tSol',g:'Solution treatment',l:'Time at temperature',min:0,max:16,step:0.5,fmt:v=>f1(v)+' h'},
+        {k:'med',g:'Quench',l:'Quench medium',type:'seg',opts:MEDOPT},
+        {k:'Tage',g:'Aging',l:'Temperature',min:100,max:250,step:5,fmt:v=>v+' °C'},
+        {k:'tAge',g:'Aging',l:'Time',min:0,max:48,step:0.5,fmt:v=>f1(v)+' h'}],
+  def:{thk:9,por:1.0,sr:false,Tsol:540,tSol:8,med:'hot',Tage:155,tAge:5},
+  state:stateB,props:propsB,ladder:['As cast','Solution treated and quenched','Fully treated (aged)'],G:GAL,gAt:gAtAl,
+  labels:['A356 as cast','after solution treatment and quench','after aging'],
+  field:(P,W,H)=>{const DAS=dasOf(modOf(P.thk));return getField('B',W,H,nCellsAl(DAS,W,H,200),11,200);},
+  micro:(ctx,W,H,F,s,P)=>renderAl(ctx,W,H,F,s,'B',P),detail:(ctx,W,H,s)=>renderAlNano(ctx,W,H,s,'B'),detailTitle:'Nanoscale',
+  stageLabel:(P,p)=>p<0.45?'Solution treatment at '+P.Tsol+' °C: '+f1(P.tSol*p/0.45)+' of '+f1(P.tSol)+' h':(p<0.5?'Quench':'Aging at '+P.Tage+' °C: '+f1(P.tAge*(p-0.5)/0.5)+' of '+f1(P.tAge)+' h'),
+  mission:(P,PR)=>{const r=PR[2];return {chips:['yield 170 MPa or more','elongation 3.5 % or more'],ok:r.YS>=170&&r.EL>=3.5,region:{ys:170,el:3.5},title:'Mission: strengthen the A356 casting'};},
+  flags:(P,S,PR)=>alFlags('B',P,S[2],PR[2]),
+  insights:(P,S,PR)=>{const [a,b,c]=PR,[s1,s2,s3]=S;return [
+    '<b>Step 1, solution treatment and quench:</b> yield '+f0(a.YS)+' to '+f0(b.YS)+' MPa, elongation '+a.EL.toFixed(1)+' % to '+b.EL.toFixed(1)+' %. The silicon changed from aspect ratio '+f1(s1.AR)+' to '+f1(s2.AR)+' (needles to rounded particles), which is what restores ductility.',
+    '<b>Step 2, aging:</b> yield '+f0(b.YS)+' to '+f0(c.YS)+' MPa ('+(c.YS/b.YS>1?'+':'')+Math.round((c.YS/b.YS-1)*100)+' %), elongation '+b.EL.toFixed(1)+' % to '+c.EL.toFixed(1)+' %. The precipitates buy strength and cost some ductility.',
+    P.sr?'The melt is strontium-modified, so the as-cast silicon is already fine and fibrous.':'The melt is not modified, so the as-cast silicon is coarse needles. Turn on the strontium melt treatment to see how much ductility that alone gives.'];}
+ },
+ C:{id:'C',kind:'al',tag:'C',title:'Prove it with three tests',sub:'Al-4.5Cu: the whole story in three tensile tests',
+  blurb:'This copper-aluminum casting alloy is brittle as cast because a continuous copper-rich network sits along the grain boundaries. Solution treatment dissolves the network, which restores ductility. Aging then precipitates fine particles, which gives strength at a cost in ductility. Run the three tensile tests and read the pattern.',
+  ctrl:[{k:'thk',g:'Casting',l:'Section thickness',min:3,max:25,step:0.5,fmt:v=>f1(v)+' mm'},
+        {k:'por',g:'Casting',l:'Porosity',min:0,max:4,step:0.1,fmt:v=>f1(v)+' %'},
+        {k:'Tsol',g:'Solution treatment',l:'Temperature',min:480,max:560,step:5,fmt:v=>v+' °C'},
+        {k:'tSol',g:'Solution treatment',l:'Time at temperature',min:0,max:24,step:1,fmt:v=>v+' h'},
+        {k:'med',g:'Quench',l:'Quench medium',type:'seg',opts:MEDOPT},
+        {k:'Tage',g:'Aging',l:'Temperature',min:100,max:250,step:5,fmt:v=>v+' °C'},
+        {k:'tAge',g:'Aging',l:'Time',min:0,max:48,step:0.5,fmt:v=>f1(v)+' h'}],
+  def:{thk:9,por:1.0,Tsol:530,tSol:12,med:'hot',Tage:190,tAge:8},
+  state:stateC,props:propsC,ladder:['As cast','Solution treated and quenched','Fully treated (aged)'],G:GAL,gAt:gAtAl,
+  labels:['Al-4.5Cu as cast','after solution treatment and quench','after aging'],
+  field:(P,W,H)=>{const DAS=dasOf(modOf(P.thk));return getField('C',W,H,nCellsAl(DAS,W,H,200),23,200);},
+  micro:(ctx,W,H,F,s,P)=>renderAl(ctx,W,H,F,s,'C',P),detail:(ctx,W,H,s)=>renderAlNano(ctx,W,H,s,'C'),detailTitle:'Nanoscale',
+  stageLabel:(P,p)=>p<0.45?'Solution treatment at '+P.Tsol+' °C: '+f1(P.tSol*p/0.45)+' of '+P.tSol+' h':(p<0.5?'Quench':'Aging at '+P.Tage+' °C: '+f1(P.tAge*(p-0.5)/0.5)+' of '+f1(P.tAge)+' h'),
+  mission:(P,PR)=>{const r=PR[2];return {chips:['yield 300 MPa or more','elongation 4 % or more'],ok:r.YS>=300&&r.EL>=4,region:{ys:300,el:4},title:'Mission: a strong casting that still stretches'};},
+  flags:(P,S,PR)=>alFlags('C',P,S[2],PR[2]),
+  insights:(P,S,PR)=>{const [a,b,c]=PR,[s1,s2,s3]=S;return [
+    '<b>Test 1 to test 2, solution treatment and quench:</b> elongation '+a.EL.toFixed(1)+' % to '+b.EL.toFixed(1)+' % ('+(b.EL/a.EL).toFixed(1)+' times), yield '+f0(a.YS)+' to '+f0(b.YS)+' MPa. The brittle network covered '+Math.round(s1.N*100)+' % of the grain boundaries as cast and '+Math.round(s2.N*100)+' % after your solution treatment.',
+    '<b>Test 2 to test 3, aging:</b> yield '+f0(b.YS)+' to '+f0(c.YS)+' MPa ('+(c.YS/b.YS>1?'+':'')+Math.round((c.YS/b.YS-1)*100)+' %), elongation '+b.EL.toFixed(1)+' % to '+c.EL.toFixed(1)+' %.',
+    'Read together: solution treatment is what rescued the ductility, and aging is what bought the strength, at a cost in ductility. Neither step alone gives both.'];}
+ }
+};
+
+// ==== STATE ====
+const MW=320,MH=240,TW=440,TH=330,NH=150;
+let CK='C',P={},R=null,TL=1,TSEL=2,TD=[null,null,null],ANIM=null;
+function setCase(k){CK=k;P=Object.assign({},CASES[k].def);TL=1;TD=[null,null,null];stopAnim();buildControls();document.querySelectorAll('.casebtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('tl').value=1;compute();drawAll();}
+function compute(){const C=CASES[CK];if(C.derive)C.derive(P);const S=C.G.map(g=>C.state(P,g)),PR=S.map(s=>C.props(s,P));R={S,PR,flags:C.flags(P,S,PR),mission:C.mission(P,PR)};}
+
+// ==== CONTROLS ====
+function buildControls(){
+  const C=CASES[CK],box=$('controls');box.innerHTML='';let lastG='',n=0;
+  C.ctrl.forEach(c=>{
+    if(c.g!==lastG){const h=document.createElement('h3');h.textContent=(++n)+'. '+c.g;box.appendChild(h);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg" data-k="'+c.k+'">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else if(c.type==='toggle'){w.innerHTML='<label class="chk"><input type="checkbox" id="c_'+c.k+'"'+(P[c.k]?' checked':'')+'> '+c.l+'</label>';w.querySelector('input').addEventListener('change',e=>{P[c.k]=e.target.checked;changed();});}
+    else{w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;if(C.derive)C.derive(P);outs();changed();});}
+    box.appendChild(w);
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},C.def);buildControls();changed();});box.appendChild(b);
+  outs();
+}
+function outs(){const C=CASES[CK];if(C.derive)C.derive(P);C.ctrl.forEach(c=>{const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k],P);});}
+function changed(){TD=[null,null,null];stopAnim();compute();drawAll();}
+
+// ==== DRAW ====
+function ctxOf(id){return $(id).getContext('2d');}
+function drawMicros(){
+  const C=CASES[CK],F=C.field(P,MW,MH),sT=C.state(P,C.gAt(P,TL));
+  for(let i=0;i<3;i++){
+    const s=i===2?sT:R.S[i];
+    C.micro(ctxOf('mic'+i),MW,MH,F,s,P);
+    const lab=C.detail(ctxOf('nano'+i),MW,NH,s);
+    $('cap'+i).textContent=lab;$('ttl'+i).textContent=(i+1)+'. '+C.ladder[i]+(i===2&&TL<1?' (time-lapse)':'');
   }
-  poly(ctx,fur,f.sx,f.sy,f.C.soft,1.6,[6,5]);poly(ctx,part,f.sx,f.sy,f.C.acc,2.6);
-  ctx.fillStyle=f.C.ink;ctx.font='600 12px sans-serif';ctx.textAlign='left';
-  if(S.tSol>0)ctx.fillText('solution '+S.Tsol+' °C',f.sx(0.05*tot)+4,f.sy(Tf)-8);
-  if(S.tAge>0)ctx.fillText('aging '+S.Tage+' °C',f.sx(t2+0.02*tot),f.sy(S.Tage)-8);
-  if(S.tSol>0){ctx.textAlign='center';ctx.fillText('quench',f.sx(t1+tQ),f.sy(Tf*0.5));}
+  $('stage').textContent=C.stageLabel(P,TL);
+  $('nanoHead').textContent=C.detailTitle+' view under each micrograph';
 }
-function drawQuench(){
-  const a=AN,c=$('cQuench'),ctx=c.getContext('2d'),W=c.width,H=c.height;
-  const f=frame(ctx,W,H,50,W-14,14,H-42,0,60,0,600,{yt:[0,200,400,600],xt:[0,15,30,45,60].map(v=>[v,v]),xl:'seconds in the quench',yl:'part temperature, °C'});
-  ctx.fillStyle='rgba(192,39,27,.10)';ctx.fillRect(f.sx(0),f.sy(400),f.sx(60)-f.sx(0),f.sy(290)-f.sy(400));
-  const T0=a.Tq0;
-  Object.keys(MED).forEach(m=>{
-    const sel=m===S.med,pts=quenchCurve(m,a.M,T0,60,60);poly(ctx,pts,f.sx,f.sy,sel?f.C.acc:f.C.line,sel?3:1.6);
-    if(!sel){ctx.fillStyle=f.C.soft;ctx.font='11px sans-serif';ctx.textAlign='left';const p=pts[Math.min(pts.length-1,10)];ctx.fillText(MED[m].name.split(' (')[0],f.sx(p[0])+4,f.sy(p[1])-4);}
+function drawTestMic(frac,idx){
+  const C=CASES[CK],F=C.field(P,TW,TH),s=R.S[idx];
+  C.micro(ctxOf('testMic'),TW,TH,F,s,P);
+  if(frac>0)drawDamage(ctxOf('testMic'),TW,TH,F,s,CK==='A'?'A':CK,P,frac,curveOf(R.PR[idx]).brittle);
+  $('testTitle').textContent='Inside the specimen: '+C.labels[idx];
+}
+function drawSpec(idx,frac,broken,tb){
+  const cv=curveOf(R.PR[idx]);drawSpecimen(ctxOf('spec'),460,130,cv,frac*cv.epsF,broken,tb);
+}
+function drawSS(){
+  const c=$('ss'),ctx=c.getContext('2d'),W=c.width,H=c.height,cvs=R.PR.map(curveOf);
+  const xm=Math.max(2,Math.max(...cvs.map(v=>v.epsF*100))*1.1),ym=Math.max(...R.PR.map(p=>p.UTS))*1.15;
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,xm,ym,'strain, %','engineering stress, MPa',niceTicks(xm,6),niceTicks(ym,5));
+  const draw=(cv,frac,col,w,alpha)=>{const em=cv.epsF*frac;ctx.strokeStyle=col;ctx.globalAlpha=alpha;ctx.lineWidth=w;ctx.beginPath();const n=140;for(let i=0;i<=n;i++){const e=em*i/n;i?ctx.lineTo(f.sx(e*100),f.sy(cv.f(e))):ctx.moveTo(f.sx(0),f.sy(0));}ctx.stroke();ctx.globalAlpha=1;};
+  TD.forEach((t,i)=>{if(!t)return;
+    (t.scat||[]).forEach(sc=>draw(sc.cv,t.frac,COL[i],1.2,0.35));
+    draw(cvs[i],t.frac,COL[i],3,1);
+    if(t.frac>=1){const cv=cvs[i];ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(cv.epsF*100),f.sy(cv.sigF),5,0,6.283);ctx.fill();
+      ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(R.PR[i].EL.toFixed(1)+' % elongation',Math.min(f.sx(cv.epsF*100)+8,W-110),f.sy(cv.sigF)-8);}
   });
-  ctx.fillStyle=f.C.ink;ctx.font='600 12px sans-serif';ctx.textAlign='right';ctx.fillText(MED[S.med].name+': '+a.rate.toFixed(0)+' K/s',W-18,24);
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';CASES[CK].ladder.forEach((l,i)=>{ctx.fillStyle=COL[i];ctx.fillRect(66,22+i*17,14,4);ctx.fillStyle='#14222B';ctx.fillText((i+1)+'. '+l,86,27+i*17);});
+  if(!TD.some(Boolean)){ctx.fillStyle='#4b5a64';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Run a tensile test to draw the curves',W/2,H/2);}
 }
-function drawAge(){
-  const a=AN,c=$('cAge'),ctx=c.getContext('2d'),W=c.width,H=c.height;
-  const lx=t=>Math.log10(t/0.1)/3;
-  const f=frame(ctx,W,H,50,W-14,14,H-42,0,1,50,90,{yt:[50,60,70,80,90],xt:[0.1,1,10,100].map(v=>[lx(v),v]),xl:'aging time, hours (log scale)',yl:'hardness, HB'});
-  const k=a.fd*a.fq*a.fdel;
-  const X=t=>f.sx(lx(t));
-  // target line
-  ctx.setLineDash([5,5]);ctx.strokeStyle=f.C.soft;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(TARGET.hb));ctx.lineTo(f.sx(1),f.sy(TARGET.hb));ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=f.C.soft;ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('hardness target',f.sx(0)+6,f.sy(TARGET.hb)-4);
-  [155,175,205].forEach(T=>{ if(Math.abs(T-S.Tage)<1)return; const pts=agingCurve(T,k,60).map(p=>[lx(p[0]),p[1]]);poly(ctx,pts,f.sx,f.sy,f.C.line,1.6);
-    const e=pts[pts.length-8];ctx.fillStyle=f.C.soft;ctx.fillText(T+' °C',f.sx(e[0])-26,f.sy(e[1])-5);});
-  const mine=agingCurve(S.Tage,k,80).map(p=>[lx(p[0]),p[1]]);poly(ctx,mine,f.sx,f.sy,f.C.acc,3);
-  if(S.tAge>0){const t=Math.max(0.1,Math.min(100,S.tAge));ctx.strokeStyle=f.C.ink;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(X(t),14);ctx.lineTo(X(t),H-42);ctx.stroke();
-    ctx.fillStyle=f.C.acc;ctx.beginPath();ctx.arc(X(t),f.sy(a.HB),5,0,6.283);ctx.fill();}
-  ctx.fillStyle=f.C.ink;ctx.font='600 12px sans-serif';ctx.textAlign='right';ctx.fillText(S.Tage+' °C peaks at '+a.tp.toFixed(1)+' h',W-18,24);
+function drawMap(){
+  const c=$('map'),ctx=c.getContext('2d'),W=c.width,H=c.height,PR=R.PR;
+  const xm=Math.max(450,Math.max(...PR.map(p=>p.YS))*1.15),ym=Math.max(14,Math.max(...PR.map(p=>p.EL))*1.2);
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,xm,ym,'yield strength, MPa','elongation, %',niceTicks(xm,5),niceTicks(ym,5));
+  const mr=R.mission.region;ctx.fillStyle='rgba(31,111,71,.10)';ctx.strokeStyle='#1f6f47';ctx.setLineDash([6,5]);ctx.lineWidth=1.5;
+  ctx.fillRect(f.sx(mr.ys),f.sy(ym),f.sx(xm)-f.sx(mr.ys),f.sy(mr.el)-f.sy(ym));ctx.strokeRect(f.sx(mr.ys),f.sy(ym),f.sx(xm)-f.sx(mr.ys),f.sy(mr.el)-f.sy(ym));ctx.setLineDash([]);
+  ctx.fillStyle='#1f6f47';ctx.font='600 12px sans-serif';ctx.textAlign='right';ctx.fillText('mission',W-22,30);
+  ctx.strokeStyle='#8d99a3';ctx.lineWidth=2;ctx.beginPath();PR.forEach((p,i)=>{i?ctx.lineTo(f.sx(p.YS),f.sy(p.EL)):ctx.moveTo(f.sx(p.YS),f.sy(p.EL));});ctx.stroke();
+  PR.forEach((p,i)=>{ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(p.YS),f.sy(p.EL),7,0,6.283);ctx.fill();ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(String(i+1),f.sx(p.YS)+10,f.sy(p.EL)-8);});
 }
-function bowPath(ctx,x0,x1,y,bow){ctx.beginPath();for(let i=0;i<=40;i++){const u=i/40,x=x0+(x1-x0)*u,yy=y-bow*(1-Math.pow(2*u-1,2));i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}ctx.stroke();}
-function drawDist(){
-  const a=AN,c=$('cDist'),ctx=c.getContext('2d'),W=c.width,H=c.height,C=css();ctx.clearRect(0,0,W,H);
-  const mag=90, panels=[{x0:30,x1:420,label:'After the quench',val:a.delta,ok:true},{x0:480,x1:870,label:'Finished part',val:a.finalDev,ok:a.finalDev<=a.tol&&(S.seq==='B'||a.cleanup)}];
-  panels.forEach(p=>{
-    const y=84;
-    ctx.setLineDash([6,5]);ctx.strokeStyle=C.soft;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(p.x0,y);ctx.lineTo(p.x1,y);ctx.stroke();ctx.setLineDash([]);
-    if(p.label==='Finished part'){ctx.fillStyle='rgba(31,111,71,.10)';ctx.fillRect(p.x0,y-a.tol*mag,p.x1-p.x0,2*a.tol*mag);}
-    ctx.lineWidth=5;ctx.lineCap='round';ctx.strokeStyle=p.ok?C.ok:C.bad;bowPath(ctx,p.x0,p.x1,y,Math.min(40,p.val*mag));ctx.lineCap='butt';
-    ctx.fillStyle=C.ink;ctx.font='600 13px sans-serif';ctx.textAlign='left';ctx.fillText(p.label+': '+p.val.toFixed(2)+' mm',p.x0,22);
-    ctx.font='11px sans-serif';ctx.fillStyle=C.soft;ctx.fillText('drawn '+mag+' times larger'+(p.label==='Finished part'?'. Green band: tolerance ±'+a.tol+' mm.':''),p.x0,40);
-  });
+function drawResults(){
+  const C=CASES[CK],hasM=R.PR[0].mach!=null;
+  $('tbl').innerHTML='<tr><th></th><th>Yield, MPa</th><th>Tensile, MPa</th><th>Elongation, %</th><th>Hardness, HB</th>'+(hasM?'<th>Machinability, 0 to 100</th>':'')+'</tr>'+
+    R.PR.map((p,i)=>'<tr><td><span class="dot" style="background:'+COL[i]+'"></span>'+(i+1)+'. '+C.ladder[i]+'</td><td>'+f0(p.YS)+'</td><td>'+f0(p.UTS)+'</td><td>'+p.EL.toFixed(1)+'</td><td>'+f0(p.HB)+'</td>'+(hasM?'<td>'+f0(p.mach)+'</td>':'')+'</tr>').join('');
+  const bad=R.flags.some(f=>f[0]==='bad'),ok=R.mission.ok&&!bad;
+  $('mission').innerHTML='<b>'+R.mission.title+'</b>'+R.mission.chips.map(c=>'<span class="chip">'+c+'</span>').join('');
+  $('verdict').className='verdict '+(ok?'ok':'bad');$('verdict').innerHTML=ok?'Mission met':'Not there yet';
+  $('flags').innerHTML=(R.flags.length?R.flags:[['ok','No problems found with this treatment.']]).map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  $('insights').innerHTML=C.insights(P,R.S,R.PR).map(t=>'<p>'+t+'</p>').join('');
+}
+function drawAll(){drawMicros();const idx=TSEL;drawSpec(idx,0,false,0);drawTestMic(0,idx);drawSS();drawMap();drawResults();updateTestBtns();}
+function updateTestBtns(){document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.i)===TSEL&&!ANIM));}
+
+// ==== TENSILE TEST ANIMATION ====
+function stopAnim(){if(ANIM){cancelAnimationFrame(ANIM.raf);ANIM=null;}}
+function runTests(list){
+  stopAnim();const scat=$('scat').checked;
+  list.forEach(i=>{TD[i]={frac:0,scat:scat?scatterSet(R.PR[i],100+i,4).map(p=>({cv:curveOf(p)})):[]};});
+  ANIM={list,pos:0,t0:performance.now(),hold:0};TSEL=list[0];stepAnim();
+}
+function stepAnim(){
+  const A=ANIM;if(!A)return;const now=performance.now(),i=A.list[A.pos],cv=curveOf(R.PR[i]),dur=cv.brittle?2200:3600;
+  let frac=Math.min(1,(now-A.t0)/dur);TD[i].frac=frac;TSEL=i;
+  const broken=frac>=1,tb=broken?Math.min(1,(now-A.t0-dur)/500):0;
+  drawSpec(i,frac,broken,Math.max(0,tb));drawTestMic(frac,i);drawSS();
+  if(frac>=1&&now-A.t0>dur+900){A.pos++;if(A.pos>=A.list.length){ANIM=null;updateTestBtns();return;}A.t0=performance.now();}
+  updateTestBtns();A.raf=requestAnimationFrame(stepAnim);
+}
+function save(){
+  const C=CASES[CK],rec={tool:'Heat treatment lab (standalone beta v0.1)',saved:new Date().toISOString(),case:C.title+': '+C.sub,settings:P,
+    conditions:R.PR.map((p,i)=>({condition:C.ladder[i],yield_MPa:+f0(p.YS),tensile_MPa:+f0(p.UTS),elongation_pct:+p.EL.toFixed(1),hardness_HB:+f0(p.HB),machinability:p.mach==null?undefined:+f0(p.mach)})),
+    missionMet:R.mission.ok&&!R.flags.some(f=>f[0]==='bad'),flags:R.flags.map(f=>f[0]+': '+f[1])};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='heat-treatment-lab-'+CK+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);
 }
 
-/* ---------- save ---------- */
-function save(){
-  const a=AN,rec={tool:'sintrlab.ca Manufacturing Simulator: Heat treatment (beta v0.1)',saved:new Date().toISOString(),part:PARTS[S.part].name,sequence:SEQ[S.seq],
-    settings:Object.assign({},params(),{quench:MED[S.med].name}),
-    result:{accepted:a.accepted,score:a.score,yield_MPa:+a.YS.toFixed(0),uts_MPa:+a.UTS.toFixed(0),elongation_pct:+a.EL.toFixed(1),hardness_HB:+a.HB.toFixed(0),
-      dissolved_pct:Math.round(a.fd*100),quench_retained_pct:Math.round(a.fq*100),cooling_rate_Ks:+a.rate.toFixed(0),distortion_mm:+a.delta.toFixed(2),position_error_mm:+a.finalDev.toFixed(2),cycle_h:+a.timeTot.toFixed(1),
-      flags:a.flags.map(f=>f[0]+': '+f[1])}};
-  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'}));
-  const l=document.createElement('a');l.href=u;l.download='heat-treatment-'+S.part+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);
-}
-window.addEventListener('resize',()=>{});
-sync();recompute();
+// ==== INIT ====
+(function init(){
+  const box=$('cases');
+  ['A','B','C'].forEach(k=>{const C=CASES[k],b=document.createElement('button');b.type='button';b.className='casebtn';b.dataset.k=k;b.innerHTML='<span class="tag">'+C.tag+'</span><b>'+C.title+'</b><span>'+C.sub+'</span>';b.addEventListener('click',()=>setCase(k));box.appendChild(b);});
+  $('tl').addEventListener('input',e=>{TL=+e.target.value;drawMicros();});
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>runTests([+b.dataset.i])));
+  $('allBtn').addEventListener('click',()=>runTests([0,1,2]));
+  $('saveBtn').addEventListener('click',save);
+  $('blurb').textContent='';
+  const orig=setCase;setCase('C');
+  const upd=()=>{$('blurb').textContent=CASES[CK].blurb;};upd();
+  document.querySelectorAll('.casebtn').forEach(b=>b.addEventListener('click',upd));
+})();
+
 })();
 </script>
 </body>

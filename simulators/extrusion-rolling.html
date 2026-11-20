@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extrusion and rolling | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive extrusion and rolling simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Find the speed and temperature window for hot extrusion, roll a plate hot then cold, and see how grain structure makes the metal stronger along the flow than across it.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/extrusion-rolling.html">
+<meta property="og:title" content="Extrusion and rolling | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Hot extrusion window, rolling passes, and strength along and across.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/extrusion-rolling.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Extrusion and rolling simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,h4,.btn,.chip,table,select,.casebtn{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:16px 0 6px}h4{margin:10px 0 4px;font-size:.95rem}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:80ch;margin:6px 0 0}.fine{font-size:.88rem;color:var(--ink-soft)}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 10px}@media (max-width:760px){.cases{grid-template-columns:minmax(0,1fr)}}
+.casebtn{text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);line-height:1.3;position:relative}
+.casebtn b{display:block;font-size:1.05rem;margin-right:26px}.casebtn span:not(.tag){font:400 .88rem var(--body);color:var(--ink-soft)}
+.casebtn .tag{position:absolute;right:12px;top:10px;font:700 .85rem var(--head);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:24px}
+.casebtn:hover{border-color:var(--ink)}.casebtn[aria-pressed="true"]{border:2px solid var(--accent);padding:10px 13px;background:var(--accent-soft)}.casebtn[aria-pressed="true"] .tag{background:var(--accent)}
+.blurb{max-width:90ch;margin:8px 0 10px}
+.mission{padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*,.three>*{min-width:0}@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}.box{margin-bottom:16px}.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .84rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:6px 12px;font-size:.88rem;margin-top:8px}.btn:hover{background:rgba(20,34,43,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-deep)}.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:7px;font:500 .92rem var(--head);margin:8px 0}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}@media (max-width:900px){.three{grid-template-columns:minmax(0,1fr)}}
+.col h4{margin:0 0 4px;font:700 .95rem var(--head)}.cap{font-size:.85rem;color:var(--ink-soft);margin:3px 0 0}
+.vw{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;margin:8px 0}.vw span{font:600 .9rem var(--head)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:right}th:first-child,td:first-child{text-align:left}th{font-weight:500;color:var(--ink-soft)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0;font-family:var(--head);font-size:.93rem}.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:8px 0 0;padding:0;list-style:none}.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+.notes li.head{background:transparent;border:0;padding:4px 0;font:700 .9rem var(--head);margin-top:6px}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}.insights p{margin:6px 0;max-width:80ch}.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Extrusion and rolling lab<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Push a hot billet through a die or roll a plate down, and see what the working does to the grains and to the strength along and across the part. Then anneal it. Three tensile tests show the difference, which explains why a bend line along the grain cracks first.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Extrusion%20and%20rolling%20(beta%20v0.1)">send feedback</a>.</p>
+  <div class="cases" id="cases"></div><p class="blurb" id="blurb"></p><section class="mission" id="mission"></section>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2>The process</h2><canvas id="proc" width="560" height="300" role="img" aria-label="The extrusion press or rolling mill"></canvas>
+      <div class="vw"><span id="slLabel"></span><input type="range" id="sl" min="0" max="100" value="100"></div><p class="fine" id="procCap"></p></div>
+    <div class="box"><h2>Inside the metal</h2>
+      <div class="three">
+        <div class="col"><h4 id="gt0"></h4><canvas id="g0" width="300" height="210"></canvas><p class="cap" id="gc0"></p></div>
+        <div class="col"><h4 id="gt1"></h4><canvas id="g1" width="300" height="210"></canvas><p class="cap" id="gc1"></p></div>
+        <div class="col"><h4 id="gt2"></h4><canvas id="g2" width="300" height="210"></canvas><p class="cap" id="gc2"></p></div>
+      </div>
+      <p class="fine">Schematic grain sections drawn from the model state, with the grain thickness setting the scale. They show the trend (stretched grains, a coarse ring, new grains after annealing), not a real sample.</p></div>
+    <div class="box" id="boxA"><h2>The press limits</h2>
+      <div class="row2"><div><canvas id="cWin" width="440" height="300"></canvas><p class="fine">Every billet temperature and ram speed, judged against the press and the surface. Your setting is the dark dot.</p></div>
+        <div><canvas id="cForce" width="440" height="300"></canvas><p class="fine">Force is highest at the start and falls as the billet gets shorter and friction on the container wall drops.</p></div></div><div id="kvA"></div></div>
+    <div class="box" id="boxB" style="display:none"><h2>The passes</h2><div class="row2"><div><canvas id="cPass" width="440" height="280"></canvas><p class="fine">Roll force for each pass against what the mill can take.</p></div><div id="kvB"></div></div></div>
+    <div class="box"><h2>Tensile test</h2>
+      <div class="btns"><button class="btn tbtn" data-i="0" type="button">Test 1</button><button class="btn tbtn" data-i="1" type="button">Test 2</button><button class="btn tbtn" data-i="2" type="button">Test 3</button><button class="btn primary" id="allBtn" type="button">Test all three</button><label class="chk" style="margin:0 0 0 8px"><input type="checkbox" id="scat"> five specimens each</label></div>
+      <div class="row2"><div><canvas id="spec" width="460" height="130" role="img" aria-label="Test specimen"></canvas><p class="fine">The specimen is drawn stretched more than real. Specimens are cut along the flow, across it, and along it again after annealing.</p></div>
+        <div><canvas id="ss" width="520" height="340" role="img" aria-label="Stress-strain curves"></canvas></div></div></div>
+    <div class="box"><h2>Results</h2>
+      <div class="row2"><div><div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul><button class="btn small" id="saveBtn" type="button">Save result (JSON)</button></div>
+        <div><h4 style="margin-top:0">Strength and ductility map</h4><canvas id="cMap" width="460" height="320"></canvas></div></div>
+      <div class="tw"><table id="tbl"></table></div><div class="insights" id="insights"></div></div>
+    <p class="disclaimer">A teaching model, not validated process software. Hot flow stress follows a sinh law fitted to typical values, the ram force uses Johnson-type relations with a friction term, and the grain, texture, seam, coarse-ring and annealing rules are simple trend models. Real extrusion and rolling depend on die design, alloy chemistry and press history. Check any number you rely on against data and test pieces.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: hot extrusion and rolling ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const RG=8.314, D0=100, L0=300, A0=Math.PI/4*D0*D0, PRESS=6e6, WIDTH=300, MILL=3e6;
+const XM={
+  al:{n:'6061 aluminum',rho:2700,cp:900,Q:190,alpha:0.03,nex:5,sigRef:55,TrefC:450,Tr:[400,520],Tcrack:540,ZcRx:3e11,dRef:60,Zref:3e12,dsub:3,kHP:45,YO:55,UO:125,ELO:28,E:69000,nn:0.20,ef:0.75,Yt6:275,Ut6:310,ELt6:0.38,rx:{T0:345,Q:150},dAnn:35,rolling:{Tr:[380,500],crackR:0.30}},
+  brass:{n:'Brass C260',rho:8530,cp:380,Q:180,alpha:0.03,nex:5,sigRef:40,TrefC:750,Tr:[650,800],Tcrack:830,ZcRx:1e10,dRef:30,Zref:3e9,dsub:5,kHP:120,YO:95,UO:330,ELO:55,E:110000,nn:0.49,ef:0.9,Yt6:0,Ut6:0,ELt6:1,rx:{T0:475,Q:170},dAnn:20,rolling:{Tr:[600,800],crackR:0.40}}
+};
+Object.values(XM).forEach(m=>{m.K=m.UO*Math.exp(m.nn)/Math.pow(m.nn,m.nn);m.eq0=Math.pow(m.YO/m.K,1/m.nn);m.A=Math.exp(m.Q*1000/(RG*(m.TrefC+273.15)))/Math.pow(Math.sinh(m.alpha*m.sigRef),m.nex);});
+function flow(m,TC,edot){const Z=edot*Math.exp(m.Q*1000/(RG*(TC+273.15)));return {Z,sig:(1/m.alpha)*Math.asinh(Math.pow(Z/m.A,1/m.nex))};}
+const MF={dry:1.0,graphite:0.5,glass:0.2};
+
+/* ---------- grain state from the hot working conditions ---------- */
+function hotState(m,Z,lnR,extra){
+  const frx=1/(1+Math.pow(Z/m.ZcRx,0.8)),drx=clamp(m.dRef*Math.pow(m.Zref/Z,0.3),8,250);
+  const t=(1-0.7*frx)*(1-Math.exp(-lnR/1.8)),R=Math.exp(lnR);
+  const asp=1+(1-frx)*Math.min(40,0.8*Math.pow(R,0.85))+frx*(1+0.1*Math.sqrt(R));
+  const deff=Math.pow(1/(frx/Math.sqrt(drx)+(1-frx)/Math.sqrt(m.dsub)),2);
+  return Object.assign({frx,drx,t,asp,deff,epsC:0.003*(1-frx),pcg:0,sq:1,tempUp:0,hot:true},extra||{});
+}
+/* ---------- annealing: static recrystallization ---------- */
+function anneal(m,st,Ta,ta){
+  const epsS=st.epsC+(1-st.frx)*Math.min(1.5,0.3*Math.log(Math.max(1.0001,st.asp))+0.3),T0=m.rx.T0+273.15;
+  const trx=60*Math.exp(m.rx.Q*1000/RG*(1/(Ta+273.15)-1/T0))/(1+3*epsS),fa=1-Math.exp(-Math.pow(ta/trx,2));
+  const coarse=1+6*Math.exp(-epsS/0.08),da=m.dAnn*coarse*(Ta>m.rx.T0+120?1+0.004*(Ta-m.rx.T0-120):1);
+  const wOld=st.frx,wNew=(1-st.frx)*fa,wSub=Math.max(0,1-wOld-wNew);
+  const deff=Math.pow(1/(wOld/Math.sqrt(st.drx||da)+wNew/Math.sqrt(da)+wSub/Math.sqrt(m.dsub)),2);
+  return Object.assign({},st,{frx:wOld+wNew,fnew:fa,da,trx,epsS,deff,t:st.t*(1-0.7*fa),epsC:st.epsC*(1-fa),asp:1+(st.asp-1)*(1-fa),pcg:st.pcg*(1-0.3*fa),tempUp:0,annealed:true,hot:false});
+}
+/* ---------- strength and ductility, along or across ---------- */
+function propsX(m,st,dir){
+  const tot=Math.min(0.3,m.eq0+st.epsC),Ys=m.K*Math.pow(tot,m.nn),uRem=Math.max(0,m.nn-tot),Ub=uRem>0?m.K*Math.pow(m.nn,m.nn)/Math.exp(uRem):Ys;
+  const dY=m.kHP*(1/Math.sqrt(Math.max(st.deff,1))-1/Math.sqrt(m.dRef)),up=st.tempUp;
+  let Y=Ys+dY+up*(m.Yt6-m.YO),U=Math.max(Y,Ub+0.9*dY+up*(m.Ut6-m.UO));
+  const D=Math.min(0.9,st.epsC/m.ef*0.5),remTot=Math.max(0.002,m.ef*(1-D)),post=Math.max(0,remTot-uRem);
+  let EL=100*(Math.exp(uRem+0.1*post)-1)*(1-(1-m.ELt6)*up);
+  Y-=25*st.pcg;EL*=(1-0.6*st.pcg);
+  if(dir==='along'){Y*=1+0.04*st.t;U*=1+0.03*st.t;EL*=1-0.15*st.t;}
+  else{Y*=1-0.04*st.t;U*=(1-0.03*st.t)*(0.75+0.25*st.sq);EL*=(1-0.35*st.t)*Math.pow(st.sq,1.5);}
+  U=Math.max(U,Y);return {YS:Y,UTS:U,EL:Math.max(0.1,EL),E:m.E,brittle:EL<0.5};
+}
+
+/* ---------- Case A: extrusion ---------- */
+function extrude(P){
+  const m=XM[P.mat],R=P.R,lnR=Math.log(R),A1=A0/R,De=Math.sqrt(4*A1/Math.PI),mf=MF[P.lub];
+  const edot=6*P.v*D0*D0*lnR/(D0*D0*D0-De*De*De);
+  let T=P.Tb,sig=0;for(let i=0;i<5;i++){sig=flow(m,(P.Tb+T)/2,edot).sig;T=P.Tb+0.9*sig*1e6*lnR/(m.rho*m.cp)*(1+0.5*mf)*(1-Math.exp(-P.v/6));}
+  const Texit=T,Zx=flow(m,Texit,edot).Z;
+  const pdef=sig*(0.8+1.4*lnR)*(1+0.3*P.angle/90),pfr0=sig*(mf/Math.sqrt(3))*4*L0/D0,stroke=L0*(1-P.discard/100);
+  const F=s=>A0*(pdef+pfr0*(1-s/L0)),Fmax=F(0);
+  let st=hotState(m,Zx,lnR);
+  // tube seams, ring of coarse grains, temper
+  const tube=P.shape==='tube';
+  if(tube){const base=1-0.45*Math.exp(-(lnR-1.6)/0.8),Tf=m.Tr[0]-60;st.sq=clamp(base*clamp(0.75+(Texit-(Tf+30))/400,0.6,1),0.4,1);}
+  st.pcg=P.mat==='al'?clamp(0.03+0.22*clamp((Texit-470)/70,0,1)*Math.pow(mf,0.7)*clamp(lnR/3.2,0,1),0,0.3):0.03;
+  if(P.mat==='al'){const qf=P.cool==='water'?1:0.65,Tq=clamp((Texit-400)/100,0.3,1);st.tempUp=qf*Tq*(P.aged?1:0.35);}
+  const st3=anneal(m,st,P.Ta,P.ta);
+  const c1=propsX(m,st,'along'),c2=propsX(m,st,'across'),c3=propsX(m,st3,'along');
+  // defects
+  const speedCrack=Texit>m.Tcrack,burst=clamp((1.2-lnR)/0.6,0,1)*clamp((P.angle-30)/40,0,1),dead=mf*clamp(P.angle/90,0,1),pipe=clamp(mf*(1-P.discard/12),0,1);
+  const tubeShape=tube?{OD:Math.min(60,De*1.3),wall:null}:{};
+  const od=tube?Math.min(70,Math.max(24,De*1.25+8)):De,id=tube?Math.sqrt(Math.max(0,od*od-4*A1/Math.PI)):0;
+  const flags=[],add=(l,t)=>flags.push([l,t]);
+  if(Fmax>PRESS)add('bad','The ram needs '+(Fmax/1e6).toFixed(1)+' MN at the start and the press gives '+(PRESS/1e6).toFixed(0)+' MN. Heat the billet, extrude slower, lubricate the container or lower the ratio.');
+  else if(Fmax>0.85*PRESS)add('warn','The ram force is '+(Fmax/PRESS*100).toFixed(0)+' % of the press capacity: no margin for a cold billet or a stiffer batch.');
+  if(speedCrack)add('bad','The extrudate leaves the die at about '+Texit.toFixed(0)+' °C, over the '+m.Tcrack+' °C where the surface tears (hot shortness). Extrude slower or start cooler.');
+  else if(Texit>m.Tcrack-25)add('warn','The exit temperature is '+Texit.toFixed(0)+' °C, only '+(m.Tcrack-Texit).toFixed(0)+' °C below where the surface tears.');
+  if(P.Tb<m.Tr[0])add('warn','A billet at '+P.Tb+' °C is cold for '+m.n.toLowerCase()+' (usual '+m.Tr[0]+' to '+m.Tr[1]+' °C). The flow stress and the press load climb steeply.');
+  if(burst>0.4)add('bad','Risk of centerburst: a ratio this low with a '+P.angle+'° die puts the centre of the billet in tension and it cracks internally. Use a bigger ratio or a shallower die.');
+  if(dead>0.7)add('warn','Sticking friction against a steep die leaves a dead metal zone in the corners. The surface layer is poor and the flow uneven. Lubricate or use a shallower die.');
+  if(pipe>0.6)add('bad','The butt is only '+P.discard+' % and friction is high: oxide skin from the billet is drawn into the centre as a pipe defect. Discard more of the butt or lubricate.');
+  if(st.pcg>0.12&&P.mat==='al')add('warn','A coarse-grained ring about '+(st.pcg*100).toFixed(0)+' % of the wall deep forms at the surface, from hot, sheared metal. It is weaker.');
+  if(tube&&st.sq<0.8)add(st.sq<0.65?'bad':'warn','The seam welds in the tube are weak (efficiency '+(st.sq*100).toFixed(0)+' %). A bigger ratio and a hotter exit weld the metal back together better.');
+  if(P.mat==='al'&&!P.aged)add('warn','Without artificial aging the aluminum only has about a third of the precipitation hardening.');
+  if(P.mat==='al'&&P.cool==='air')add('warn','Air cooling at the press only quenches the aluminum part-way; water quenching traps more of the hardening elements.');
+  if(P.mat==='al'&&Texit<440)add('warn','The aluminum leaves at '+Texit.toFixed(0)+' °C, too cool to hold the hardening elements in solution for a press quench.');
+  if(P.discard>15)add('warn','Discarding '+P.discard+' % of every billet wastes metal.');
+  // mission
+  const crit=[],C=(l,v,need,u,pass,dec)=>crit.push({l,v,need,u,pass,dec:dec||0});
+  if(P.mat==='al'){C('yield strength across the flow',c2.YS,240,'MPa',c2.YS>=240);C('elongation across the flow',c2.EL,7,'%',c2.EL>=7,1);}
+  else{C('elongation across the flow',c2.EL,40,'%',c2.EL>=40);C('grain size',st.deff,'40 or less','µm',st.deff<=40);}
+  C('metal yield',100-P.discard,88,'%',100-P.discard>=88);
+  const nBad=flags.filter(f=>f[0]==='bad').length,ok=crit.every(c=>c.pass)&&nBad===0;
+  const short=crit.filter(c=>!c.pass).map(c=>c.l+' is '+c.v.toFixed(c.dec)+' '+c.u+' (needs '+c.need+')');
+  const ms=P.mat==='al'?['yield strength across the flow 240 MPa or more','elongation across the flow 7 % or more','metal yield 88 % or more','no defects']:['elongation across the flow 40 % or more','grain size 40 µm or less','metal yield 88 % or more','no defects'];
+  const region=P.mat==='al'?{Y:240,EL:7}:{Y:0,EL:40};
+  return {region,kind:'A',m,R,lnR,A1,De,edot,sig,Texit,dT:Texit-P.Tb,Zx,pdef,pfr0,Fmax,F,stroke,state:st,state3:st3,conds:[c1,c2,c3],flags,nBad,ok,short,mission:ms,burst,dead,pipe,od,id,tube,mf};
+}
+function windowMap(P,n){ // billet temperature against ram speed
+  const m=XM[P.mat],out=[],T0=m.Tr[0]-60,T1=m.Tr[1]+40,v0=1,v1=40;
+  for(let i=0;i<n;i++){const row=[];for(let j=0;j<n;j++){const Tb=T0+(T1-T0)*i/(n-1),v=v0*Math.pow(v1/v0,j/(n-1)),a=extrude(Object.assign({},P,{Tb,v}));row.push({Tb,v,Fok:a.Fmax<=PRESS,Tok:a.Texit<=m.Tcrack,ok:a.Fmax<=PRESS&&a.Texit<=m.Tcrack&&a.nBad===0});}out.push(row);}
+  return {grid:out,T0,T1,v0,v1};
+}
+
+/* ---------- Case B: rolling a plate ---------- */
+function roll(P){
+  const m=XM[P.mat],Rr=P.Rroll/2,mu=P.lub?(0.2):0.3,muC=P.lub?0.08:0.2,passes=[];
+  const rc=P.cold/100,hh=P.hf/(1-rc);
+  let flags=[],add=(l,t)=>flags.push([l,t]);
+  // hot stage
+  const hot=hh<P.h0-0.01;const Nh=hot?Math.ceil(Math.log(hh/P.h0)/Math.log(1-P.rh)-1e-9):0,rhA=hot?1-Math.pow(hh/P.h0,1/Nh):0;
+  let h=P.h0,T=P.Th,Fmaxh=0,Zl=1,gripH=true;
+  for(let i=0;i<Nh;i++){const h1=h*(1-rhA),d=h-h1,L=Math.sqrt(Rr*d),ed=(P.speed*1000/L)*Math.log(h/h1),f=flow(m,T,ed),F=f.sig*WIDTH*L*(1+mu*L/(2*(h+h1)/2));
+    passes.push({i:i+1,h,h1,F,T,cold:false,sig:f.sig,L,d});if(d>mu*mu*Rr*1.0)gripH=false;Fmaxh=Math.max(Fmaxh,F);Zl=f.Z;
+    const hav=(h+h1)/2,dTd=0.9*f.sig*1e6*Math.log(h/h1)/(m.rho*m.cp),loss=12*Math.sqrt(20/hav)*(1+0.4/Math.max(P.speed,0.05))*(T-20)/460*(2.43e6/(m.rho*m.cp));T=T+dTd-loss;h=h1;}
+  const Tf=hot?T:P.Th,lnRh=Math.log(P.h0/Math.max(hh,0.01));
+  // cold stage
+  const Nc=rc>0.001?Math.ceil(Math.log(1-rc)/Math.log(1-P.rc)-1e-9):0,rcA=Nc?1-Math.pow(1-rc,1/Nc):0;let Fmaxc=0,gripC=true,eps=0;
+  for(let i=0;i<Nc;i++){const h1=h*(1-rcA),d=h-h1,L=Math.sqrt(Rr*d),tot=Math.min(0.3,m.eq0+eps),sig=m.K*Math.pow(tot,m.nn)*1.1,F=sig*WIDTH*L*(1+muC*L/(2*(h+h1)/2));
+    passes.push({i:Nh+i+1,h,h1,F,T:20,cold:true,sig,L,d});if(d>muC*muC*Rr)gripC=false;Fmaxc=Math.max(Fmaxc,F);eps+=Math.log(h/h1);h=h1;}
+  const epsC=Nc?Math.log(hh/P.hf):0;
+  // state
+  let st;
+  if(hot){st=hotState(m,Zl,lnRh*0.6);st.frx=Tf>=m.Tr[0]?st.frx:st.frx*0.3;st.deff=Math.pow(1/(st.frx/Math.sqrt(st.drx)+(1-st.frx)/Math.sqrt(m.dsub)),2);}
+  else st={frx:0,drx:m.dRef,t:0,asp:1,deff:m.dRef,epsC:0,pcg:0,sq:1,tempUp:0};
+  if(Nc){st.epsC=epsC;st.frx=0;st.t=st.t+(1-st.t)*(1-Math.exp(-epsC/0.9));st.asp=Math.min(60,st.asp*Math.pow(hh/P.hf,1.2));st.hot=false;}
+  st.pcg=0;st.sq=1;st.tempUp=0;st.rolled=true;
+  const st3=anneal(m,st,P.Ta,P.ta),c1=propsX(m,st,'along'),c2=propsX(m,st,'across'),c3=propsX(m,st3,'along');
+  // checks
+  const edgeCrack=Nc&&rcA>m.rolling.crackR,exhaust=Nc&&epsC>0.6*m.ef&&!false;
+  if(!hot&&!Nc)add('warn','The plate is already at final thickness: nothing to roll.');
+  if(hot&&!gripH)add('bad','The rolls cannot bite in the hot passes: the draft of '+(P.h0*rhA).toFixed(1)+' mm is more than the friction allows (about '+(mu*mu*Rr).toFixed(1)+' mm for this roll). Take smaller passes, roughen the rolls, or use bigger rolls.');
+  if(Nc&&!gripC)add('bad','The rolls cannot bite in the cold passes: the draft of '+(hh*rcA).toFixed(1)+' mm is more than '+(muC*muC*Rr).toFixed(1)+' mm. Take smaller passes, use bigger rolls, or less lubrication.');
+  if(Math.max(Fmaxh,Fmaxc)>MILL)add('bad','The roll force reaches '+(Math.max(Fmaxh,Fmaxc)/1e6).toFixed(1)+' MN and the mill is rated for '+(MILL/1e6).toFixed(0)+' MN. Take lighter passes, or roll hotter.');
+  if(hot&&Tf<m.Tr[0])add('warn','The plate finishes hot rolling at '+Tf.toFixed(0)+' °C, below the usual '+m.Tr[0]+' °C: it stops recrystallizing between passes and keeps deformed, flattened grains.');
+  if(hot&&T>m.Tcrack)add('bad','The plate heats to '+T.toFixed(0)+' °C in the mill, past where the surface tears.');
+  if(P.Th<m.rolling.Tr[0]&&hot)add('warn','A starting temperature of '+P.Th+' °C is cold for hot rolling this alloy (usual '+m.rolling.Tr[0]+' to '+m.rolling.Tr[1]+' °C).');
+  if(edgeCrack)add('bad','The cold passes take '+(rcA*100).toFixed(0)+' % each, over the '+(m.rolling.crackR*100).toFixed(0)+' % where the edges start to crack.');
+  if(exhaust)add('warn','Cold rolling this far ('+(epsC*100).toFixed(0)+' % true strain) has used up most of the ductility. Anneal the plate part-way through, or stop sooner.');
+  if(Nc&&rc>0&&!hot&&P.hf>P.h0)add('bad','The final thickness is thicker than the starting plate.');
+  if(Nc&&c2.EL<5)add('warn','Elongation across the plate is only '+c2.EL.toFixed(1)+' %.');
+  if(P.h0<=P.hf)add('bad','The final thickness must be less than the starting thickness.');
+  const crit=[],C=(l,v,need,u,pass,dec)=>crit.push({l,v,need,u,pass,dec:dec||0});
+  const Yneed=P.mat==='al'?130:250,ELneed=P.mat==='al'?5:10;
+  C('yield strength across the plate',c2.YS,Yneed,'MPa',c2.YS>=Yneed);C('elongation across the plate',c2.EL,ELneed,'%',c2.EL>=ELneed,1);
+  C('across to along yield ratio',c2.YS/c1.YS,'0.95 or more','',c2.YS/c1.YS>=0.95,2);
+  const nBad=flags.filter(f=>f[0]==='bad').length,ok=crit.every(c=>c.pass)&&nBad===0&&P.h0>P.hf;
+  const short=crit.filter(c=>!c.pass).map(c=>c.l+' is '+c.v.toFixed(c.dec)+(c.u?' '+c.u:'')+' (needs '+c.need+')');
+  const ms=['yield strength across the plate '+Yneed+' MPa or more','elongation across the plate '+ELneed+' % or more','across to along yield ratio 0.95 or more','no defects'];
+  const region=P.mat==='al'?{Y:130,EL:5}:{Y:250,EL:10};
+  return {region,kind:'B',m,passes,Nh,Nc,rhA,rcA,hh,Tf,Fmaxh,Fmaxc,epsC,state:st,state3:st3,conds:[c1,c2,c3],flags,nBad,ok,short,mission:ms,mu,muC,hot,Zl};
+}
+function analyze(P){return P.case==='A'?extrude(P):roll(P);}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt,xmap){
+  ctx.clearRect(0,0,W,H);const mx=xmap||(v=>v),a0=mx(x0),a1=mx(x1);
+  const sx=v=>L+(R-L)*(mx(v)-a0)/(a1-a0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(+(+v).toFixed(2),sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function pline(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>{const x=f.sx(p[0]),y=f.sy(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+function curveOf(pr){
+  const E=pr.E,sy=pr.YS,su=pr.UTS;
+  if(pr.brittle||pr.EL<0.5){const ef=su/E;return {epsF:Math.max(ef,1e-4),epsU:ef,brittle:true,f:e=>Math.min(su,E*e),sigF:su};}
+  const epsF=pr.EL/100+0.9*su/E,e0=0.9*sy/E,epsU=e0+0.8*(epsF-e0),k=4/(epsU-e0),s0=0.9*sy,sigF=su*(pr.EL>3?0.82:0.95);
+  const f=e=>{if(e<=e0)return E*e;if(e<=epsU)return s0+(su-s0)*(1-Math.exp(-k*(e-e0)))/(1-Math.exp(-k*(epsU-e0)));return su+(sigF-su)*(e-epsU)/(epsF-epsU);};
+  return {epsF,epsU,brittle:false,f,sigF};
+}
+function scatterSet(pr,seed,n){const r=mulberry32(seed),out=[],cv=0.10+0.30*(1-Math.min(1,pr.EL/6));
+  for(let i=0;i<n;i++){const z1=gauss(r),z2=gauss(r);out.push(Object.assign({},pr,{YS:pr.YS*(1+0.02*z1),UTS:pr.UTS*(1+0.02*z1+0.01*gauss(r)),EL:Math.max(0.1,pr.EL*Math.exp(cv*z2))}));}
+  return out.map(p=>{p.UTS=Math.max(p.UTS,p.YS);return p;});}
+function drawSpecimen(ctx,W,H,cv,eps,fractured,tBreak){
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2,gx0=70,L0=W-2*gx0-80,w0=46,stretch=cv.brittle?30:5,vis=Math.min(eps*stretch,0.3),L=L0*(1+vis),x0=gx0-10,neckC=x0+L/2;
+  const neckT=cv.brittle||eps<=cv.epsU?0:Math.max(0,Math.min(1,(eps-cv.epsU)/(cv.epsF-cv.epsU)))*0.55;
+  const hw=x=>{let h=w0/2*(1-0.22*Math.min(1,eps*stretch/1.4));if(neckT>0){const d=(x-neckC)/(L*0.1);h*=1-neckT*Math.exp(-d*d);}return h;};
+  const grad=ctx.createLinearGradient(0,cy-w0/2,0,cy+w0/2);grad.addColorStop(0,'#eef1f4');grad.addColorStop(0.5,'#b7bfc7');grad.addColorStop(1,'#8a949e');
+  ctx.fillStyle='#3a4650';ctx.fillRect(4,cy-34,gx0-10,68);ctx.fillRect(x0+L+10,cy-34,gx0+6,68);
+  ctx.fillStyle='#4d5b67';ctx.fillRect(gx0-14,cy-w0/2-8,12,w0+16);ctx.fillRect(x0+L+10,cy-w0/2-8,12,w0+16);
+  const body=(xa,xb)=>{ctx.beginPath();const n=40;for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy-hw(x));}for(let i=n;i>=0;i--){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy+hw(x));}ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#5d6872';ctx.lineWidth=1.2;ctx.stroke();};
+  if(!fractured)body(x0,x0+L);
+  else{const gap=Math.min(40,tBreak*40);ctx.save();ctx.beginPath();ctx.rect(0,0,neckC-gap/2,H);ctx.clip();body(x0,x0+L);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(neckC+gap/2,0,W,H);ctx.clip();ctx.translate(gap,0);body(x0,x0+L);ctx.restore();
+    ctx.fillStyle='#e0261c';ctx.font='700 13px sans-serif';ctx.textAlign='center';ctx.fillText(cv.brittle?'brittle fracture: flat, no neck':'ductile fracture: necked',W/2,18);}
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('strain '+(eps*100).toFixed(2)+' %',gx0,H-6);
+}
+
+/* ---------- grains drawn as bands of stretched cells ---------- */
+function voronoiBands(ctx,W,H,bands,seed){
+  const img=ctx.createImageData(W,H),D=img.data;
+  bands.forEach((b,bi)=>{
+    const rnd=mulberry32(seed+bi*17),y0=Math.round(b.y0),y1=Math.round(b.y1),h=Math.max(1,y1-y0),gw=b.gw,asp=b.asp;
+    const n=Math.max(4,Math.round((W*h)/(gw*gw*asp))),cx=new Float32Array(n),cy=new Float32Array(n),tone=new Float32Array(n);
+    for(let i=0;i<n;i++){cx[i]=rnd()*(W+2*gw*asp)-gw*asp;cy[i]=y0+rnd()*h;tone[i]=rnd();}
+    for(let y=y0;y<y1&&y<H;y++)for(let x=0;x<W;x++){let a=1e9,c2=1e9,ai=0;
+      for(let i=0;i<n;i++){const dx=(x-cx[i])/asp,dy=y-cy[i],d=dx*dx+dy*dy;if(d<a){c2=a;a=d;ai=i;}else if(d<c2)c2=d;}
+      const edge=(Math.sqrt(c2)-Math.sqrt(a))<1.1,t=(b.tone||200)+tone[ai]*28,o=4*(y*W+x);
+      if(edge){D[o]=70;D[o+1]=78;D[o+2]=86;}else{D[o]=t;D[o+1]=t+3;D[o+2]=t+8;}D[o+3]=255;}
+  });
+  ctx.putImageData(img,0,0);
+}
+function grainView(c,view,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,m=A.m;ctx.fillStyle='#e8ecef';ctx.fillRect(0,0,W,H);
+  const isA=A.kind==='A',st=view==='anneal'?A.state3:A.state;
+  if(view==='wall'&&!isA)view='across';
+  const aspRaw=view==='across'?1+(st.asp-1)*0.4:st.asp,asp=Math.min(12,Math.max(1,aspRaw)),thick=Math.max(st.deff,2.5),gw=16;
+  let label='',pxum=gw/thick;
+  if(view==='wall'&&isA){
+    const ring=Math.max(0,st.pcg),hr=Math.round(ring*H*0.9);const bands=[];
+    if(hr>2)bands.push({y0:0,y1:hr,gw:46,asp:1.4,tone:196});bands.push({y0:hr,y1:H,gw:14,asp:1.5,tone:206});
+    voronoiBands(ctx,W,H,bands,11);
+    if(A.tube){[0.3,0.78].forEach(f=>{ctx.strokeStyle=A.state.sq<0.8?'#b3261e':'#8a949e';ctx.lineWidth=A.state.sq<0.8?4:2;ctx.setLineDash(A.state.sq<0.8?[6,5]:[]);ctx.beginPath();ctx.moveTo(f*W,hr);ctx.lineTo(f*W,H);ctx.stroke();ctx.setLineDash([]);});}
+    ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(6,6,W-12,18);ctx.fillStyle='#14222B';ctx.font='600 11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('outside surface at the top'+(hr>2?'; coarse ring '+(ring*100).toFixed(0)+' % of the wall':'')+(A.tube?'; vertical lines are seam welds':''),10,19);
+    label='Wall cross-section (grains drawn much larger than real)';
+  } else {
+    voronoiBands(ctx,W,H,[{y0:0,y1:H,gw:gw,asp:asp,tone:204}],view==='anneal'?31:7);
+    const fov=W/pxum,nice=[1,2,5,10,20,50,100,200,500,1000],len=nice.filter(v=>v*pxum<W*0.4).pop()||1;
+    ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(8,H-22,len*pxum+14,18);ctx.fillStyle='#14222B';ctx.fillRect(14,H-10,len*pxum,3);ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText(len+' µm',14,H-13);
+    ctx.textAlign='right';ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(W-140,6,134,18);ctx.fillStyle='#14222B';ctx.fillText(isA?'flow direction  →':'rolling direction  →',W-10,19);
+    label=(view==='anneal'?'After annealing, along the '+(isA?'flow':'rolling direction'):(view==='across'?'Across the rolling direction, as rolled':'Along the '+(isA?'flow, as extruded':'rolling direction, as rolled')))+': grain thickness about '+st.deff.toFixed(0)+' µm, stretched '+Math.max(1,aspRaw).toFixed(0)+' times'+(aspRaw>12?' (drawn at 12)':'');
+  }
+  return label;
+}
+
+/* ---------- the extrusion press ---------- */
+function drawExtrusion(c,A,P,s){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,k=1.1,cy=H/2,x0=30,xd=x0+300*k,R0=50*k,m=A.m;ctx.clearRect(0,0,W,H);
+  const strokeMM=A.stroke*s,xb=x0+strokeMM*k,R=A.R,heat=(T)=>{const u=Math.max(0,Math.min(1,(T-300)/550));return 'rgb('+Math.round(160+90*u)+','+Math.round(110-50*u)+','+Math.round(70-40*u)+')';};
+  // container and die
+  ctx.fillStyle='#5d6872';ctx.fillRect(x0-6,cy-R0-12,xd-x0+6,12);ctx.fillRect(x0-6,cy+R0,xd-x0+6,12);
+  const De=A.De*k/2;ctx.fillStyle='#3a4650';ctx.beginPath();ctx.moveTo(xd,cy-R0-12);ctx.lineTo(xd+18,cy-R0-12);ctx.lineTo(xd+18,cy-De);ctx.lineTo(xd,cy-De);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(xd,cy+R0+12);ctx.lineTo(xd+18,cy+R0+12);ctx.lineTo(xd+18,cy+De);ctx.lineTo(xd,cy+De);ctx.closePath();ctx.fill();
+  // die face cone
+  const Lc=P.angle>=89?0:(R0-De)/Math.tan(P.angle*Math.PI/180);
+  ctx.fillStyle='#3a4650';ctx.beginPath();ctx.moveTo(xd,cy-R0);ctx.lineTo(xd,cy-De);ctx.lineTo(xd-Lc,cy-R0);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(xd,cy+R0);ctx.lineTo(xd,cy+De);ctx.lineTo(xd-Lc,cy+R0);ctx.closePath();ctx.fill();
+  // billet
+  ctx.fillStyle=heat(P.Tb);ctx.fillRect(xb,cy-R0,xd-xb,2*R0);
+  // dead metal zone
+  const dz=Math.min(1,A.dead)*0.55*R0;if(dz>3){ctx.fillStyle='#9aa3ab';ctx.beginPath();ctx.moveTo(xd,cy-R0);ctx.lineTo(xd-dz*1.4,cy-R0);ctx.lineTo(xd,cy-De-4);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(xd,cy+R0);ctx.lineTo(xd-dz*1.4,cy+R0);ctx.lineTo(xd,cy+De+4);ctx.closePath();ctx.fill();}
+  // extrudate
+  const oD=A.tube?A.od*k/2:De;ctx.fillStyle=heat(A.Texit);ctx.fillRect(xd+18,cy-De,W-xd-18,2*De);
+  if(A.tube){const iD=Math.max(2,A.id*k/2*(De/oD));ctx.fillStyle='#f3f5f6';ctx.fillRect(xd+18,cy-iD*0.55,W-xd-18,iD*1.1);}
+  // flow lines
+  ctx.strokeStyle='rgba(20,34,43,.55)';ctx.lineWidth=1.2;
+  for(let i=-4;i<=4;i++){const r0=i/4.6*R0;ctx.beginPath();const xs=xd-0.75*R0*1.6,xe=xd+14;
+    for(let x=xb+2;x<=W-6;x+=5){let r=r0;if(x>xs){const u=Math.min(1,(x-xs)/(xe-xs)),sm=u*u*(3-2*u);r=r0*(1-(1-1/Math.sqrt(R))*sm);}ctx.lineTo(x,cy+r);}ctx.stroke();}
+  ctx.fillStyle='#14222B';ctx.fillRect(x0-14,cy-R0,14+(xb-x0),2*R0>0?0:0);
+  ctx.fillStyle='#2b343c';ctx.fillRect(x0-34,cy-R0*0.8,34+(xb-x0),R0*1.6);
+  if(A.tube){ctx.strokeStyle='#14222B';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(xb,cy);ctx.lineTo(xd+18,cy);ctx.stroke();}
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='left';
+  ctx.fillText('ram',x0-30,cy-R0*0.8-6);ctx.fillText('billet, '+P.Tb+' °C',xb+10,cy-R0-18);ctx.fillText('die',xd-4,cy+R0+30);ctx.fillText('extrudate at '+A.Texit.toFixed(0)+' °C',xd+30,cy-De-8);
+  if(dz>3){ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.fillText('dead metal zone',xd-dz*1.4-4,cy-R0-4);}
+  ctx.fillStyle='#14222B';ctx.font='700 13px sans-serif';ctx.textAlign='right';ctx.fillText('ram force '+(A.F(strokeMM)/1e6).toFixed(1)+' MN',W-10,20);
+}
+function drawForceStroke(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ymax=Math.max(PRESS*1.15,A.Fmax*1.1)/1e6;
+  const f=chartFrame(ctx,W,H,50,W-14,16,H-40,0,A.stroke,0,ymax,'ram stroke, mm','ram force, MN',niceTicks(A.stroke,5),niceTicks(ymax,5));
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#b3261e';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(PRESS/1e6));ctx.lineTo(f.sx(A.stroke),f.sy(PRESS/1e6));ctx.stroke();ctx.setLineDash([]);
+  const pts=[];for(let s=0;s<=A.stroke;s+=A.stroke/40)pts.push([s,A.F(s)/1e6]);pline(ctx,pts,f,'#c0271b',3);
+  ctx.fillStyle='#b3261e';ctx.font='11px sans-serif';ctx.textAlign='right';ctx.fillText('press capacity',W-18,f.sy(PRESS/1e6)-5);
+  return f;
+}
+function drawWindow(c,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,w=windowMap(P,22),L=56,R=W-14,T=16,B=H-42,n=22;
+  ctx.clearRect(0,0,W,H);const x=(j)=>L+(R-L)*j/n,y=(i)=>B-(B-T)*(i+1)/n;
+  w.grid.forEach((row,i)=>row.forEach((cell,j)=>{ctx.fillStyle=cell.ok?'rgba(31,111,71,.45)':(cell.Fok?'rgba(179,38,30,.22)':'rgba(168,106,0,.25)');ctx.fillRect(x(j),y(i),(R-L)/n+0.5,(B-T)/n+0.5);}));
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='center';[1,3,10,30].forEach(v=>{const j=Math.log(v/w.v0)/Math.log(w.v1/w.v0)*n;ctx.fillText(v,L+(R-L)*j/n,B+16);});ctx.fillText('ram speed, mm/s (log scale)',(L+R)/2,H-6);
+  ctx.textAlign='right';niceTicks(w.T1-w.T0,5).forEach(v=>{const Tt=w.T0+v;ctx.fillText(Math.round(Tt),L-6,B-(B-T)*(v/(w.T1-w.T0))+4);});ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('billet temperature, °C',0,0);ctx.restore();
+  const px=L+(R-L)*Math.log(P.v/w.v0)/Math.log(w.v1/w.v0),py=B-(B-T)*(P.Tb-w.T0)/(w.T1-w.T0);ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(px,py,7,0,6.283);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#1f6f47';ctx.fillText('green: works',L+8,T+14);ctx.fillStyle='#a86a00';ctx.fillText('amber: press too weak (too cold)',L+8,T+28);ctx.fillStyle='#b3261e';ctx.fillText('red: surface tears or a defect (too hot or fast)',L+8,T+42);
+}
+/* ---------- the rolling mill ---------- */
+function drawRolling(c,A,P,pi){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,cy=H/2,pass=A.passes[Math.min(A.passes.length-1,Math.max(0,pi))];ctx.clearRect(0,0,W,H);
+  if(!pass){ctx.fillStyle='#14222B';ctx.font='13px sans-serif';ctx.fillText('No passes: the plate is already at final thickness.',20,cy);return;}
+  const k=Math.min(2.2,110/P.h0),Rr=Math.min(62,Math.max(30,P.Rroll*0.1)),hIn=pass.h*k,hOut=pass.h1*k,xc=W*0.5;
+  ctx.fillStyle=pass.cold?'#aab4bd':'#e08a3a';ctx.beginPath();ctx.moveTo(0,cy-hIn/2);ctx.lineTo(xc-30,cy-hIn/2);ctx.lineTo(xc+30,cy-hOut/2);ctx.lineTo(W,cy-hOut/2);ctx.lineTo(W,cy+hOut/2);ctx.lineTo(xc+30,cy+hOut/2);ctx.lineTo(xc-30,cy+hIn/2);ctx.lineTo(0,cy+hIn/2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#3a4650';[-1,1].forEach(sg=>{ctx.beginPath();ctx.arc(xc,cy+sg*(hOut/2+Rr),Rr,0,6.283);ctx.fill();});
+  ctx.strokeStyle='#14222B';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(xc-30,cy-hIn/2-10);ctx.lineTo(xc-30,cy+hIn/2+10);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText('in: '+pass.h.toFixed(1)+' mm',12,cy-hIn/2-8);ctx.textAlign='right';ctx.fillText('out: '+pass.h1.toFixed(1)+' mm',W-12,cy-hOut/2-8);
+  ctx.textAlign='center';ctx.font='700 13px sans-serif';ctx.fillText('pass '+pass.i+' of '+A.passes.length+(pass.cold?', cold':', hot at '+pass.T.toFixed(0)+' °C')+', roll force '+(pass.F/1e6).toFixed(2)+' MN',W/2,20);
+  ctx.font='12px sans-serif';ctx.fillStyle='#4b5a64';ctx.fillText('draft '+pass.d.toFixed(1)+' mm; contact length '+pass.L.toFixed(0)+' mm; the rolls can grip at most '+((pass.cold?A.muC:A.mu)**2*P.Rroll/2).toFixed(1)+' mm',W/2,H-10);
+}
+function drawPasses(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,n=A.passes.length,ymax=Math.max(MILL*1.15,Math.max(...A.passes.map(p=>p.F),1))/1e6;
+  if(!n){ctx.clearRect(0,0,W,H);return;}
+  const f=chartFrame(ctx,W,H,50,W-14,16,H-40,0.4,n+0.6,0,ymax,'pass number','roll force, MN',A.passes.map(p=>p.i),niceTicks(ymax,5));
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#b3261e';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0.4),f.sy(MILL/1e6));ctx.lineTo(f.sx(n+0.6),f.sy(MILL/1e6));ctx.stroke();ctx.setLineDash([]);
+  A.passes.forEach(p=>{const x=f.sx(p.i),w=Math.min(30,(W-70)/n*0.7);ctx.fillStyle=p.cold?'#6d7b86':'#d9822b';ctx.fillRect(x-w/2,f.sy(p.F/1e6),w,f.sy(0)-f.sy(p.F/1e6));});
+  ctx.fillStyle='#14222B';ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#d9822b';ctx.fillRect(60,22,12,10);ctx.fillStyle='#14222B';ctx.fillText('hot',76,31);ctx.fillStyle='#6d7b86';ctx.fillRect(110,22,12,10);ctx.fillStyle='#14222B';ctx.fillText('cold',126,31);ctx.fillStyle='#b3261e';ctx.textAlign='right';ctx.fillText('mill capacity',W-18,f.sy(MILL/1e6)-5);
+}
+function drawMap(c,A,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,PR=A.conds,reg=A.region,ymax=Math.max(reg.EL,Math.max(...PR.map(p=>p.EL)))*1.25,xmax=Math.max(reg.Y,Math.max(...PR.map(p=>p.YS)))*1.2;
+  const f=chartFrame(ctx,W,H,56,W-14,16,H-40,0,xmax,0,ymax,'yield strength, MPa','elongation, %',niceTicks(xmax,5),niceTicks(ymax,5));
+  ctx.fillStyle='rgba(31,111,71,.12)';ctx.strokeStyle='#1f6f47';ctx.setLineDash([6,5]);ctx.lineWidth=1.4;const x0=f.sx(reg.Y),y0=f.sy(ymax);ctx.fillRect(x0,y0,f.sx(xmax)-x0,f.sy(reg.EL)-y0);ctx.strokeRect(x0,y0,f.sx(xmax)-x0,f.sy(reg.EL)-y0);ctx.setLineDash([]);
+  const COL=['#6d7b86','#d9822b','#c0271b'];PR.forEach((p,i)=>{ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(p.YS),f.sy(p.EL),7,0,6.283);ctx.fill();ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(String(i+1),f.sx(p.YS)+10,f.sy(p.EL)-8);});
+  ctx.fillStyle='#1f6f47';ctx.font='600 11px sans-serif';ctx.textAlign='right';ctx.fillText('mission (across the flow)',W-20,26);
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const COL=['#6d7b86','#d9822b','#c0271b'];
+const MATOPT=[['al','6061 aluminum'],['brass','Brass C260']];
+const DEFA={al:{case:'A',mat:'al',shape:'tube',R:25,Tb:480,v:8,lub:'dry',angle:90,discard:10,cool:'water',aged:true,Ta:350,ta:60},
+            brass:{case:'A',mat:'brass',shape:'tube',R:25,Tb:820,v:8,lub:'graphite',angle:90,discard:10,cool:'water',aged:false,Ta:500,ta:60}};
+const DEFB={al:{case:'B',mat:'al',h0:40,hf:6,cold:30,Th:480,rh:0.25,rc:0.10,Rroll:500,lub:true,speed:1.0,Ta:350,ta:60},
+            brass:{case:'B',mat:'brass',h0:40,hf:6,cold:30,Th:750,rh:0.25,rc:0.10,Rroll:500,lub:true,speed:1.0,Ta:500,ta:60}};
+const CASES={
+ A:{tag:'A',title:'Extrude a tube or bar',sub:'Hot flow, grain structure and the speed-temperature window',
+  blurb:'Push a hot billet through a die. The metal has to be hot enough that the press can do it, and cool enough that the surface does not tear, so there is a narrow window of billet temperature and ram speed. The grains are drawn out along the flow, so the part is stronger and more ductile along the flow than across it, and a tube carries seam welds.',
+  ladder:['Along the flow (as extruded)','Across the flow (as extruded)','After annealing (along the flow)'],
+  ctrl:[{g:'The billet',k:'mat',type:'select',l:'Alloy',opts:MATOPT},
+        {g:'The billet',k:'shape',type:'seg',l:'Product',opts:[['tube','Tube (seam welds)'],['bar','Solid bar']]},
+        {g:'The billet',k:'Tb',type:'range',l:'Billet temperature',range:P=>[XM[P.mat].Tr[0]-60,XM[P.mat].Tr[1]+60],step:5,fmt:v=>v+' °C'},
+        {g:'The extrusion',k:'R',type:'range',l:'Extrusion ratio (area reduction)',min:8,max:80,step:1,fmt:v=>v+' : 1'},
+        {g:'The extrusion',k:'v',type:'range',l:'Ram speed',min:1,max:40,step:1,fmt:v=>v+' mm/s'},
+        {g:'The extrusion',k:'lub',type:'select',l:'Lubrication',opts:[['dry','Dry (sticking friction)'],['graphite','Graphite lubricant'],['glass','Glass lubricant']]},
+        {g:'The extrusion',k:'angle',type:'range',l:'Die half-angle (90 is flat)',min:30,max:90,step:5,fmt:v=>v+'°'},
+        {g:'The extrusion',k:'discard',type:'range',l:'Butt discarded',min:0,max:20,step:1,fmt:v=>v+' %'},
+        {g:'After the press',k:'cool',type:'seg',l:'Cooling at the press (aluminum)',opts:[['air','Air'],['water','Water quench']],show:P=>P.mat==='al'},
+        {g:'After the press',k:'aged',type:'toggle',l:'Age artificially (aluminum)',show:P=>P.mat==='al'},
+        {g:'Annealing (test 3)',k:'Ta',type:'range',l:'Annealing temperature',min:200,max:650,step:10,fmt:v=>v+' °C'},
+        {g:'Annealing (test 3)',k:'ta',type:'range',l:'Annealing time',min:5,max:240,step:5,fmt:v=>v+' min'}]},
+ B:{tag:'B',title:'Roll a plate',sub:'Hot then cold rolling: pancake grains, work hardening and anisotropy',
+  blurb:'Roll a thick plate down in hot passes, then finish with cold passes. The rolls can only grip so much per pass, the mill can only push so hard, and cold work strengthens the plate while flattening its grains and making it different along and across the rolling direction.',
+  ladder:['Along the rolling direction','Across the rolling direction','After annealing (along)'],
+  ctrl:[{g:'The plate',k:'mat',type:'select',l:'Alloy',opts:MATOPT},
+        {g:'The plate',k:'h0',type:'range',l:'Starting thickness',min:20,max:80,step:5,fmt:v=>v+' mm'},
+        {g:'The plate',k:'hf',type:'range',l:'Final thickness',min:3,max:30,step:1,fmt:v=>v+' mm'},
+        {g:'Hot rolling',k:'Th',type:'range',l:'Starting temperature',range:P=>[XM[P.mat].rolling.Tr[0]-60,XM[P.mat].rolling.Tr[1]+40],step:10,fmt:v=>v+' °C'},
+        {g:'Hot rolling',k:'rh',type:'range',l:'Reduction per hot pass',min:0.05,max:0.35,step:0.01,fmt:v=>Math.round(v*100)+' %'},
+        {g:'Cold rolling',k:'cold',type:'range',l:'Share of the thickness removed cold',min:0,max:60,step:1,fmt:v=>v+' %'},
+        {g:'Cold rolling',k:'rc',type:'range',l:'Reduction per cold pass',min:0.03,max:0.40,step:0.01,fmt:v=>Math.round(v*100)+' %'},
+        {g:'The mill',k:'Rroll',type:'range',l:'Roll diameter',min:200,max:800,step:50,fmt:v=>v+' mm'},
+        {g:'The mill',k:'lub',type:'toggle',l:'Lubricate the rolls'},
+        {g:'The mill',k:'speed',type:'range',l:'Rolling speed',min:0.1,max:5,step:0.1,fmt:v=>fx(v,1)+' m/s'},
+        {g:'Annealing (test 3)',k:'Ta',type:'range',l:'Annealing temperature',min:200,max:650,step:10,fmt:v=>v+' °C'},
+        {g:'Annealing (test 3)',k:'ta',type:'range',l:'Annealing time',min:5,max:240,step:5,fmt:v=>v+' min'}]}
+};
+let CK='A',P=Object.assign({},DEFA.al),A=null,SL=1,TD=[null,null,null],TSEL=2,ANIM=null,pend=false;
+function setCase(k){CK=k;P=Object.assign({},(k==='A'?DEFA:DEFB).al);SL=1;TD=[null,null,null];stopAnim();
+  document.querySelectorAll('.casebtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('blurb').textContent=CASES[k].blurb;
+  $('boxA').style.display=k==='A'?'':'none';$('boxB').style.display=k==='B'?'':'none';$('sl').value=100;$('slLabel').textContent=k==='A'?'Ram stroke':'Pass number';buildControls();changed();}
+function buildControls(){
+  const C=CASES[CK],box=$('controls');box.innerHTML='';let lastG='',n=0;
+  C.ctrl.forEach(c=>{
+    if(c.show&&!c.show(P))return;
+    if(c.g!==lastG){const h=document.createElement('h3');h.textContent=(++n)+'. '+c.g;box.appendChild(h);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(P[c.k]===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+      w.querySelector('select').addEventListener('change',e=>{P[c.k]=e.target.value;if(c.k==='mat')P=Object.assign({},(CK==='A'?DEFA:DEFB)[P.mat]);buildControls();changed();});}
+    else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else if(c.type==='toggle'){w.innerHTML='<label class="chk"><input type="checkbox" id="c_'+c.k+'"'+(P[c.k]?' checked':'')+'> '+c.l+'</label>';w.querySelector('input').addEventListener('change',e=>{P[c.k]=e.target.checked;changed();});}
+    else{const r=c.range?c.range(P):[c.min,c.max];P[c.k]=Math.max(r[0],Math.min(r[1],P[c.k]));
+      w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+r[0]+'" max="'+r[1]+'" step="'+c.step+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;outs();changed();});}
+    box.appendChild(w);
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},(CK==='A'?DEFA:DEFB)[P.mat]);buildControls();changed();});box.appendChild(b);outs();
+}
+function outs(){CASES[CK].ctrl.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k]);}});}
+function changed(){TD=[null,null,null];stopAnim();A=analyze(P);draw();}
+
+function kv(rows){return '<dl class="kv">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl>';}
+function drawProcess(){
+  const c=$('proc');
+  if(CK==='A'){drawExtrusion(c,A,P,SL);$('procCap').textContent='The billet is pushed from the left through the die on the right. The lines are flow lines: they stay straight in the middle and bend into the opening near the die. Slide the ram forward to watch the force fall as the billet gets shorter and the friction drops.';}
+  else{const pi=Math.max(0,Math.round(SL*(A.passes.length-1)));drawRolling(c,A,P,pi);$('procCap').textContent='The plate is squeezed between the rolls in a series of passes. Slide through the passes to see the thickness, the temperature and the roll force at each one.';}
+}
+function draw(){
+  const m=A.m,C=CASES[CK];
+  $('mission').innerHTML='<b>Mission: '+(CK==='A'?'extrude a good '+(P.shape==='tube'?'tube':'bar')+' in '+m.n.toLowerCase():'roll a good '+m.n.toLowerCase()+' plate')+'</b>'+A.mission.map(x=>'<span class="chip">'+x+'</span>').join('');
+  drawProcess();
+  const ids=['g0','g1','g2'],views=CK==='A'?['along','wall','anneal']:['along','across','anneal'],titles=CK==='A'?['1. Lengthwise, as extruded','2. Through the wall','3. Lengthwise, after annealing']:['1. Side view, as rolled','2. End view, as rolled','3. Side view, after annealing'];
+  ids.forEach((id,i)=>{$('gt'+i).textContent=titles[i];$('gc'+i).textContent=grainView($(id),views[i],A,P);});
+  if(CK==='A'){drawWindow($('cWin'),P);const s=SL*A.stroke;const f=drawForceStroke($('cForce'),A,P);const ctx=$('cForce').getContext('2d');ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(f.sx(s),f.sy(A.F(s)/1e6),6,0,6.283);ctx.fill();
+    $('kvA').innerHTML=kv([['Strain rate (average)',fx(A.edot,2)+' per second'],['Flow stress in the die',fx(A.sig,0)+' MPa'],['Temperature rise',fx(A.dT,0)+' °C, exit at '+fx(A.Texit,0)+' °C'],['True strain',fx(A.lnR,2)],['Product',A.tube?'tube, outside '+fx(A.od,0)+' mm, wall '+fx((A.od-A.id)/2,1)+' mm':'bar, '+fx(A.De,0)+' mm diameter'],['Peak ram force',fx(A.Fmax/1e6,1)+' MN of '+fx(PRESS/1e6,0)+' MN'],['Recrystallized fraction',fx(A.state.frx*100,0)+' %'],['Seam weld efficiency',A.tube?fx(A.state.sq*100,0)+' %':'no seams in a bar'],['Metal yield',fx(100-P.discard,0)+' %']]);}
+  else{drawPasses($('cPass'),A,P);$('kvB').innerHTML=kv([['Hot passes',A.Nh+(A.Nh?' of '+fx(A.rhA*100,0)+' % each':'')],['Cold passes',A.Nc+(A.Nc?' of '+fx(A.rcA*100,0)+' % each':'')],['Thickness before cold rolling',fx(A.hh,1)+' mm'],['Finishing temperature (hot)',A.hot?fx(A.Tf,0)+' °C':'no hot rolling'],['Highest roll force',fx(Math.max(A.Fmaxh,A.Fmaxc)/1e6,2)+' MN of '+fx(MILL/1e6,0)+' MN'],['Total true strain cold',fx(A.epsC,2)],['Friction coefficient',fx(A.mu,2)+' hot, '+fx(A.muC,2)+' cold']]);}
+  drawSS();drawMap($('cMap'),A,P);results();drawSpec(TSEL,0,false,0);updBtns();
+}
+function drawSS(){
+  const c=$('ss'),ctx=c.getContext('2d'),W=c.width,H=c.height,cvs=A.conds.map(curveOf),xm=Math.max(2,Math.max(...cvs.map(v=>v.epsF*100))*1.1),ym=Math.max(...A.conds.map(p=>p.UTS))*1.15;
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,0,xm,0,ym,'strain, %','engineering stress, MPa',niceTicks(xm,6),niceTicks(ym,5));
+  const draw=(cv,frac,col,w,alpha)=>{const em=cv.epsF*frac;ctx.strokeStyle=col;ctx.globalAlpha=alpha;ctx.lineWidth=w;ctx.beginPath();const n=140;for(let i=0;i<=n;i++){const e=em*i/n;i?ctx.lineTo(f.sx(e*100),f.sy(cv.f(e))):ctx.moveTo(f.sx(0),f.sy(0));}ctx.stroke();ctx.globalAlpha=1;};
+  TD.forEach((t,i)=>{if(!t)return;(t.scat||[]).forEach(sc=>draw(sc.cv,t.frac,COL[i],1.2,0.35));draw(cvs[i],t.frac,COL[i],3,1);
+    if(t.frac>=1){const cv=cvs[i];ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(cv.epsF*100),f.sy(cv.sigF),5,0,6.283);ctx.fill();ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(fx(A.conds[i].EL,1)+' % elongation',Math.min(f.sx(cv.epsF*100)+8,W-120),f.sy(cv.sigF)-8);}});
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';CASES[CK].ladder.forEach((l,i)=>{ctx.fillStyle=COL[i];ctx.fillRect(66,22+i*17,14,4);ctx.fillStyle='#14222B';ctx.fillText((i+1)+'. '+l,86,27+i*17);});
+  if(!TD.some(Boolean)){ctx.fillStyle='#4b5a64';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Run a test to draw the curves',W/2,H/2+30);}
+}
+function results(){
+  const m=A.m,C=CASES[CK],ok=A.ok;
+  $('verdict').className='verdict '+(ok?'ok':'bad');$('verdict').innerHTML=ok?'Mission met':'Not there yet';
+  let h='';if(!ok&&A.short.length)h+='<li class="head">Short of the mission</li><li class="warn">'+A.short.join('; ')+'.</li>';
+  if(A.flags.length)h+='<li class="head">Things to fix</li>'+A.flags.map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  $('flags').innerHTML=h||'<li class="ok">No problems found with this recipe.</li>';
+  const sts=[A.state,A.state,A.state3];
+  $('tbl').innerHTML='<tr><th></th><th>Yield, MPa</th><th>Tensile, MPa</th><th>Elongation, %</th><th>Grain thickness, µm</th><th>Texture</th></tr>'+A.conds.map((p,i)=>'<tr><td><span class="dot" style="background:'+COL[i]+'"></span>'+(i+1)+'. '+C.ladder[i]+'</td><td>'+fx(p.YS,0)+'</td><td>'+fx(p.UTS,0)+'</td><td>'+fx(p.EL,1)+'</td><td>'+fx(sts[i].deff,0)+'</td><td>'+fx(sts[i].t*100,0)+' %</td></tr>').join('');
+  const [a,b,c]=A.conds,an=A.state3;let ins=[];
+  const diff=(1-b.YS/a.YS)*100,eld=(1-b.EL/a.EL)*100;
+  ins.push('<b>Along against across:</b> yield '+fx(a.YS,0)+' along and '+fx(b.YS,0)+' MPa across ('+fx(diff,0)+' % lower), and elongation '+fx(a.EL,1)+' against '+fx(b.EL,1)+' % ('+fx(eld,0)+' % lower). The grains were drawn out '+fx(A.state.asp,0)+' times in one direction'+(CK==='A'&&A.tube&&A.state.sq<0.9?', and the seam welds are only '+fx(A.state.sq*100,0)+' % efficient, which hits the across direction':'')+'. This is why a bend line along the grain cracks sooner than one across it.');
+  ins.push('<b>Annealing:</b> yield falls from '+fx(a.YS,0)+' to '+fx(c.YS,0)+' MPa and elongation rises from '+fx(a.EL,1)+' to '+fx(c.EL,1)+' %, as new grains of about '+fx(an.deff,0)+' µm replace the deformed ones'+(an.fnew<0.95?'. Only '+fx(an.fnew*100,0)+' % of the metal recrystallized at this temperature and time':'')+(CK==='A'&&P.mat==='al'?'. For 6061 this also throws away the press quench and aging.':'')+'.');
+  if(CK==='A')ins.push('<b>The window:</b> the green region in the speed-temperature map is where the press can do the job and the surface stays sound. Faster extrusion heats the metal by deformation, so it needs a cooler billet.');
+  $('insights').innerHTML=ins.map(t=>'<p>'+t+'</p>').join('');
+}
+function drawSpec(i,frac,broken,tb){const cv=curveOf(A.conds[i]);drawSpecimen($('spec').getContext('2d'),460,130,cv,frac*cv.epsF,broken,tb);}
+function updBtns(){document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.i)===TSEL&&!ANIM));}
+function stopAnim(){if(ANIM){cancelAnimationFrame(ANIM.raf);ANIM=null;}}
+function runTests(list){stopAnim();const scat=$('scat').checked;list.forEach(i=>{TD[i]={frac:0,scat:scat?scatterSet(A.conds[i],100+i,4).map(p=>({cv:curveOf(p)})):[]};});ANIM={list,pos:0,t0:performance.now()};TSEL=list[0];step();}
+function step(){const a=ANIM;if(!a)return;const now=performance.now(),i=a.list[a.pos],cv=curveOf(A.conds[i]),dur=cv.brittle?2000:3400,frac=Math.min(1,(now-a.t0)/dur);TD[i].frac=frac;TSEL=i;
+  const broken=frac>=1,tb=broken?Math.min(1,(now-a.t0-dur)/500):0;drawSpec(i,frac,broken,Math.max(0,tb));drawSS();
+  if(frac>=1&&now-a.t0>dur+900){a.pos++;if(a.pos>=a.list.length){ANIM=null;updBtns();return;}a.t0=performance.now();}updBtns();a.raf=requestAnimationFrame(step);}
+function save(){const C=CASES[CK],rec={tool:'Extrusion and rolling lab (standalone beta v0.1)',saved:new Date().toISOString(),case:C.title,settings:P,
+  conditions:A.conds.map((p,i)=>({condition:C.ladder[i],yield_MPa:+fx(p.YS,0),tensile_MPa:+fx(p.UTS,0),elongation_pct:+fx(p.EL,1)})),missionMet:A.ok,flags:A.flags.map(f=>f[0]+': '+f[1])};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='extrusion-rolling-lab-'+CK+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);}
+(function init(){
+  const box=$('cases');['A','B'].forEach(k=>{const C=CASES[k],b=document.createElement('button');b.type='button';b.className='casebtn';b.dataset.k=k;b.innerHTML='<span class="tag">'+C.tag+'</span><b>'+C.title+'</b><span>'+C.sub+'</span>';b.addEventListener('click',()=>setCase(k));box.appendChild(b);});
+  $('sl').addEventListener('input',e=>{SL=+e.target.value/100;if(!pend){pend=true;requestAnimationFrame(()=>{pend=false;drawProcess();if(CK==='A'){const s=SL*A.stroke,f=drawForceStroke($('cForce'),A,P),ctx=$('cForce').getContext('2d');ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(f.sx(s),f.sy(A.F(s)/1e6),6,0,6.283);ctx.fill();}});}});
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>runTests([+b.dataset.i])));
+  $('allBtn').addEventListener('click',()=>runTests([0,1,2]));$('saveBtn').addEventListener('click',save);
+  setCase('A');
+})();
+
+})();
+</script>
+</body>
+</html>

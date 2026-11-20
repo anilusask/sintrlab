@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machining | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive turning simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Choose cutting speed, feed and depth and follow the calculation through force, power and tool life to the surface roughness of the first and last part in a batch.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/machining.html">
+<meta property="og:title" content="Machining | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Turn a shaft: cutting speed, feed and depth through to the surface finish.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/machining.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Machining simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,.btn,.chip,table,select{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:18px 0 6px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:78ch;margin:6px 0 0}.fine{font-size:.85rem;color:var(--ink-soft)}
+.mission{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}
+.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*{min-width:0}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}
+.box{margin-bottom:16px}.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}
+.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 3px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .85rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:5px 11px;font-size:.88rem;margin-top:8px}.btn:hover{background:rgba(20,34,43,.08)}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}th{font-weight:500;color:var(--ink-soft)}
+#work td.n{width:26px;color:var(--ink-soft)}#work td.st{font-weight:700;width:150px}#work td.fm{font-family:'Source Serif 4',Georgia,serif;color:var(--ink-soft)}#work td.rs{font-weight:700;width:30%}
+#work tr.bad td.rs{color:var(--bad)}#work tr.warn td.rs{color:var(--warn)}#work tr.ok td.rs{color:var(--ink)}
+#fac tr.hi td{background:var(--warn-soft)}#fac tr.tot td{font-weight:700;border-top:2px solid var(--ink)}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}
+.verdict small{display:block;font:400 .9rem var(--body);color:var(--ink-soft)}
+.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:0 0 12px;padding:0;list-style:none}
+.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0 12px;font-family:var(--head);font-size:.95rem}
+.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Machining lab: turning<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Turn a 20 mm shaft section on a lathe. Pick the cutting speed, feed and depth, and follow the calculation through spindle speed, time, force, power and tool life to the number that matters: the surface roughness, on the first part and on the last part of the batch.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Machining%20(beta%20v0.1)">send feedback</a>.</p>
+  <section class="mission" id="mission" aria-live="polite"></section>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2>The calculation</h2>
+      <div class="tw"><table id="work"></table></div>
+      <p class="fine">Working for a 20 mm bar with 4 mm of radius to remove in passes of equal depth, 42 mm of cut length, one feed for all passes. Red and amber rows are the ones that need attention.</p></div>
+    <div class="box"><h2>In the lathe</h2><canvas id="lathe" width="560" height="190" role="img" aria-label="Schematic of the turning cut"></canvas></div>
+    <div class="box"><h2>The surface</h2>
+      <canvas id="prof" width="560" height="260" role="img" aria-label="Surface profile of the first and last part"></canvas>
+      <div class="row2" style="margin-top:14px">
+        <div><h3 style="margin-top:0">Roughness against feed</h3><canvas id="cFeed" width="440" height="270"></canvas><p class="fine">The ideal formula goes with feed squared. Real surfaces are rougher, and rougher still with a worn tool.</p></div>
+        <div><h3 style="margin-top:0">Roughness against cutting speed</h3><canvas id="cSpeed" width="440" height="270"></canvas><p class="fine">Slow cutting builds up an edge that tears the surface. The grey zone is beyond what the spindle can do.</p></div>
+      </div>
+      <h3>Where the roughness comes from</h3><div class="tw"><table id="fac"></table></div>
+    </div>
+    <div class="box"><h2>The batch</h2>
+      <div class="row2">
+        <div><canvas id="cBatchRa" width="440" height="250"></canvas></div>
+        <div><canvas id="cBatchDe" width="440" height="250"></canvas></div>
+      </div>
+      <p class="fine">The tool wears as it cuts, so roughness and diameter drift along the batch. Grey lines mark tool changes.</p></div>
+    <div class="box"><h2>Result</h2>
+      <div class="row2"><div><div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul></div>
+      <div><dl class="kv" id="kv"></dl><div id="insight"></div><button class="btn" id="saveBtn" type="button">Save result (JSON)</button></div></div></div>
+    <p class="disclaimer">A teaching model, not validated process software. The formulas are textbook-level (Taylor tool life, specific cutting energy, the feed-and-nose-radius roughness formula) with typical constants, not your tools' data. The built-up edge, chatter and wear effects are simple trend models. Check the numbers against a handbook or your tooling supplier before relying on them.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: turning a shaft ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const D0=20, LCUT=42, STOCK=4.0, KBASE=1.35, TOL=0.05, HANDLING=0.3, RATE=1.0, VBLIM=0.3;   // mm, mm, mm radial, mm, min, $/min, mm
+const MATS={
+  al6061:{n:'6061-T6 aluminum (wrought bar)',us:700,Vbue:110,kmat:1.0,E:69000,duct:true,V60:{hss:120,carb:350,coat:360}},
+  a356f:{n:'A356 cast aluminum, as cast',us:800,Vbue:130,kmat:1.3,E:72000,duct:true,V60:{hss:40,carb:160,coat:175}},
+  a356t6:{n:'A356 cast aluminum, T6 (heat treated)',us:900,Vbue:90,kmat:1.1,E:72000,duct:true,V60:{hss:35,carb:150,coat:165}},
+  brass:{n:'Free-cutting brass (C360)',us:750,Vbue:35,kmat:0.9,E:100000,duct:false,V60:{hss:110,carb:260,coat:260}},
+  steel:{n:'Mild steel (1018)',us:2200,Vbue:70,kmat:1.25,E:205000,duct:true,V60:{hss:30,carb:150,coat:230}}
+};
+const TOOLS={hss:{n:'High-speed steel',nx:0.125,bue:0.6,cost:6,fl:0.1},carb:{n:'Uncoated carbide',nx:0.25,bue:1.0,cost:9,fl:0},coat:{n:'Coated carbide',nx:0.28,bue:0.85,cost:12,fl:0}};
+const HOLD={c40:{n:'Chuck only, 40 mm sticking out',L:40,mult:1},c100:{n:'Chuck only, 100 mm sticking out',L:100,mult:1},tail:{n:'Chuck and tailstock, 100 mm',L:100,mult:10}};
+const MACH={bench:{n:'Bench lathe: 2500 rpm, 1.1 kW at the spindle',nmax:2500,pav:1100},room:{n:'Toolroom lathe: 3500 rpm, 3 kW at the spindle',nmax:3500,pav:3000}};
+
+function stiffness(P){const m=MATS[P.mat],h=HOLD[P.hold],I=Math.PI*Math.pow(D0,4)/64;return 3*m.E*I/Math.pow(h.L,3)*h.mult;}   // N/mm
+function raModel(P,f,Va,d,VB){
+  const m=MATS[P.mat],t=TOOLS[P.tool],flood=P.cool==='flood';
+  const ideal=f*f/(32*P.r)*1000;                                          // micrometres
+  const Veff=m.Vbue*t.bue*(flood?0.85:1), b=Math.pow(clamp(1-Va/Veff,0,1),0.8), kBUE=1+2*b;
+  const us=m.us*Math.pow(f/0.1,-0.2), Fc=us*f*d, k=stiffness(P), delta=Fc/k, kChat=1+3*clamp((delta-0.02)/0.06,0,1);
+  const kCool=flood?0.92:1, kWear=1+0.6*VB/VBLIM;
+  const floor=0.2+t.fl+1.0*clamp((0.05-f)/0.05,0,1);
+  const ra=Math.sqrt(Math.pow(ideal*KBASE*m.kmat*kBUE*kChat*kCool*kWear,2)+floor*floor);
+  return {ra,ideal,b,kBUE,kBase:KBASE,kMat:m.kmat,kChat,kCool,kWear,floor,Fc,us,delta,k};
+}
+function analyze(P){
+  const m=MATS[P.mat],t=TOOLS[P.tool],mc=MACH[P.mach],flood=P.cool==='flood';
+  const Nreq=1000*P.V/(Math.PI*D0), N=Math.min(Nreq,mc.nmax), Va=Math.PI*D0*N/1000;
+  const F=P.f*N, tPass=LCUT/F, passes=Math.ceil(STOCK/P.d-1e-9), tCut=passes*tPass, tPart=tCut+HANDLING;
+  const MRR=Va*1000*P.f*P.d;                                                 // mm3/min
+  const r0=raModel(P,P.f,Va,P.d,0.05), Fc=r0.Fc, Pc=Fc*Va/60;
+  const C=m.V60[P.tool]*Math.pow(60,t.nx), Ceff=C*Math.pow(0.15/P.f,0.25)*Math.pow(1/P.d,0.1)*(flood?1.15:1);
+  const T=Math.min(5000,Math.pow(Ceff/Va,1/t.nx)), partsPerTool=T/tCut;
+  const Fr=Fc*(0.25+0.25*P.r/0.8), k=r0.k, deflErr=2*Fr/k;
+  const wear=tt=>Math.min(0.8,0.05+0.25*Math.pow(tt/T,0.8));
+  const ra=[],de=[],vb=[],changes=[];let tcum=0,nChange=0;
+  for(let i=0;i<P.batch;i++){
+    if(tcum+tCut>T&&tcum>0){tcum=0;nChange++;changes.push(i);}
+    const VB=wear(tcum+tCut/2);ra.push(raModel(P,P.f,Va,P.d,VB).ra);de.push(deflErr+2*0.35*(VB-0.05));vb.push(VB);tcum+=tCut;
+  }
+  const maxRa=Math.max(...ra),maxDe=Math.max(...de),batchTime=P.batch*tPart+nChange*1.0,cost=batchTime*RATE/P.batch+(nChange+1)*t.cost/P.batch;
+  const flags=[],add=(l,s)=>flags.push([l,s]);
+  if(Nreq>mc.nmax)add('warn','The spindle tops out at '+mc.nmax+' rpm, so the real cutting speed is '+Va.toFixed(0)+' m/min, not the '+P.V+' m/min you asked for.');
+  if(Pc>mc.pav)add('bad','Overload: the cut needs '+(Pc/1000).toFixed(2)+' kW and this lathe gives '+(mc.pav/1000).toFixed(1)+' kW at the spindle. It stalls.');
+  if(r0.b>0.6)add('bad','Built-up edge: at '+Va.toFixed(0)+' m/min this tool and material weld a lump of metal to the edge. It tears the surface. Cut faster.');
+  else if(r0.b>0.25)add('warn','Some built-up edge at '+Va.toFixed(0)+' m/min. Going faster would clean up the finish.');
+  if(r0.delta>0.05)add('bad','Chatter: the part flexes '+(r0.delta*1000).toFixed(0)+' µm under the cutting force and vibrates. Take a lighter cut, support the part, or use a smaller nose radius.');
+  else if(r0.delta>0.02)add('warn','The part flexes '+(r0.delta*1000).toFixed(0)+' µm under the cut. Chatter is starting to show.');
+  if(deflErr>TOL)add('bad','The tool is pushed away by about '+(deflErr*1000).toFixed(0)+' µm on the diameter, over the ±'+TOL+' mm tolerance, even with a fresh tool.');
+  if(P.f<0.04)add('warn','A feed of '+P.f+' mm/rev is below the minimum chip thickness for this edge. The tool rubs instead of cutting and the finish gets worse.');
+  if(P.f/2>P.r)add('warn','The feed is more than twice the nose radius, so the straight edge of the tool cuts the ridges and the ideal roughness formula no longer applies.');
+  if(m.duct&&P.f<0.1&&Va>80)add('warn','Long ribbon chips are likely at this feed. They can wrap round the work and the tool.');
+  if(T<tCut)add('bad','The tool is worn out before it finishes one part (life '+T.toFixed(1)+' min, a part needs '+tCut.toFixed(2)+' min).');
+  else if(nChange>0)add('warn','The tool lasts about '+Math.floor(partsPerTool)+' parts. In a batch of '+P.batch+' you change it '+nChange+' times, and the finish and size drift between changes.');
+  if(maxRa>P.target)add('bad','The roughest part in the batch is Ra '+maxRa.toFixed(2)+' µm, over the '+P.target+' µm required.');
+  if(maxDe>TOL&&deflErr<=TOL)add('bad','Tool wear pushes the diameter '+(maxDe*1000).toFixed(0)+' µm off by the end of a tool life, over the ±'+TOL+' mm tolerance.');
+  if(tPart>1.0)add('warn','Each part takes '+tPart.toFixed(2)+' min, over the 1.0 min budget.');
+  const nBad=flags.filter(f=>f[0]==='bad').length;
+  const accepted=nBad===0&&maxRa<=P.target&&maxDe<=TOL&&tPart<=1.0;
+  let score=100-nBad*22;if(maxRa>P.target)score-=Math.min(25,(maxRa/P.target-1)*40);if(tPart>1)score-=Math.min(15,(tPart-1)*20);score=Math.max(0,Math.round(score));
+  return {Nreq,N,Va,F,tPass,passes,tCut,tPart,MRR,Fc,Pc,us:r0.us,T,partsPerTool,C,Ceff,Fr,k,deflErr,r0,ra,de,vb,changes,nChange,maxRa,maxDe,batchTime,cost,flags,nBad,accepted,score,Vmax:Math.PI*D0*mc.nmax/1000,Veff:m.Vbue*t.bue*(flood?0.85:1),wear};
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt,xmap){
+  ctx.clearRect(0,0,W,H);const mx=xmap||(v=>v),a0=mx(x0),a1=mx(x1);
+  const sx=v=>L+(R-L)*(mx(v)-a0)/(a1-a0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(v,sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function line(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();let first=true;pts.forEach(p=>{const x=f.sx(p[0]),y=f.sy(p[1]);if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+
+/* ---------- surface profile ---------- */
+function synthProfile(P,a,Ra,seed){
+  const n=560,Lmm=1.6,rnd=mulberry32(seed),z=new Float32Array(n),r0=a.r0;
+  const f=P.f,r=P.r,ideal=r0.ideal;
+  // smooth random noise for built-up edge tearing
+  const nz=new Float32Array(n);let acc=0;for(let i=0;i<n;i++){acc=acc*0.82+(rnd()-0.5);nz[i]=acc;}
+  const ph=rnd()*6.283;
+  for(let i=0;i<n;i++){
+    const x=i/n*Lmm,xp=((x/f)%1)-0.5,xc=xp*f;
+    let zi=1000*(r-Math.sqrt(Math.max(0,r*r-xc*xc)));
+    zi+=nz[i]*(ideal*2.2*r0.b+0.03);
+    zi+=Math.sin(x/0.28*6.283+ph)*ideal*1.2*(r0.kChat-1);
+    zi+=(rnd()-0.5)*0.05;
+    z[i]=zi;
+  }
+  let m=0;for(let i=0;i<n;i++)m+=z[i];m/=n;let ra=0;for(let i=0;i<n;i++)ra+=Math.abs(z[i]-m);ra/=n;
+  const s=ra>1e-9?Ra/ra:1;for(let i=0;i<n;i++)z[i]=(z[i]-m)*s;
+  return z;
+}
+function drawProfiles(ctx,W,H,P,a){
+  ctx.clearRect(0,0,W,H);
+  const zs=[synthProfile(P,a,a.ra[0],5),synthProfile(P,a,a.ra[a.ra.length-1],5)];
+  let md=0;zs.forEach(z=>z.forEach(v=>{md=Math.max(md,Math.abs(v));}));md=Math.max(md,P.target*1.6);
+  const panelH=(H-10)/2,labs=['Part 1 (fresh tool)','Part '+P.batch+(P.batch>1?' (last)':'')],ras=[a.ra[0],a.ra[a.ra.length-1]];
+  zs.forEach((z,k)=>{
+    const y0=5+k*(panelH+0),mid=y0+panelH*0.55,sc=(panelH*0.38)/md,n=z.length,x0=8,x1=W-8;
+    ctx.fillStyle='#e9edf0';ctx.fillRect(0,y0,W,panelH-4);
+    ctx.fillStyle='#aab3bb';ctx.beginPath();ctx.moveTo(x0,y0+panelH-4);
+    for(let i=0;i<n;i++)ctx.lineTo(x0+(x1-x0)*i/(n-1),mid-z[i]*sc);ctx.lineTo(x1,y0+panelH-4);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#3a4650';ctx.lineWidth=1.6;ctx.beginPath();for(let i=0;i<n;i++){const x=x0+(x1-x0)*i/(n-1),y=mid-z[i]*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();
+    ctx.strokeStyle='#1f6f47';ctx.setLineDash([5,4]);ctx.lineWidth=1;[-1,1].forEach(sg=>{ctx.beginPath();ctx.moveTo(x0,mid-sg*P.target*sc);ctx.lineTo(x1,mid-sg*P.target*sc);ctx.stroke();});ctx.setLineDash([]);
+    ctx.fillStyle=ras[k]<=P.target?'#1f6f47':'#b3261e';ctx.font='700 13px sans-serif';ctx.textAlign='left';ctx.fillText(labs[k]+': Ra '+ras[k].toFixed(2)+' µm',12,y0+16);
+  });
+  ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.textAlign='right';ctx.fillText('1.6 mm of surface, height magnified. Dashed green: ±Ra target',W-10,H-4);
+}
+
+/* ---------- charts ---------- */
+function drawRaFeed(c,P,a){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ymax=Math.max(3,Math.min(12,P.target*3.2));
+  const f=chartFrame(ctx,W,H,50,W-14,14,H-40,0,0.5,0,ymax,'feed, mm/rev','roughness Ra, µm',[0,0.1,0.2,0.3,0.4,0.5],niceTicks(ymax,5));
+  const ide=[],fresh=[],worn=[];for(let i=0;i<=100;i++){const ff=Math.max(0.01,0.5*i/100);ide.push([ff,Math.min(ymax,ff*ff/(32*P.r)*1000)]);fresh.push([ff,Math.min(ymax,raModel(P,ff,a.Va,P.d,0.05).ra)]);worn.push([ff,Math.min(ymax,raModel(P,ff,a.Va,P.d,VBLIM).ra)]);}
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#1f6f47';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(P.target));ctx.lineTo(f.sx(0.5),f.sy(P.target));ctx.stroke();ctx.setLineDash([]);
+  line(ctx,ide,f,'#8d99a3',2,[5,4]);line(ctx,worn,f,'#d9822b',2);line(ctx,fresh,f,'#c0271b',3);
+  ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(f.sx(P.f),f.sy(Math.min(ymax,a.r0.ra)),6,0,6.283);ctx.fill();
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';[['#c0271b','real, fresh tool'],['#d9822b','real, worn tool'],['#8d99a3','ideal formula'],['#1f6f47','target']].forEach((l,i)=>{ctx.fillStyle=l[0];ctx.fillRect(62,20+i*16,14,4);ctx.fillStyle='#14222B';ctx.fillText(l[1],82,25+i*16);});
+}
+function drawRaSpeed(c,P,a){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ymax=Math.max(3,Math.min(12,P.target*3.2)),xm=v=>Math.log(v);
+  const f=chartFrame(ctx,W,H,50,W-14,14,H-40,15,500,0,ymax,'cutting speed, m/min (log scale)','roughness Ra, µm',[20,50,100,200,500],niceTicks(ymax,5),xm);
+  ctx.fillStyle='rgba(168,106,0,.12)';ctx.fillRect(f.sx(15),14,f.sx(a.Veff)-f.sx(15),H-54);
+  ctx.fillStyle='rgba(120,130,140,.18)';const xv=Math.min(500,a.Vmax);ctx.fillRect(f.sx(xv),14,f.sx(500)-f.sx(xv),H-54);
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#1f6f47';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(15),f.sy(P.target));ctx.lineTo(f.sx(500),f.sy(P.target));ctx.stroke();ctx.setLineDash([]);
+  const pts=[];for(let i=0;i<=120;i++){const V=15*Math.pow(500/15,i/120),Va=Math.min(V,a.Vmax);pts.push([V,Math.min(ymax,raModel(P,P.f,Va,P.d,0.05).ra)]);}
+  line(ctx,pts,f,'#c0271b',3);
+  ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(f.sx(Math.max(15,Math.min(500,P.V))),f.sy(Math.min(ymax,a.r0.ra)),6,0,6.283);ctx.fill();
+  ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#a86a00';ctx.fillText('built-up edge zone',f.sx(15)+6,30);
+  if(a.Vmax<500){ctx.fillStyle='#4b5a64';ctx.textAlign='right';ctx.fillText('beyond the spindle limit',W-18,30);}
+}
+function drawBatch(c,P,a,kind){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,B=P.batch,data=kind==='ra'?a.ra:a.de.map(v=>v*1000),lim=kind==='ra'?P.target:TOL*1000;
+  const ymax=Math.max(lim*1.5,Math.max(...data)*1.12);
+  const xt=B<=5?[1,2,3,4,5]:[1,Math.round(B/2),B];
+  const f=chartFrame(ctx,W,H,50,W-14,14,H-40,1,Math.max(2,B),0,ymax,'part number',kind==='ra'?'roughness Ra, µm':'diameter error, µm',xt,niceTicks(ymax,5));
+  ctx.fillStyle='rgba(31,111,71,.08)';ctx.fillRect(f.sx(1),f.sy(lim),f.sx(Math.max(2,B))-f.sx(1),f.sy(0)-f.sy(lim));
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#1f6f47';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(1),f.sy(lim));ctx.lineTo(f.sx(Math.max(2,B)),f.sy(lim));ctx.stroke();ctx.setLineDash([]);
+  a.changes.forEach(i=>{ctx.strokeStyle='#8d99a3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(f.sx(i+1),14);ctx.lineTo(f.sx(i+1),H-40);ctx.stroke();});
+  if(B<=5){data.forEach((v,i)=>{ctx.fillStyle=v<=lim?'#1f6f47':'#b3261e';const x=f.sx(i+1);ctx.fillRect(x-14,f.sy(v),28,f.sy(0)-f.sy(v));});}
+  else line(ctx,data.map((v,i)=>[i+1,v]),f,'#c0271b',2.6);
+  ctx.font='600 11px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';ctx.fillText(kind==='ra'?'target':'tolerance',W-18,f.sy(lim)-5);
+  if(a.changes.length){ctx.textAlign='left';ctx.fillText('grey lines: tool changes',60,28);}
+}
+
+/* ---------- the cutting animation ---------- */
+function drawLathe(ctx,W,H,t,P,a){
+  ctx.clearRect(0,0,W,H);const cy=100,sc=3,rS=14*sc,rT=10*sc,x0=78,x1=W-30;
+  const chat=a.r0.kChat-1,bue=a.r0.b;
+  // stock, turned part ahead of the tool
+  const cyc=((t/7000)%1),xt=x1-(x1-x0-8)*cyc;
+  ctx.fillStyle='#c8d0d6';ctx.fillRect(x0,cy-rS,xt-x0,2*rS);
+  ctx.fillStyle='#e9edf0';ctx.fillRect(xt,cy-rS,x1-xt,2*rS);
+  // turned surface (smaller diameter) to the right of the tool
+  ctx.fillStyle='#b6bfc7';ctx.fillRect(xt,cy-rT,x1-xt,2*rT);
+  // feed ridges
+  const pitch=clamp(P.f*60,5,26);ctx.strokeStyle='rgba(58,70,80,.5)';ctx.lineWidth=1;
+  for(let x=xt+4;x<x1;x+=pitch){const wob=Math.sin(x*0.09)*chat*4;ctx.beginPath();ctx.moveTo(x,cy-rT+wob);ctx.lineTo(x,cy+rT+wob);ctx.stroke();}
+  // rotation streaks on the stock
+  ctx.strokeStyle='rgba(120,130,140,.55)';ctx.lineWidth=1.5;const sp=(a.N/2500)*90;
+  for(let k=0;k<6;k++){const y=cy-rS+(((t/1000)*sp+k*(2*rS/6))%(2*rS));ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(xt,y);ctx.stroke();}
+  // chuck
+  ctx.fillStyle='#3a4650';ctx.fillRect(14,cy-48,x0-14,96);ctx.fillStyle='#4d5b67';ctx.fillRect(x0-8,cy-40,8,80);
+  // tool
+  const vib=Math.sin(t/55)*chat*3,tipY=cy-rT+vib;
+  ctx.fillStyle='#d9822b';ctx.beginPath();ctx.moveTo(xt,tipY);ctx.lineTo(xt+34,tipY-10);ctx.lineTo(xt+90,tipY-52);ctx.lineTo(xt+110,tipY-38);ctx.lineTo(xt+52,tipY+2);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#7a4a12';ctx.lineWidth=1.2;ctx.stroke();
+  if(bue>0.05){ctx.fillStyle='#8a949e';ctx.beginPath();ctx.arc(xt+4,tipY-3,2+7*bue,0,6.283);ctx.fill();}
+  // chip
+  const long=MATS[P.mat].duct&&P.f<0.12&&a.Va>60;
+  ctx.strokeStyle=P.mat==='steel'?'#8a7a9a':'#b4bcc3';ctx.lineWidth=2.6;ctx.lineCap='round';
+  if(long){ctx.beginPath();for(let i=0;i<=40;i++){const u=i/40,x=xt+30+u*70+Math.sin(u*14-t/90)*5,y=tipY-12-u*52+Math.cos(u*10-t/110)*8;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}
+  else{for(let k=0;k<6;k++){const u=((t/700)+k/6)%1,x=xt+34+u*60,y=tipY-12-u*40+u*u*55;ctx.save();ctx.translate(x,y);ctx.rotate(u*5+k);ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(4,0);ctx.stroke();ctx.restore();}}
+  ctx.lineCap='butt';
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(a.N.toFixed(0)+' rpm, '+a.F.toFixed(0)+' mm/min feed, '+P.d+' mm depth, '+a.passes+' passes',18,22);
+  ctx.font='11px sans-serif';ctx.fillStyle='#4b5a64';ctx.fillText('Schematic, not to scale. Speed of the animation is not real time.',18,H-8);
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const CTRL=[
+ {g:'Workpiece and machine',items:[
+  {k:'mat',type:'select',l:'Material',opts:Object.keys(MATS).map(k=>[k,MATS[k].n])},
+  {k:'hold',type:'select',l:'Work holding',opts:Object.keys(HOLD).map(k=>[k,HOLD[k].n])},
+  {k:'mach',type:'select',l:'Lathe',opts:Object.keys(MACH).map(k=>[k,MACH[k].n])}]},
+ {g:'Tool',items:[
+  {k:'tool',type:'seg',l:'Tool material',opts:[['hss','HSS'],['carb','Carbide'],['coat','Coated']]},
+  {k:'r',type:'seg',num:true,l:'Nose radius',opts:[[0.2,'0.2 mm'],[0.4,'0.4 mm'],[0.8,'0.8 mm'],[1.2,'1.2 mm']]},
+  {k:'cool',type:'seg',l:'Coolant',opts:[['dry','Dry'],['flood','Flood']]}]},
+ {g:'Cutting data',items:[
+  {k:'V',type:'range',l:'Cutting speed',min:20,max:400,step:5,fmt:v=>v+' m/min'},
+  {k:'f',type:'range',l:'Feed',min:0.02,max:0.5,step:0.01,fmt:v=>fx(v,2)+' mm/rev'},
+  {k:'d',type:'range',l:'Depth of cut',min:0.1,max:3,step:0.1,fmt:v=>fx(v,1)+' mm'}]},
+ {g:'The job',items:[
+  {k:'batch',type:'seg',num:true,l:'Batch size',opts:[[5,'5 parts'],[50,'50 parts'],[500,'500 parts']]},
+  {k:'target',type:'seg',num:true,l:'Required finish, Ra',opts:[[3.2,'3.2 µm'],[1.6,'1.6 µm'],[0.8,'0.8 µm']]}]}
+];
+const DEF={mat:'al6061',hold:'c40',mach:'bench',tool:'carb',r:0.8,cool:'flood',V:100,f:0.2,d:1.0,batch:50,target:1.6};
+let P=Object.assign({},DEF),A=null;
+
+function buildControls(){
+  const box=$('controls');box.innerHTML='';let n=0;
+  CTRL.forEach(grp=>{
+    const h=document.createElement('h3');h.textContent=(++n)+'. '+grp.g;box.appendChild(h);
+    grp.items.forEach(c=>{
+      const w=document.createElement('div');
+      if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(P[c.k]===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+        w.querySelector('select').addEventListener('change',e=>{P[c.k]=e.target.value;changed();});}
+      else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(String(P[c.k])===String(o[0]))+'">'+o[1]+'</button>').join('')+'</div>';
+        w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=c.num?+b.dataset.v:b.dataset.v;w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+      else{w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+P[c.k]+'">';
+        const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;outs();changed();});}
+      box.appendChild(w);
+    });
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},DEF);buildControls();changed();});box.appendChild(b);
+  outs();
+}
+function outs(){CTRL.forEach(g=>g.items.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k]);}}));}
+function changed(){A=analyze(P);render();}
+
+function workings(){
+  const m=MATS[P.mat],t=TOOLS[P.tool],mc=MACH[P.mach],a=A,rows=[];
+  const lim=a.Nreq>mc.nmax;
+  rows.push(['Spindle speed','N = 1000 × V ÷ (π × D) = 1000 × '+P.V+' ÷ (π × '+D0+')',fx(a.Nreq,0)+' rpm'+(lim?', capped at '+mc.nmax+' rpm: real cutting speed '+fx(a.Va,0)+' m/min':' (limit '+mc.nmax+' rpm)'),lim?'warn':'ok']);
+  rows.push(['Feed rate','F = f × N = '+fx(P.f,2)+' × '+fx(a.N,0),fx(a.F,0)+' mm/min','ok']);
+  rows.push(['Time','passes = stock ÷ depth = '+STOCK+' ÷ '+fx(P.d,1)+' = '+a.passes+'; time = passes × L ÷ F = '+a.passes+' × '+LCUT+' ÷ '+fx(a.F,0)+', plus '+HANDLING+' min handling',fx(a.tCut,2)+' min cutting, '+fx(a.tPart,2)+' min per part',a.tPart>1?'warn':'ok']);
+  rows.push(['Material removal rate','MRR = V × f × d = '+fx(a.Va,0)+' × '+fx(P.f,2)+' × '+fx(P.d,1),fx(a.MRR/1000,1)+' cm³/min','ok']);
+  rows.push(['Cutting force and power','Fc = u × f × d = '+fx(a.us,0)+' N/mm² × '+fx(P.f,2)+' × '+fx(P.d,1)+'; P = Fc × V ÷ 60',fx(a.Fc,0)+' N, '+fx(a.Pc/1000,2)+' kW (lathe gives '+fx(mc.pav/1000,1)+' kW)',a.Pc>mc.pav?'bad':'ok']);
+  rows.push(['Tool life (Taylor)','V × Tⁿ = C, n = '+t.nx+', C = '+fx(a.C,0)+' scaled for feed, depth and coolant = '+fx(a.Ceff,0)+'; T = (C ÷ V)^(1/n)',a.T>=5000?'over 5000 min':fx(a.T,0)+' min, about '+fx(a.partsPerTool,0)+' parts per edge',a.T<a.tCut?'bad':'ok']);
+  rows.push(['Ideal roughness','Ra = f² ÷ (32 × r) = '+fx(P.f,2)+'² ÷ (32 × '+P.r+') × 1000',fx(a.r0.ideal,2)+' µm','ok']);
+  rows.push(['Real roughness','ideal × '+a.r0.kBase+' (real-world base) × '+fx(a.r0.kMat,2)+' (material) × '+fx(a.r0.kBUE,2)+' (built-up edge) × '+fx(a.r0.kChat,2)+' (chatter) × '+fx(a.r0.kCool,2)+' (coolant) × '+fx(a.r0.kWear,2)+' (wear)',fx(a.ra[0],2)+' µm on part 1, worst '+fx(a.maxRa,2)+' µm (need '+P.target+')',a.maxRa>P.target?'bad':'ok']);
+  rows.push(['Diameter error','tool push-off 2 × Fr ÷ k = 2 × '+fx(a.Fr,0)+' N ÷ '+fx(a.k,0)+' N/mm, plus wear',fx(a.deflErr*1000,0)+' µm from push-off, worst '+fx(a.maxDe*1000,0)+' µm in the batch (tolerance ±'+TOL*1000+')',a.maxDe>TOL?'bad':'ok']);
+  return rows;
+}
+function render(){
+  const a=A,m=MATS[P.mat];
+  $('mission').innerHTML='<b>Mission: turn the shaft section</b><span class="chip">Ra '+P.target+' µm or better on every part</span><span class="chip">diameter within ±'+TOL+' mm on every part</span><span class="chip">1.0 min or less per part</span><span class="chip">no overload, chatter or tool failure</span>';
+  $('work').innerHTML=workings().map((r,i)=>'<tr class="'+r[3]+'"><td class="n">'+(i+1)+'</td><td class="st">'+r[0]+'</td><td class="fm">'+r[1]+'</td><td class="rs">'+r[2]+'</td></tr>').join('');
+  $('verdict').className='verdict '+(a.accepted?'ok':'bad');$('verdict').innerHTML=(a.accepted?'Job accepted':'Not ready')+'<small>Score '+a.score+' out of 100</small>';
+  $('flags').innerHTML=(a.flags.length?a.flags:[['ok','No problems found with this setup.']]).map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  const maxVB=Math.max(...a.vb),rW=raModel(P,P.f,a.Va,P.d,maxVB),r0=a.r0;
+  const fac=(n,v,why,nohi)=>'<tr class="'+(!nohi&&Math.abs(v-1)>0.15?'hi':'')+'"><td>'+n+'</td><td>'+(typeof v==='number'?'× '+fx(v,2):v)+'</td><td>'+why+'</td></tr>';
+  $('fac').innerHTML='<tr><th>Step</th><th>Factor</th><th>What it is</th></tr>'+
+    '<tr><td>Ideal ridge height</td><td>'+fx(r0.ideal,2)+' µm</td><td>Set by feed and nose radius only</td></tr>'+
+    fac('Real-world base',r0.kBase,'Edge imperfections and vibration, always present',true)+
+    fac('Material',r0.kMat,m.n.indexOf('A356')>=0?'Silicon particles and porosity pull out; T6 is cleaner than as cast':'Smearing and tearing tendency of this material')+
+    fac('Built-up edge',r0.kBUE,r0.b>0.02?'Lump welded to the edge below about '+fx(a.Veff,0)+' m/min':'None at this speed')+
+    fac('Chatter',r0.kChat,r0.delta>0.02?'Part flexes '+fx(r0.delta*1000,0)+' µm under the cut':'Part is stiff enough')+
+    fac('Coolant',r0.kCool,P.cool==='flood'?'Flood coolant helps the finish':'Dry',true)+
+    fac('Tool wear, worst part',rW.kWear,'Flank wear up to '+fx(maxVB,2)+' mm')+
+    '<tr class="tot"><td>Real Ra</td><td>'+fx(a.ra[0],2)+' µm fresh</td><td>'+fx(a.maxRa,2)+' µm on the worst part, against '+P.target+' µm needed</td></tr>';
+  const util=a.Pc/MACH[P.mach].pav*100;
+  const kv=[['Time per part',fx(a.tPart,2)+' min'],['Cost per part',' $'+fx(a.cost,2)],['Tool changes in the batch',String(a.nChange)],['Worst roughness',fx(a.maxRa,2)+' µm'],['Worst diameter error',fx(a.maxDe*1000,0)+' µm'],['Power used',fx(Math.min(999,util),0)+' % of the lathe']];
+  $('kv').innerHTML=kv.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('');
+  const big=[['Material',r0.kMat],['Built-up edge',r0.kBUE],['Chatter',r0.kChat],['Tool wear',rW.kWear]].sort((x,y)=>y[1]-x[1])[0];
+  let ins;
+  if(big[1]>1.3)ins='The biggest thing hurting the finish is <b>'+big[0].toLowerCase()+'</b> (× '+fx(big[1],2)+'). Fix that before touching the feed.';
+  else if(a.r0.ideal*r0.kBase*r0.kMat>P.target*0.9)ins='The finish is set by geometry. The ideal ridge height is '+fx(r0.ideal,2)+' µm, and it scales with feed squared: cutting the feed by 30 % roughly halves it, and a larger nose radius lowers it too, though it pushes the tool harder against the part.';
+  else ins='The finish is comfortably inside the target. Look at what you can trade: a bigger feed or depth shortens the cycle, until chatter, power or tolerance push back.';
+  $('insight').innerHTML='<p>'+ins+'</p>';
+  drawProfiles($('prof').getContext('2d'),$('prof').width,$('prof').height,P,a);
+  drawRaFeed($('cFeed'),P,a);drawRaSpeed($('cSpeed'),P,a);drawBatch($('cBatchRa'),P,a,'ra');drawBatch($('cBatchDe'),P,a,'de');
+}
+function save(){
+  const a=A,rec={tool:'Machining lab: turning (standalone beta v0.1)',saved:new Date().toISOString(),settings:P,
+    result:{accepted:a.accepted,score:a.score,spindle_rpm:+fx(a.N,0),cutting_speed_mpm:+fx(a.Va,0),feed_rate_mm_min:+fx(a.F,0),time_per_part_min:+fx(a.tPart,2),passes:a.passes,force_N:+fx(a.Fc,0),power_kW:+fx(a.Pc/1000,2),tool_life_min:+fx(a.T,1),
+      ra_part1_um:+fx(a.ra[0],2),ra_worst_um:+fx(a.maxRa,2),diameter_error_worst_um:+fx(a.maxDe*1000,0),tool_changes:a.nChange,cost_per_part:+fx(a.cost,2),flags:a.flags.map(f=>f[0]+': '+f[1])}};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='machining-lab-turning.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);
+}
+// animation loop
+(function loop(t){const c=$('lathe');if(c&&A)drawLathe(c.getContext('2d'),c.width,c.height,t,P,A);requestAnimationFrame(loop);})(0);
+$('saveBtn').addEventListener('click',save);
+buildControls();changed();
+
+})();
+</script>
+</body>
+</html>

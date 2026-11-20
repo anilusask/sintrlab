@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investment casting | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive investment casting simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Build the tree, pour the plaster, burn out the wax, preheat the flask and pour, and see how many castings come out good.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/investment-casting.html">
+<meta property="og:title" content="Investment casting | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Lost-wax casting in a plaster investment, step by step, from the tree to the pour.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/investment-casting.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Investment casting simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,h4,.btn,.chip,table,select,.pill{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:16px 0 6px}h4{margin:10px 0 4px;font-size:.95rem}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:80ch;margin:6px 0 0}.fine{font-size:.88rem;color:var(--ink-soft)}
+.mission{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 0}
+@media (max-width:900px){.chain{grid-template-columns:minmax(0,1fr)}}
+.pill{text-align:left;padding:9px 11px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);font-size:.9rem;line-height:1.25;position:relative;padding-left:30px}
+.pill b{margin-right:4px}.pill .dot{position:absolute;left:10px;top:13px;width:12px;height:12px;border-radius:50%;background:var(--ok)}
+.pill.warn .dot{background:var(--warn)}.pill.bad .dot{background:var(--bad)}.pill:hover{border-color:var(--ink)}
+.pill[aria-pressed="true"]{border:2px solid var(--accent);padding:8px 10px 8px 29px;background:var(--accent-soft)}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*{min-width:0}@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}.box{margin-bottom:16px}.panel h2{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .85rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:6px 12px;font-size:.88rem}.btn:hover:not(:disabled){background:rgba(20,34,43,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover:not(:disabled){background:var(--accent-deep)}.btn:disabled{opacity:.4;cursor:default}
+.nav{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.chk{display:flex;align-items:center;gap:7px;font:500 .92rem var(--head);margin:8px 0}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:right}th:first-child,td:first-child,th:last-child,td:last-child{text-align:left}th{font-weight:500;color:var(--ink-soft)}
+tr.g td:last-child{color:var(--ok);font-weight:700}tr.b td:last-child{color:var(--bad);font-weight:700}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0;font-family:var(--head);font-size:.93rem}.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}.verdict small{display:block;font:400 .9rem var(--body);color:var(--ink-soft)}
+.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:8px 0 0;padding:0;list-style:none}.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.vw{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;margin:8px 0}.vw span{font:600 .9rem var(--head)}
+.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Investment casting lab<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Lost-wax casting in a plaster investment, step by step: build the tree, pour the plaster and let it cure, melt out the wax and burn out, preheat the flask, then melt the metal and pour. Every choice carries through to how many of the castings on the tree come out good.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Investment%20casting%20(beta%20v0.1)">send feedback</a>.</p>
+  <section class="mission" id="mission"></section>
+  <div class="chain" id="chain"></div>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2 id="flaskTitle"></h2>
+      <canvas id="flask" width="560" height="470" role="img" aria-label="The flask and the casting tree"></canvas>
+      <div class="vw" id="pourRow" style="display:none"><span>Time through the pour</span><input type="range" id="pour" min="0" max="100" value="100"></div>
+      <p class="fine" id="flaskCap"></p></div>
+    <div class="box" id="i1" style="display:none"><h3 style="margin-top:0">The tree</h3><div id="kv1"></div></div>
+    <div class="box" id="i2" style="display:none"><h3 style="margin-top:0">The investment</h3><div class="row2"><div><canvas id="cSet" width="440" height="260"></canvas></div><div id="kv2"></div></div></div>
+    <div class="box" id="i3" style="display:none"><h3 style="margin-top:0">The oven</h3><div class="row2"><div><canvas id="cOven" width="440" height="300"></canvas></div><div id="kv3"></div></div></div>
+    <div class="box" id="i5" style="display:none"><h3 style="margin-top:0">Freezing and filling</h3><div class="row2"><div><canvas id="cSol" width="440" height="260"></canvas><p class="fine">The casting should freeze first, then the gate, then the sprue, so the sprue can keep feeding.</p></div><div><canvas id="cFill" width="440" height="260"></canvas><p class="fine">Parts nearest the pour cup have the least head and fill worst.</p></div></div></div>
+    <div class="box"><h3 style="margin-top:0">What this step needs</h3><ul class="notes" id="flags"></ul></div>
+    <div class="box"><h2>Result for the whole tree</h2>
+      <div class="row2"><div><div class="verdict" id="verdict"></div><div id="insights"></div><button class="btn small" id="saveBtn" type="button">Save result (JSON)</button></div><div id="kv"></div></div>
+      <div class="tw"><table id="tbl"></table></div></div>
+    <p class="disclaimer">A teaching model, not validated foundry software. The investment, burnout and freezing relations are simple trend models with typical values for a gypsum-bonded investment, not your supplier's data sheet. The alloy properties are typical, the oven lag is a lumped estimate and the defect probabilities are tuned for instruction. Check temperatures and times against the investment manufacturer's instructions and with a test flask.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: investment (lost-wax) casting in a plaster-bonded investment ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+const G=9.81, PL={k:0.45,rho:1300,c:1000,alpha:4e-7}, TOLREL=0.004, RAMAX=6.3;
+const ALLOYS={
+  a356:{n:'A356 aluminum',rho:2680,Tliq:615,Tsol:555,L:389e3,cp:960,shr:6.5,lin:1.3,ff:0.030,pour:[680,780],flask:[230,400],plaster:'ok',price:4,gas:'Al'},
+  silver:{n:'Sterling silver 925',rho:10300,Tliq:893,Tsol:779,L:105e3,cp:250,shr:5.0,lin:1.7,ff:0.038,pour:[930,1040],flask:[480,650],plaster:'ok',price:900,gas:'O'},
+  bronze:{n:'Silicon bronze (jeweler\'s)',rho:8300,Tliq:1030,Tsol:970,L:200e3,cp:380,shr:5.2,lin:1.6,ff:0.034,pour:[1100,1200],flask:[600,750],plaster:'marginal',price:12,gas:'O'},
+  ss316:{n:'316 stainless steel',rho:7900,Tliq:1400,Tsol:1375,L:270e3,cp:500,shr:4.0,lin:2.1,ff:0.028,pour:[1520,1620],flask:[900,1100],plaster:'no',price:6,gas:'O'}
+};
+const FLASKS={f1:{n:'125 × 150 mm (5 × 6 in)',D:125,H:150},f2:{n:'150 × 200 mm (6 × 8 in)',D:150,H:200},f3:{n:'150 × 250 mm (6 × 10 in)',D:150,H:250},f4:{n:'175 × 300 mm (7 × 12 in)',D:175,H:300}};
+const PARTS={
+  star:{n:'Star ornament',w:69,h:69,tmin:1.5,tmax:12,vol:(t,s)=>1038*s*s*t,M:(t,s)=>Math.max(t/2*0.95,0.7)},
+  bracket:{n:'L-bracket',w:72,h:60,tmin:3,tmax:15,vol:(t,s)=>((72*s)*t+(60*s-t)*t)*(42*s),M:(t,s)=>t/2*0.9},
+  mount:{n:'Pump mount',w:72,h:42,tmin:3,tmax:12,vol:(t,s)=>72*s*42*s*t+Math.PI*Math.pow(13.5*s,2)*(42*s-t),M:(t,s)=>Math.max(t/2,6.75*s)}
+};
+const rng=(seed)=>mulberry32(seed);
+
+/* ---------- step 1: the tree ---------- */
+function tree(P){
+  const part=PARTS[P.part],s=P.scale/100,w=part.w*s,h=part.h*s,t=P.t,al=ALLOYS[P.alloy];
+  const ppl=Math.min(2,P.n),levels=Math.ceil(P.n/ppl),gap=6,spacing=h+gap,Ls=levels*spacing+22,fl=FLASKS[P.flask];
+  const Rneed=P.Ds/2+P.lg+w+6,Rfl=fl.D/2-6,Hneed=Ls+12+12,tangOK=true;
+  const Vp=part.vol(t,s),Vg=Math.PI*P.dg*P.dg/4*P.lg,Vs=Math.PI*P.Ds*P.Ds/4*Ls;
+  const Vtree=P.n*(Vp+Vg)+Vs;
+  const pats=[];for(let i=0;i<P.n;i++){const lv=Math.floor(i/ppl);pats.push({i,lv,side:i%ppl===0?-1:1,z:14+lv*spacing+h/2,head:(14+lv*spacing+h/2)/1000+0.015});}
+  const patRho=P.pattern==='wax'?0.93:1.1;
+  return {part,s,w,h,t,ppl,levels,spacing,Ls,fl,Rneed,Rfl,Hneed,fitR:Rneed<=Rfl,fitH:Hneed<=fl.H,tangOK,Vp,Vg,Vs,Vtree,pats,
+    Mc:part.M(t,s),massPattern:Vtree*patRho/1000,massMetal:Vtree*al.rho/1e6,massParts:P.n*Vp*al.rho/1e6};
+}
+
+/* ---------- step 2: plaster ---------- */
+function plaster(P){
+  const ratio=P.ratio,workMin=9,used=P.mix/60+P.vac/60+2;
+  const phi=clamp((ratio-18.6)/(ratio+43),0,0.8),strength=10*Math.pow(1-phi/0.9,2);
+  const perm=clamp(1+(ratio-40)*0.07,0.3,1.8),pBub=0.9*Math.exp(-P.vac/55);
+  const setFrac=1-Math.exp(-P.cure/22);
+  const eSet=clamp(0.34-0.012*(ratio-40),0.05,0.5),RaInv=2.6+0.4*Math.max(0,ratio-38)+0.2*Math.max(0,36-ratio);
+  return {workMin,used,late:used>workMin,phi,strength,perm,pBub,setFrac,eSet,RaInv};
+}
+
+/* ---------- steps 3 and 4: dewax, burnout, preheat ---------- */
+function oven(P,tr){
+  const R=tr.fl.D/2/1000,tau=0.25*R*R/PL.alpha/60;          // minutes
+  const cool=5,dt=1;let t=0,Tc=20,Tov=P.Tdw;const ser=[];let tb650=0,tDw=0,maxT=20,maxRate=0,Tstage=[],stageEnd={};
+  const dw=P.tdw,ramp=P.ramp/60,Tb=P.Tb,Tpre=P.Tpre;
+  const rampMin=Math.max(0,(Tb-P.Tdw)/ramp);
+  const tRampEnd=dw+rampMin,tHoldEnd=tRampEnd+P.hb*60,coolMin=Math.abs(Tb-Tpre)/cool,tCoolEnd=tHoldEnd+coolMin,tEnd=tCoolEnd+P.soak;
+  stageEnd={dw,tRampEnd,tHoldEnd,tCoolEnd,tEnd};
+  let wasCore=20;
+  for(t=0;t<=tEnd;t+=dt){
+    let To;
+    if(t<=dw)To=P.Tdw;else if(t<=tRampEnd)To=P.Tdw+ramp*(t-dw);else if(t<=tHoldEnd)To=Tb;else if(t<=tCoolEnd)To=Tb+(Tpre-Tb)*(t-tHoldEnd)/coolMin;else To=Tpre;
+    if(P.hb===0&&t>tRampEnd&&t<=tHoldEnd)To=Tb;
+    Tc+=(To-Tc)*(1-Math.exp(-dt/tau));
+    const rate=(Tc-wasCore)*60;wasCore=Tc;
+    if(Tc>=100&&Tc<=300)maxRate=Math.max(maxRate,rate);
+    if(Tc>=90&&t<=dw)tDw+=dt;
+    if(Tc>=650)tb650+=dt;
+    maxT=Math.max(maxT,Tc);
+    ser.push([t/60,To,Tc]);
+  }
+  const tNeedWax=25*Math.pow(R*1000/62.5,2),waxOut=P.pattern==='wax'?(dw>0?clamp(tDw/tNeedWax,0,1):0):1;
+  const resin=P.pattern==='resin',tReq=180*(R*1000/62.5)*(resin?1.4:1);
+  const residue=(1-tb650/tReq)+(1-waxOut)*0.3;
+  const Tend=ser[ser.length-1][2],Toven=Tpre,gradient=Math.abs(Tend-Toven);
+  const steamRisk=clamp((maxRate-120)/200,0,1);
+  const resinRisk=resin?clamp((maxRate-60)/120,0,1):0;
+  const hot=clamp((maxT-780)/40,0,1);
+  return {ser,tau,stageEnd,tb650,tReq,waxOut,residue:clamp(residue,0,1),maxT,maxRate,steamRisk,resinRisk,hot,gradient,Tflask:Tend+0,tNeedWax,tDw,resin};
+}
+
+/* ---------- step 5: pour and the result for every part on the tree ---------- */
+function chv(A,Tp,Tf){const H=A.L+A.cp*Math.max(0,Tp-A.Tliq),dT=Math.max(40,A.Tliq-Tf);return Math.PI/4*Math.pow(A.rho*H/dT,2)/(PL.k*PL.rho*PL.c);}
+function analyze(P){
+  const A=ALLOYS[P.alloy],tr=tree(P),pl=plaster(P),ov=oven(P,tr);
+  const Tf=P.Tpre+0.3*(ov.Tflask-P.Tpre),B=chv(A,P.Tp,Tf);
+  const mM={grav:1,vac:1.6,cent:2.5}[P.method],mAir={grav:1,vac:6,cent:3}[P.method];
+  const part=tr.part,s=tr.s,t=P.t,Mc=tr.Mc/1000,tc=B*Mc*Mc;
+  const sf=1+Math.min(0.8,0.5*P.dg/P.lg),Mg=P.dg/4/1000*sf,tg=B*Mg*Mg,Ms=P.Ds/4/1000,ts=B*Ms*Ms;
+  const Ag=Math.PI*P.dg*P.dg/4/1e6,tf=A.ff*B*Math.pow(t/2000,2);
+  const wM=tr.w/1000,path=0.9*Math.max(tr.w,tr.h)/1000,Vc=tr.Vp/1e9,Acav=2*tr.Vp/Math.max(t,0.5)/1e6*1.15,Across=(t/1000)*wM;
+  const turb=clamp((P.angle-60)/30,0,1);
+  // moulded size
+  const eTh=0.0011*(Tf-20),eInv=pl.eSet+eTh,net=P.comp+eInv-A.lin,dimErr=net/100*Math.max(tr.w,tr.h);
+  const RaPat=P.pattern==='wax'?0.8:0.06*P.layer;
+  const sh=clamp((tc-tg)/tc,0,1),Psh=A.shr*0.8*(tc>tg?sh:0)+(P.dg>2.0*t?0.6*(P.dg/t-2.0):0)+(ts<tg?A.shr*0.3*clamp(1-ts/tg,0,1):0);
+  const gasBase=A.gas==='Al'?(P.degas?0.3:1.6)*Math.exp((P.Tp-700)/70):0.35;
+  const mGas={grav:1,vac:0.5,cent:0.7}[P.method],Pgas0=gasBase*mGas/Math.sqrt(pl.perm)+2.0*ov.residue;
+  const crack=Math.max(ov.steamRisk,ov.resinRisk,ov.hot*0.9,pl.setFrac<0.65?0.8*(1-pl.setFrac/0.65):0,pl.strength<3?0.5*(3-pl.strength)/3:0);
+  const rep=P.dg;
+  // plaster compatibility
+  let moldFail=0;if(A.plaster==='no')moldFail=1;const noFit=!tr.fitR||!tr.fitH,marg=A.plaster==='marginal'&&P.Tp>1160?0.4:0,tolMm=TOLREL*Math.max(tr.w,tr.h);
+  const parts=[],r=rng(7001);
+  tr.pats.forEach(pt=>{
+    const v=mM*0.4*Math.sqrt(2*G*pt.head)*(1-0.25*turb),Qg=Ag*v,Qa=4e-3*pl.perm*Acav*mAir*(0.8+0.4*Math.sqrt(pt.head/0.1)),Q=Math.min(Qg,Qa),vf=Q/Across,tFill=path/Math.max(vf,1e-6);
+    const fill=clamp(tf/tFill,0,1),Pgas=Pgas0*(1+0.4*turb),Ptot=Psh+Pgas;
+    const rn=r(),rn2=r(),rn3=r(),rn4=r();
+    const nod=rn<pl.pBub*1.4,fin=rn2<crack*1.2,incl=rn3<Math.max(ov.residue*0.9,marg),ra=Math.sqrt(Math.pow(pl.RaInv*(nod?1.0:1),2)+Math.pow(RaPat,2)+Math.pow(Math.max(0,P.Tp-A.Tliq-150)*0.02,2))*(0.92+0.16*rn4);
+    const dim=dimErr*(1+0.12*(rn4-0.5));
+    const defects=[];if(fill<0.98)defects.push('misrun');if(Ptot>2.5)defects.push('porosity');if(nod)defects.push('nodules');if(fin)defects.push('fins');if(incl)defects.push('inclusions');if(ra>RAMAX)defects.push('rough');if(Math.abs(dim)>tolMm)defects.push('size');
+    if(noFit)defects.push('fused');const good=!moldFail&&!noFit&&defects.length===0;
+    parts.push({i:pt.i,lv:pt.lv,side:pt.side,z:pt.z,head:pt.head,fill,Ptot,Psh,Pgas,Ra:ra,dim,defects,good,tFill,tf,nod,fin,incl});
+  });
+  const nGood=parts.filter(p=>p.good).length,yieldPct=nGood/P.n*100;
+  const metalCost=tr.massMetal/1000*A.price*1.15,costPerGood=nGood>0?metalCost/nGood:Infinity;
+  const metalYield=tr.massParts/tr.massMetal*100;
+  const procH=(0.2+P.cure/60+ov.stageEnd.tEnd/60);
+  const DAS=25*Math.pow(tc/60,0.33),ys=A.gas==='Al'?100*Math.pow(30/Math.max(DAS,10),0.3)*Math.exp(-0.07*Psh):null;
+  // flags per step
+  const F={1:[],2:[],3:[],4:[],5:[]},add=(k,l,tx)=>F[k].push([l,tx]);
+  if(!tr.fitR)add(1,'bad','The tree touches the flask wall: the parts reach '+tr.Rneed.toFixed(0)+' mm from the centre and the flask allows '+tr.Rfl.toFixed(0)+' mm after a 6 mm margin. Shorten the gates, scale the parts down, or use a wider flask.');
+  if(!tr.fitH)add(1,'bad','The tree is '+tr.Hneed.toFixed(0)+' mm tall with its margins and the flask is '+tr.fl.H+' mm. Use fewer parts or a taller flask.');
+  if(P.dg>2.0*t)add(1,'warn','The gate ('+P.dg+' mm) is much thicker than the wall ('+t+' mm). The junction becomes a hot spot that shrinks, and it is hard to cut off.');
+  if(P.dg<0.5*t)add(1,'warn','A '+P.dg+' mm gate is thin for a '+t+' mm wall. It will freeze early and starve the casting, and choke the fill.');
+  if(P.Ds<P.dg)add(1,'bad','The sprue is thinner than the gates, so it freezes first and cannot feed anything.');
+  if(P.angle>70)add(1,'warn','Gates close to horizontal make the metal tumble in and trap air. Angle them down at 30 to 60 degrees.');
+  if(P.pattern==='resin')add(1,'ok','A printed resin pattern does not melt out. It must burn out, and it expands as it heats, so go slowly through the dewax range.');
+  if(pl.late)add(2,'bad','Mixing, vacuum and pouring took '+pl.used.toFixed(1)+' min and the working time is about '+pl.workMin+' min. The plaster starts to set before the flask is full.');
+  if(P.ratio>44)add(2,'warn','A water to powder ratio of '+P.ratio+' makes a weak, rough mold ('+pl.strength.toFixed(1)+' MPa).');
+  if(P.ratio<36)add(2,'warn','A ratio of '+P.ratio+' is too stiff to pour well and to flow round the pattern.');
+  if(pl.pBub>0.35)add(2,'warn','Without enough vacuum, air bubbles stick to the pattern and print as little nodules on '+Math.round(pl.pBub*140)+' % of the castings. Vacuum the slurry for 90 seconds or more.');
+  if(pl.setFrac<0.65)add(2,'bad','The investment has only cured to '+Math.round(pl.setFrac*100)+' %. Burning out a soft flask cracks it. Let it cure for at least an hour.');
+  if(ov.waxOut<0.9&&P.pattern==='wax')add(3,P.tdw<20?'bad':'warn',P.tdw<20?'No dewax stage: the wax boils inside the flask and the steam cracks it.':'Only '+Math.round(ov.waxOut*100)+' % of the wax melted out. The core needs about '+ov.tNeedWax.toFixed(0)+' min above 90 °C and got '+ov.tDw.toFixed(0)+'.');
+  if(ov.steamRisk>0.2)add(3,ov.steamRisk>0.6?'bad':'warn','The flask heats at '+ov.maxRate.toFixed(0)+' °C/h through 100 to 300 °C, where the water leaves. Fast heating blows steam through the mold and cracks it. Keep it under about 120 °C/h.');
+  if(ov.resinRisk>0.2)add(3,ov.resinRisk>0.6?'bad':'warn','The resin pattern expands about six times faster than the plaster as it warms, and cracks the flask. Slow down to about 60 °C/h through the range where it softens.');
+  if(ov.residue>0.25)add(3,ov.residue>0.6?'bad':'warn','Burnout is incomplete: the core of the flask spent '+ov.tb650.toFixed(0)+' min above 650 °C and needs about '+ov.tReq.toFixed(0)+'. Carbon and ash left behind show up as inclusions and gas.');
+  if(P.Tb<650)add(3,'warn','A burnout temperature of '+P.Tb+' °C is too low to burn out the carbon.');
+  if(ov.maxT>780)add(3,'bad','The flask core reached '+ov.maxT.toFixed(0)+' °C. Above about 780 °C gypsum starts to break down and gives off sulfur, which weakens the mold and contaminates the metal.');
+  if(P.Tpre<A.flask[0]||P.Tpre>A.flask[1])add(4,P.Tpre<A.flask[0]-60||P.Tpre>A.flask[1]+80?'bad':'warn','A flask at '+P.Tpre+' °C is outside the usual '+A.flask[0]+' to '+A.flask[1]+' °C for '+A.n+'. '+(P.Tpre<A.flask[0]?'Cold flasks chill thin sections and misrun.':'A very hot flask freezes slowly, coarsens the grains and lets metal burrow into the mold.'));
+  if(ov.gradient>25)add(4,'warn','The flask core is still '+ov.gradient.toFixed(0)+' °C away from the oven temperature. Soak longer so it equalizes.');
+  if(A.plaster==='no')add(5,'bad','Gypsum investment cannot take '+A.n+'. It breaks down, gives off sulfur that contaminates steel, and the mold fails at the pour. Industrial steel investment casting uses a ceramic shell instead.');
+  else if(A.plaster==='marginal'&&P.Tp>1160)add(5,'warn','Pouring bronze above 1160 °C is hard on a gypsum mold: expect some breakdown and a rough surface.');
+  if(P.Tp<A.pour[0])add(5,P.Tp<A.pour[0]-50?'bad':'warn','A pour at '+P.Tp+' °C is cold for '+A.n+' (usual '+A.pour[0]+' to '+A.pour[1]+' °C).');
+  if(P.Tp>A.pour[1])add(5,'warn','A pour at '+P.Tp+' °C is hot for '+A.n+': more gas, more shrinkage and a rougher surface.');
+  const mis=parts.filter(p=>p.fill<0.98).length;if(mis)add(5,'bad',mis+' of '+P.n+' parts misrun: the metal froze before it filled the thin sections. Make the wall thicker, preheat the flask hotter, pour hotter, or use vacuum assist or centrifugal casting.');
+  if(Psh>1.5&&tc>tg)add(5,'bad','The gate freezes before the casting ('+tg.toFixed(0)+' s against '+tc.toFixed(0)+' s), so the casting cannot be fed and shrinks inside (about '+Psh.toFixed(1)+' % porosity). Make the gate thicker or shorter.');
+  if(ts<tg)add(5,'warn','The sprue freezes before the gate ('+ts.toFixed(0)+' s against '+tg.toFixed(0)+' s), so nothing is left to feed the gates. Use a thicker sprue.');
+  if(Pgas0>2)add(5,'warn','Gas porosity of about '+Pgas0.toFixed(1)+' %: '+(A.gas==='Al'&&!P.degas?'degas the aluminum melt, and ':'')+'burn the flask out fully and pour under vacuum if you can.');
+  if(parts.some(p=>p.nod))add(5,'warn',parts.filter(p=>p.nod).length+' casting(s) have nodules from air bubbles in the investment.');
+  if(parts.some(p=>p.fin)&&crack>0.2)add(5,'warn','Cracks in the mold fill with metal as fins on '+parts.filter(p=>p.fin).length+' casting(s).');
+  const sz=parts.filter(p=>Math.abs(p.dim)>tolMm).length;if(sz)add(5,'bad',sz+' of '+P.n+' parts are out of size (about '+dimErr.toFixed(2)+' mm, tolerance ±'+tolMm.toFixed(2)+' mm). The mold cavity grows with the plaster expansion and the metal shrinks, so change the scale compensation of the pattern ('+(net>0?'reduce':'increase')+' it by about '+Math.abs(net).toFixed(2)+' %).');
+  const rough=parts.filter(p=>p.Ra>RAMAX).length;if(rough)add(5,'warn',rough+' part(s) are rougher than Ra '+RAMAX+' µm.');
+  const stepBad=k=>F[k].some(f=>f[0]==='bad'),stepWarn=k=>F[k].some(f=>f[0]==='warn');
+  const status=[1,2,3,4,5].map(k=>stepBad(k)?'bad':(stepWarn(k)?'warn':'ok'));
+  const accepted=yieldPct>=80&&P.n>=4&&!moldFail&&!noFit;
+  return {tolMm,noFit,A,tr,pl,ov,B,Tf,tc,tg,ts,tf,sf,Psh,Pgas0,crack,moldFail,parts,nGood,yieldPct,metalCost,costPerGood,metalYield,procH,DAS,ys,net,dimErr,eInv,F,status,accepted,P};
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt){
+  ctx.clearRect(0,0,W,H);const sx=v=>L+(R-L)*(v-x0)/(x1-x0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(+(+v).toFixed(2),sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function pline(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>{const x=f.sx(p[0]),y=f.sy(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+
+/* ---------- shapes of the parts ---------- */
+function shapePath(ctx,kind,x,y,w,h){
+  ctx.beginPath();
+  if(kind==='star'){const R=Math.min(w,h)/2,r=R*0.42;for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a));}ctx.closePath();}
+  else if(kind==='bracket'){const tw=w*0.3,th=h*0.3;[[x-w/2,y-h/2],[x-w/2+tw,y-h/2],[x-w/2+tw,y+h/2-th],[x+w/2,y+h/2-th],[x+w/2,y+h/2],[x-w/2,y+h/2]].forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();}
+  else{ctx.rect(x-w/2,y-h/2,w,h*0.62);ctx.moveTo(x+h*0.3,y+h*0.05);ctx.arc(x,y+h*0.05,h*0.3,0,6.283);}
+}
+function metalColour(s){ // s = solid fraction 0..1
+  if(s<=0.02)return '#f5a03a';if(s>=0.98)return '#8a949e';
+  const a=s<0.6?[245,160,58]:[200,70,40],b=s<0.6?[200,70,40]:[138,148,158],u=s<0.6?s/0.6:(s-0.6)/0.4;
+  return 'rgb('+Math.round(a[0]+(b[0]-a[0])*u)+','+Math.round(a[1]+(b[1]-a[1])*u)+','+Math.round(a[2]+(b[2]-a[2])*u)+')';
+}
+
+/* ---------- pouring timeline ---------- */
+function pourTimes(A){
+  const P=A.P,tr=A.tr,arr=A.parts.map(p=>(p.z/1000)/1.0),fillEnd=A.parts.map((p,i)=>arr[i]+Math.min(p.tFill,A.tf)),
+    tFillEnd=Math.max(...fillEnd,1),tSolEnd=Math.max(A.ts,...arr.map((a,i)=>fillEnd[i]+A.tc));
+  return {arr,fillEnd,tFillEnd,tSolEnd};
+}
+function timeAt(A,u){const T=pourTimes(A);return u<0.2?(u/0.2)*T.tFillEnd:T.tFillEnd+(u-0.2)/0.8*(T.tSolEnd-T.tFillEnd);}
+
+/* ---------- the flask and the tree ---------- */
+function drawFlask(ctx,W,H,A,mode,u){
+  ctx.clearRect(0,0,W,H);
+  const P=A.P,tr=A.tr,fl=tr.fl,k=Math.min((W-40)/fl.D,(H-40)/fl.H),cx=W/2,y0=20,kind=P.part;
+  const fx0=cx-fl.D/2*k,fw=fl.D*k,fh=fl.H*k;
+  // mold
+  if(mode==='tree'){ctx.fillStyle='#fbfcfc';ctx.fillRect(fx0,y0,fw,fh);}
+  else{ctx.fillStyle='#e8d9b5';ctx.fillRect(fx0,y0,fw,fh);
+    if(mode==='plaster'){const lvl=Math.min(1,(A.pl.setFrac));ctx.fillStyle='rgba(255,255,255,'+(0.35*(1-lvl))+')';ctx.fillRect(fx0,y0,fw,fh);}
+    if(mode==='hot'||mode==='pour'){const a=Math.min(0.5,Math.max(0,(A.Tf-20)/900));ctx.fillStyle='rgba(235,110,40,'+a+')';ctx.fillRect(fx0,y0,fw,fh);}}
+  ctx.strokeStyle='#5d6872';ctx.lineWidth=3;ctx.setLineDash(mode==='tree'?[8,5]:[]);ctx.strokeRect(fx0,y0,fw,fh);ctx.setLineDash([]);
+  const ytop=y0+12*k,sx=cx-P.Ds/2*k,swd=P.Ds*k,sprueBot=ytop+tr.Ls*k;
+  const dy=P.lg/Math.tan(Math.max(0.35,P.angle*Math.PI/180))*k;
+  const patCol=P.pattern==='wax'?'#5aa9c6':'#e0b04a';
+  const T=pourTimes(A),tt=mode==='pour'?timeAt(A,u):0;
+  // colours of gating
+  const spSolid=mode==='pour'?Math.max(0,Math.min(1,tt/A.ts)):0;
+  const cavity=mode==='hot'||mode==='pour';
+  const gateFill=(i)=>{if(mode!=='pour')return cavity?'#faf6ec':patCol;const sg=Math.max(0,Math.min(1,(tt-T.arr[i])/A.tg));return tt<T.arr[i]?'#faf6ec':metalColour(sg);};
+  const sprueFill=cavity?(mode==='pour'?(tt<=0?'#faf6ec':metalColour(spSolid)):'#faf6ec'):patCol;
+  // sprue and cup
+  ctx.fillStyle=sprueFill;ctx.beginPath();ctx.moveTo(cx-P.Ds*1.15*k,ytop);ctx.lineTo(cx+P.Ds*1.15*k,ytop);ctx.lineTo(cx+P.Ds/2*k,ytop+14*k);ctx.lineTo(cx+P.Ds/2*k,sprueBot);ctx.lineTo(cx-P.Ds/2*k,sprueBot);ctx.lineTo(cx-P.Ds/2*k,ytop+14*k);ctx.closePath();ctx.fill();
+  ctx.strokeStyle=cavity?'#7a6a50':'#2d6f8a';ctx.lineWidth=1.4;ctx.setLineDash(mode==='hot'?[4,3]:[]);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#5d6872';ctx.fillRect(cx-P.Ds*1.9*k,ytop-9,P.Ds*3.8*k,9);ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('sprue base / pour cup',cx+P.Ds*2*k,ytop-1);
+  // bubbles in the slurry
+  if(mode==='plaster'){const r=mulberry32(3);ctx.strokeStyle='rgba(120,100,70,.7)';ctx.lineWidth=1;const nb=Math.round(A.pl.pBub*60);
+    A.parts.forEach((p,i)=>{const side=p.side,xc=cx+side*(P.Ds/2+P.lg+tr.w/2)*k,yc=ytop+p.z*k;for(let b=0;b<nb;b++){const bx=xc+(r()-0.5)*tr.w*k*1.1,by=yc+(r()-0.5)*tr.h*k*1.1;ctx.beginPath();ctx.arc(bx,by,1.6+r()*2.2,0,6.283);ctx.stroke();}});}
+  // gates and parts
+  A.parts.forEach((p,i)=>{
+    const side=p.side,xc=cx+side*(P.Ds/2+P.lg+tr.w/2)*k,yc=ytop+p.z*k,xs=cx+side*P.Ds/2*k,xp=cx+side*(P.Ds/2+P.lg)*k;
+    ctx.strokeStyle=gateFill(i);ctx.lineWidth=Math.max(2,P.dg*k);ctx.lineCap='butt';ctx.beginPath();ctx.moveTo(xs,yc-dy);ctx.lineTo(xp,yc);ctx.stroke();
+    let fill=patCol,stroke=cavity?'#7a6a50':'#2d6f8a';
+    if(cavity)fill='#faf6ec';
+    ctx.save();
+    if(mode==='pour'){
+      const arr=T.arr[i],ff=Math.max(0,Math.min(p.fill,(tt-arr)/Math.max(0.05,Math.min(p.tFill,A.tf))*p.fill)),t0=T.fillEnd[i],sp=Math.max(0,Math.min(1,(tt-t0)/A.tc));
+      shapePath(ctx,kind,xc,yc,tr.w*k,tr.h*k);ctx.fillStyle='#faf6ec';ctx.fill();ctx.strokeStyle='#7a6a50';ctx.lineWidth=1.2;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.save();const wpx=tr.w*k;ctx.beginPath();if(side<0)ctx.rect(xp-ff*wpx,yc-tr.h*k,ff*wpx,tr.h*k*2);else ctx.rect(xp,yc-tr.h*k,ff*wpx,tr.h*k*2);ctx.clip();
+      shapePath(ctx,kind,xc,yc,tr.w*k,tr.h*k);ctx.fillStyle=metalColour(tt<T.fillEnd[i]?0:sp);ctx.fill();ctx.restore();
+      if(u>=0.999){ // defect marks
+        ctx.fillStyle='#14161a';const r=mulberry32(40+i);
+        const npit=Math.round(Math.min(14,p.Psh*5)),ngas=Math.round(Math.min(18,p.Pgas*6));
+        for(let q=0;q<npit;q++){ctx.beginPath();ctx.arc(xp+(side<0?-1:1)*(3+r()*tr.w*k*0.25),yc+(r()-0.5)*tr.h*k*0.5,1.8+r()*1.6,0,6.283);ctx.fill();}
+        for(let q=0;q<ngas;q++){ctx.beginPath();ctx.arc(xc+(r()-0.5)*tr.w*k*0.8,yc+(r()-0.5)*tr.h*k*0.8,1+r()*1.2,0,6.283);ctx.fill();}
+        if(p.nod){for(let q=0;q<4;q++){ctx.beginPath();ctx.arc(xc+(r()-0.5)*tr.w*k*0.9,yc-tr.h*k*0.45,2.2,0,6.283);ctx.fill();}}
+        if(p.fin){ctx.strokeStyle='#14161a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(xc-tr.w*k*0.2,yc-tr.h*k*0.55);ctx.lineTo(xc+tr.w*k*0.1,yc-tr.h*k*0.85);ctx.stroke();}
+        ctx.strokeStyle=p.good?'#1f6f47':'#b3261e';ctx.lineWidth=2.4;shapePath(ctx,kind,xc,yc,tr.w*k+6,tr.h*k+6);ctx.stroke();
+      }
+    } else {shapePath(ctx,kind,xc,yc,tr.w*k,tr.h*k);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1.4;ctx.setLineDash(mode==='hot'?[4,3]:[]);ctx.stroke();ctx.setLineDash([]);}
+    ctx.restore();
+  });
+  // overflow warning
+  if(!tr.fitR||!tr.fitH){ctx.fillStyle='rgba(179,38,30,.12)';ctx.fillRect(fx0,y0,fw,fh);ctx.fillStyle='#b3261e';ctx.font='700 14px sans-serif';ctx.textAlign='center';ctx.fillText(!tr.fitR?'The tree touches the flask wall':'The tree is taller than the flask',cx,y0+fh+16);}
+  ctx.fillStyle='#14222B';ctx.font='12px sans-serif';ctx.textAlign='left';ctx.fillText(fl.D+' mm wide flask',fx0,y0-6);
+  if(mode==='pour'){ctx.textAlign='right';ctx.fillStyle='#14222B';ctx.font='700 13px sans-serif';ctx.fillText('t = '+tt.toFixed(tt<10?1:0)+' s',W-10,18);}
+}
+
+/* ---------- charts for each step ---------- */
+function drawSetting(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,P=A.P;
+  const f=chartFrame(ctx,W,H,50,W-14,14,H-40,0,180,0,100,'time on the bench, min','investment set, %',[0,30,60,90,120,150,180],[0,25,50,75,100]);
+  ctx.fillStyle='rgba(179,38,30,.08)';ctx.fillRect(f.sx(0),f.sy(65),f.sx(180)-f.sx(0),f.sy(0)-f.sy(65));
+  const pts=[];for(let t=0;t<=180;t+=3)pts.push([t,100*(1-Math.exp(-t/22))]);pline(ctx,pts,f,'#c0271b',3);
+  ctx.strokeStyle='#14222B';ctx.lineWidth=1.6;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(f.sx(P.cure),14);ctx.lineTo(f.sx(P.cure),H-40);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#c0271b';ctx.beginPath();ctx.arc(f.sx(P.cure),f.sy(A.pl.setFrac*100),5,0,6.283);ctx.fill();
+  ctx.fillStyle='#b3261e';ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText('too soft to burn out',f.sx(3),f.sy(33));
+}
+function drawOven(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ov=A.ov,P=A.P,ser=ov.ser,tEnd=ser[ser.length-1][0],ymax=Math.max(850,ov.maxT+60,P.Tb+60);
+  const f=chartFrame(ctx,W,H,52,W-14,28,H-56,0,tEnd,0,ymax,'time, hours','temperature, °C',niceTicks(tEnd,6),niceTicks(ymax,6));
+  // required burnout zone
+  ctx.fillStyle='rgba(168,106,0,.10)';ctx.fillRect(f.sx(0),f.sy(ymax),f.sx(tEnd)-f.sx(0),f.sy(650)-f.sy(ymax));
+  ctx.fillStyle='#a86a00';ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillText('carbon burns out above 650 °C',f.sx(0)+6,f.sy(650)-5);
+  // pour window for the alloy
+  const A_=A.A;ctx.fillStyle='rgba(31,111,71,.14)';const xs=f.sx(ov.stageEnd.tCoolEnd/60);ctx.fillRect(xs,f.sy(A_.flask[1]),f.sx(tEnd)-xs,f.sy(A_.flask[0])-f.sy(A_.flask[1]));
+  const se=ov.stageEnd;[[se.dw,'dewax'],[se.tRampEnd,'ramp'],[se.tHoldEnd,'hold'],[se.tCoolEnd,'cool']].forEach(s=>{const x=f.sx(s[0]/60);ctx.strokeStyle='#8d99a3';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x,28);ctx.lineTo(x,H-56);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText(s[1],x+3,22);});
+  pline(ctx,ser.map(s=>[s[0],s[1]]),f,'#8d99a3',2,[6,4]);pline(ctx,ser.map(s=>[s[0],s[2]]),f,'#c0271b',3);
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillStyle='#8d99a3';ctx.fillRect(56,H-30,14,4);ctx.fillStyle='#14222B';ctx.fillText('oven',76,H-25);ctx.fillStyle='#c0271b';ctx.fillRect(130,H-30,14,4);ctx.fillStyle='#14222B';ctx.fillText('core of the flask',150,H-25);
+  ctx.fillStyle='rgba(31,111,71,.9)';ctx.font='11px sans-serif';ctx.textAlign='right';ctx.fillText('usual flask temperature at the pour',W-16,f.sy(A_.flask[1])-4);
+}
+function drawBars(c,A,kind){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,P=A.P;
+  if(kind==='sol'){
+    const vals=[['casting',A.tc],['gate',A.tg],['sprue',A.ts]],ymax=Math.max(...vals.map(v=>v[1]))*1.2;
+    const f=chartFrame(ctx,W,H,52,W-14,20,H-40,0,3,0,ymax,'','time to freeze, s',[],niceTicks(ymax,5));
+    vals.forEach((v,i)=>{const x=f.sx(i+0.5),w=58;ctx.fillStyle=['#5b7a9a','#d9822b','#8a6a4a'][i];ctx.fillRect(x-w/2,f.sy(v[1]),w,f.sy(0)-f.sy(v[1]));ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='center';ctx.fillText(v[1].toFixed(0)+' s',x,f.sy(v[1])-5);ctx.font='13px sans-serif';ctx.fillText(v[0],x,H-22);});
+    const ok=A.tg>=0.9*A.tc&&A.ts>=A.tg;ctx.fillStyle=ok?'#1f6f47':'#b3261e';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(ok?'Right order: casting, gate, sprue':'Wrong order for feeding',60,14);
+  } else {
+    const n=A.parts.length,f=chartFrame(ctx,W,H,50,W-14,20,H-40,0.4,n+0.6,0,100,'part number (1 is nearest the pour cup)','filled, %',A.parts.map((p,i)=>i+1),[0,25,50,75,100]);
+    ctx.setLineDash([5,4]);ctx.strokeStyle='#1f6f47';ctx.beginPath();ctx.moveTo(f.sx(0.4),f.sy(98));ctx.lineTo(f.sx(n+0.6),f.sy(98));ctx.stroke();ctx.setLineDash([]);
+    A.parts.forEach((p,i)=>{const x=f.sx(i+1),w=Math.min(34,(W-70)/n*0.7);ctx.fillStyle=p.fill>=0.98?'#1f6f47':'#b3261e';ctx.fillRect(x-w/2,f.sy(p.fill*100),w,f.sy(0)-f.sy(p.fill*100));});
+  }
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const DEF={alloy:'a356',part:'star',t:4,scale:60,n:6,pattern:'wax',layer:50,flask:'f2',Ds:12,dg:7,lg:12,angle:45,comp:0,
+  ratio:40,mix:120,vac:90,cure:60,Tdw:150,tdw:90,ramp:150,Tb:730,hb:4,Tpre:300,soak:150,Tp:740,method:'grav',degas:true};
+const ALOPT=Object.keys(ALLOYS).map(k=>[k,ALLOYS[k].n]),PARTOPT=Object.keys(PARTS).map(k=>[k,PARTS[k].n]),FLOPT=Object.keys(FLASKS).map(k=>[k,FLASKS[k].n]);
+const STEPS=[
+ {t:'Pattern and tree',d:'Choose the metal and the part, make the wax or resin patterns, and build them onto a sprue to make the casting tree. The tree has to fit the flask with room to spare.',ctrl:[
+   {g:'Metal and part',k:'alloy',type:'select',l:'Metal',opts:ALOPT},{g:'Metal and part',k:'part',type:'select',l:'Part',opts:PARTOPT},
+   {g:'Metal and part',k:'t',type:'range',l:'Wall thickness',range:P=>[PARTS[P.part].tmin,PARTS[P.part].tmax],step:0.5,fmt:v=>fx(v,1)+' mm'},
+   {g:'Metal and part',k:'scale',type:'range',l:'Part size',min:40,max:100,step:5,fmt:v=>v+' %'},
+   {g:'Pattern',k:'pattern',type:'seg',l:'Pattern material',opts:[['wax','Casting wax'],['resin','Castable resin']]},
+   {g:'Pattern',k:'layer',type:'range',l:'Print layer height (resin)',min:25,max:100,step:5,fmt:v=>v+' µm',show:P=>P.pattern==='resin'},
+   {g:'Pattern',k:'comp',type:'range',l:'Scale compensation of the pattern',min:0,max:3,step:0.05,fmt:v=>fx(v,2)+' %'},
+   {g:'The tree',k:'n',type:'range',l:'Parts on the tree',min:1,max:10,step:1,fmt:v=>v+' parts'},
+   {g:'The tree',k:'flask',type:'select',l:'Flask',opts:FLOPT},
+   {g:'The tree',k:'Ds',type:'range',l:'Sprue diameter',min:8,max:25,step:1,fmt:v=>v+' mm'},
+   {g:'The tree',k:'dg',type:'range',l:'Gate diameter',min:2,max:14,step:0.5,fmt:v=>fx(v,1)+' mm'},
+   {g:'The tree',k:'lg',type:'range',l:'Gate length',min:3,max:30,step:1,fmt:v=>v+' mm'},
+   {g:'The tree',k:'angle',type:'range',l:'Gate angle from the sprue',min:30,max:90,step:5,fmt:v=>v+'°'}]},
+ {t:'Pour the plaster and let it cure',d:'Mix the investment powder with water, take the air out under vacuum, pour it round the tree and let it set. The wetter the mix, the weaker and rougher the mold.',ctrl:[
+   {g:'The slurry',k:'ratio',type:'range',l:'Water per 100 g of powder',min:30,max:48,step:0.5,fmt:v=>fx(v,1)+' ml'},
+   {g:'The slurry',k:'mix',type:'range',l:'Mixing time',min:30,max:300,step:10,fmt:v=>v+' s'},
+   {g:'The slurry',k:'vac',type:'range',l:'Vacuum to remove air bubbles',min:0,max:240,step:10,fmt:v=>v+' s'},
+   {g:'Curing',k:'cure',type:'range',l:'Time on the bench before the oven',min:10,max:240,step:5,fmt:v=>v+' min'}]},
+ {t:'Melt out the wax and burn out',d:'Put the flask in the oven. The wax melts and runs out first, then the oven climbs to burnout temperature to remove the last carbon. Heat too fast and the flask cracks.',ctrl:[
+   {g:'Dewax',k:'Tdw',type:'range',l:'Dewax temperature',min:100,max:200,step:5,fmt:v=>v+' °C'},
+   {g:'Dewax',k:'tdw',type:'range',l:'Time at the dewax temperature',min:0,max:180,step:5,fmt:v=>v+' min'},
+   {g:'Burnout',k:'ramp',type:'range',l:'Heating rate to burnout',min:30,max:400,step:10,fmt:v=>v+' °C/h'},
+   {g:'Burnout',k:'Tb',type:'range',l:'Burnout temperature',min:400,max:850,step:10,fmt:v=>v+' °C'},
+   {g:'Burnout',k:'hb',type:'range',l:'Hold at burnout temperature',min:0,max:10,step:0.5,fmt:v=>fx(v,1)+' h'}]},
+ {t:'Preheat to the pouring temperature',d:'Bring the flask down from burnout to the temperature it should have when the metal goes in, and let it soak so the core catches up with the oven. A hot mold lets thin sections fill, but freezes slowly.',ctrl:[
+   {g:'Preheat',k:'Tpre',type:'range',l:'Flask temperature at the pour',range:P=>[100,Math.max(300,ALLOYS[P.alloy].flask[1]+250)],step:10,fmt:v=>v+' °C'},
+   {g:'Preheat',k:'soak',type:'range',l:'Soak at that temperature',min:0,max:240,step:10,fmt:v=>v+' min'}]},
+ {t:'Melt the metal and pour',d:'Choose the pouring temperature and how the metal goes in. Gravity is simple. Vacuum assist or a centrifuge pushes metal into thin sections. Then see how every casting on the tree turned out.',ctrl:[
+   {g:'The pour',k:'Tp',type:'range',l:'Pouring temperature',range:P=>[ALLOYS[P.alloy].Tliq,ALLOYS[P.alloy].pour[1]+100],step:10,fmt:v=>v+' °C'},
+   {g:'The pour',k:'method',type:'seg',l:'How the metal goes in',opts:[['grav','Gravity'],['vac','Vacuum assist'],['cent','Centrifugal']]},
+   {g:'The pour',k:'degas',type:'toggle',l:'Degas the melt (aluminum)',show:P=>ALLOYS[P.alloy].gas==='Al'}]}
+];
+let P=Object.assign({},DEF),A=null,STEP=0,U=1,pend=false;
+
+function buildControls(){
+  const S=STEPS[STEP],box=$('controls');box.innerHTML='';
+  const h=document.createElement('h2');h.textContent='Step '+(STEP+1)+' of 5: '+S.t;box.appendChild(h);
+  const d=document.createElement('p');d.className='fine';d.textContent=S.d;box.appendChild(d);
+  let lastG='';
+  S.ctrl.forEach(c=>{
+    if(c.show&&!c.show(P))return;
+    if(c.g!==lastG){const hh=document.createElement('h3');hh.textContent=c.g;box.appendChild(hh);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(P[c.k]===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+      w.querySelector('select').addEventListener('change',e=>{P[c.k]=e.target.value;if(c.k==='alloy')alloyChanged();if(c.k==='part'){const r=PARTS[P.part];P.t=Math.max(r.tmin,Math.min(r.tmax,P.t));}rebuild();});}
+    else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;if(c.k==='pattern'){rebuild();return;}w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else if(c.type==='toggle'){w.innerHTML='<label class="chk"><input type="checkbox" id="c_'+c.k+'"'+(P[c.k]?' checked':'')+'> '+c.l+'</label>';w.querySelector('input').addEventListener('change',e=>{P[c.k]=e.target.checked;changed();});}
+    else{const r=c.range?c.range(P):[c.min,c.max];P[c.k]=Math.max(r[0],Math.min(r[1],P[c.k]));
+      w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+r[0]+'" max="'+r[1]+'" step="'+c.step+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;outs();changed();});}
+    box.appendChild(w);
+  });
+  const nav=document.createElement('div');nav.className='nav';
+  nav.innerHTML='<button type="button" class="btn small" id="back"'+(STEP===0?' disabled':'')+'>Back</button><button type="button" class="btn small primary" id="next"'+(STEP===4?' disabled':'')+'>Next step</button><button type="button" class="btn small" id="reset">Reset all</button>';box.appendChild(nav);
+  $('back').onclick=()=>goStep(STEP-1);$('next').onclick=()=>goStep(STEP+1);$('reset').onclick=()=>{P=Object.assign({},DEF);rebuild();};
+  outs();
+}
+function outs(){STEPS[STEP].ctrl.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k]);}});}
+function alloyChanged(){const a=ALLOYS[P.alloy];P.Tpre=Math.round((a.flask[0]+a.flask[1])/2/10)*10;P.Tp=Math.round((a.pour[0]+a.pour[1])/2/10)*10;}
+function rebuild(){buildControls();changed();}
+function changed(){A=analyze(P);if(!A)return;render();}
+function goStep(i){STEP=Math.max(0,Math.min(4,i));buildControls();render();}
+
+function kv(rows){return '<dl class="kv">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl>';}
+function render(){
+  const S=STEPS[STEP];
+  // chain
+  $('chain').innerHTML=STEPS.map((s,i)=>'<button type="button" class="pill '+A.status[i]+'" aria-pressed="'+(i===STEP)+'" data-i="'+i+'"><span class="dot"></span><b>'+(i+1)+'</b> '+s.t+'</button>').join('');
+  document.querySelectorAll('.pill').forEach(b=>b.onclick=()=>goStep(+b.dataset.i));
+  $('mission').innerHTML='<b>Mission: cast a tree of ornaments</b><span class="chip">4 or more parts on the tree</span><span class="chip">80 % or more good castings</span><span class="chip">good = full, sound, smooth and the right size</span>';
+  // visual
+  const modes=['tree','plaster','hot','hot','pour'],mode=modes[STEP];
+  $('flaskTitle').textContent='Step '+(STEP+1)+': '+S.t;
+  drawFlask($('flask').getContext('2d'),$('flask').width,$('flask').height,A,mode,U);
+  $('pourRow').style.display=STEP===4?'':'none';
+  const caps=['The tree of patterns on its sprue, drawn flat for clarity. On the real tree the parts point out at different angles round the sprue.','Plaster slurry poured round the tree. The small rings are air bubbles stuck to the patterns; they print onto the castings as nodules.','The flask in the oven. The wax has melted out and burned away, leaving cavities in the shape of the parts. The orange tint is the flask temperature.','The preheated flask, ready to pour.','The pour. Slide through time: first the metal fills the sprue and gates, then it freezes. Orange is liquid, grey is solid. A green outline is a good casting, red is a bad one.'];
+  $('flaskCap').textContent=caps[STEP];
+  // step info
+  ['i1','i2','i3','i5'].forEach(id=>$(id).style.display='none');
+  const tr=A.tr,pl=A.pl,ov=A.ov;
+  if(STEP===0){$('i1').style.display='';$('kv1').innerHTML=kv([['Levels on the tree',tr.levels+' (2 parts per level)'],['Tree height with margins',fx(tr.Hneed,0)+' mm of '+tr.fl.H+' mm'],['Reach from the centre',fx(tr.Rneed,0)+' mm of '+fx(tr.Rfl,0)+' mm'],['Part mass in this metal',fx(tr.massParts/P.n,0)+' g each'],['Pattern material to melt out',fx(tr.massPattern,0)+' g'],['Metal for the whole tree',fx(tr.massMetal,0)+' g'],['Metal that ends up in parts',fx(A.metalYield,0)+' %']]);}
+  if(STEP===1){$('i2').style.display='';drawSetting($('cSet'),A);$('kv2').innerHTML=kv([['Working time used',fx(pl.used,1)+' min of '+pl.workMin+' min'],['Mold strength when dry',fx(pl.strength,1)+' MPa'],['Mold permeability (1 is normal)',fx(pl.perm,2)],['Investment set at the oven',Math.round(pl.setFrac*100)+' %'],['Chance of a bubble nodule per casting',Math.round(Math.min(1,pl.pBub*1.4)*100)+' %'],['Surface roughness the mold gives',fx(pl.RaInv,1)+' µm Ra']]);}
+  if(STEP===2||STEP===3){$('i3').style.display='';drawOven($('cOven'),A);
+    $('kv3').innerHTML=STEP===2?kv([['Flask thermal lag',fx(ov.tau,0)+' min'],['Wax melted out',P.pattern==='wax'?Math.round(ov.waxOut*100)+' %':'not applicable (resin burns out)'],['Fastest heating, 100 to 300 °C',fx(ov.maxRate,0)+' °C/h'],['Time above 650 °C',fx(ov.tb650/60,1)+' h of about '+fx(ov.tReq/60,1)+' h needed'],['Burnout incomplete',Math.round(ov.residue*100)+' %'],['Hottest the flask got',fx(ov.maxT,0)+' °C'],['Chance the flask cracks',Math.round(A.crack*100)+' %']]):
+      kv([['Flask at the pour (core)',fx(A.Tf,0)+' °C'],['Core against oven',fx(ov.gradient,0)+' °C apart'],['Usual window for this metal',A.A.flask[0]+' to '+A.A.flask[1]+' °C'],['Time for the casting to freeze',fx(A.tc,0)+' s'],['Total time in the oven',fx(ov.stageEnd.tEnd/60,1)+' h']]);}
+  if(STEP===4){$('i5').style.display='';drawBars($('cSol'),A,'sol');drawBars($('cFill'),A,'fill');}
+  // flags for this step
+  const fl=A.F[STEP+1];$('flags').innerHTML=(fl.length?fl:[['ok','No problems found in this step.']]).map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  results();
+}
+function results(){
+  const ok=A.accepted;
+  $('verdict').className='verdict '+(ok?'ok':'bad');$('verdict').innerHTML=(ok?'Mission met':'Not there yet')+'<small>'+A.nGood+' of '+P.n+' castings are good ('+fx(A.yieldPct,0)+' %)</small>';
+  $('tbl').innerHTML='<tr><th>#</th><th>Filled</th><th>Porosity</th><th>Ra</th><th>Size error</th><th>Result</th></tr>'+A.parts.map(p=>'<tr class="'+(p.good?'g':'b')+'"><td>'+(p.i+1)+'</td><td>'+fx(p.fill*100,0)+' %</td><td>'+fx(p.Ptot,1)+' %</td><td>'+fx(p.Ra,1)+' µm</td><td>'+(p.dim>=0?'+':'')+fx(p.dim,2)+' mm</td><td>'+(p.good?'good':p.defects.join(', '))+'</td></tr>').join('');
+  $('kv').innerHTML=kv([['Tree metal',fx(A.tr.massMetal,0)+' g'],['Metal yield into parts',fx(A.metalYield,0)+' %'],['Metal cost of the pour','$'+fx(A.metalCost,2)],['Cost per good casting',isFinite(A.costPerGood)?'$'+fx(A.costPerGood,2):'no good castings'],['Process time',fx(A.procH,1)+' h'],['Casting freezes in',fx(A.tc,0)+' s']]);
+  const defCount={};A.parts.forEach(p=>p.defects.forEach(d=>defCount[d]=(defCount[d]||0)+1));
+  const top=Object.entries(defCount).sort((a,b)=>b[1]-a[1]);
+  const firstBad=[1,2,3,4,5].find(k=>A.F[k].some(f=>f[0]==='bad'));
+  let ins='';
+  if(ok)ins='<p>The tree produced '+A.nGood+' good castings out of '+P.n+'. '+(A.ys?'The as-cast aluminum should be around '+fx(A.ys,0)+' MPa yield before heat treatment (typical, not measured).':'')+' Only '+fx(A.metalYield,0)+' % of the metal poured ended up in the parts; the rest is sprue and gates that gets remelted.</p>';
+  else{ins='<p>'+(top.length?'The most common defect is <b>'+top[0][0]+'</b> ('+top[0][1]+' of '+P.n+' parts). ':'')+(firstBad?'Start with <b>step '+firstBad+'</b>, which has a problem that ruins castings. ':'Step flags are amber only, so look at the defect list above.')+'</p>';}
+  if(A.noFit)ins+='<p>The tree does not fit the flask, so none of the castings count.</p>';
+  $('insights').innerHTML=ins;
+}
+function save(){const rec={tool:'Investment casting lab (standalone beta v0.1)',saved:new Date().toISOString(),settings:P,
+  result:{yield_pct:+fx(A.yieldPct,0),good:A.nGood,of:P.n,metal_yield_pct:+fx(A.metalYield,0),cost_per_good:isFinite(A.costPerGood)?+fx(A.costPerGood,2):null,process_h:+fx(A.procH,1),missionMet:A.accepted,
+    parts:A.parts.map(p=>({n:p.i+1,filled_pct:+fx(p.fill*100,0),porosity_pct:+fx(p.Ptot,1),Ra_um:+fx(p.Ra,1),size_error_mm:+fx(p.dim,2),defects:p.defects})),
+    flags:[1,2,3,4,5].flatMap(k=>A.F[k].map(f=>'step '+k+' '+f[0]+': '+f[1]))}};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='investment-casting-lab.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);}
+(function init(){
+  $('pour').addEventListener('input',e=>{U=+e.target.value/100;drawFlask($('flask').getContext('2d'),$('flask').width,$('flask').height,A,'pour',U);});
+  $('saveBtn').addEventListener('click',save);
+  buildControls();changed();
+})();
+
+})();
+</script>
+</body>
+</html>

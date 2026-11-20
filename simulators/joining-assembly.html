@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Joining and assembly | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive joining and assembly simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Choose between bolting and welding, tighten a bolt into cast aluminum, weld 6061-T6 and watch it soften, and stack part tolerances to see how many assemblies fit.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/joining-assembly.html">
+<meta property="og:title" content="Joining and assembly | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Bolts, welds and tolerance stack-up.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/joining-assembly.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Joining and assembly simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,h4,.btn,.chip,table,select,.casebtn{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:16px 0 6px}h4{margin:10px 0 4px;font-size:.95rem}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:80ch;margin:6px 0 0}.fine{font-size:.88rem;color:var(--ink-soft)}
+.cases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 10px}@media (max-width:1000px){.cases{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:620px){.cases{grid-template-columns:minmax(0,1fr)}}
+.casebtn{text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);line-height:1.3;position:relative}
+.casebtn b{display:block;font-size:1.02rem;margin-right:26px}.casebtn span:not(.tag){font:400 .85rem var(--body);color:var(--ink-soft)}
+.casebtn .tag{position:absolute;right:12px;top:10px;font:700 .85rem var(--head);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:24px}
+.casebtn:hover{border-color:var(--ink)}.casebtn[aria-pressed="true"]{border:2px solid var(--accent);padding:10px 13px;background:var(--accent-soft)}.casebtn[aria-pressed="true"] .tag{background:var(--accent)}
+.blurb{max-width:90ch;margin:8px 0 10px}
+.mission{padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg)}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*,.three>*{min-width:0}@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}.box{margin-bottom:16px}.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .84rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:6px 12px;font-size:.88rem;margin-top:8px}.btn:hover{background:rgba(20,34,43,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-deep)}.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:7px;font:500 .92rem var(--head);margin:8px 0}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:right}th:first-child,td:first-child,td:last-child,th:last-child{text-align:left}th{font-weight:500;color:var(--ink-soft)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;margin:8px 0;font-family:var(--head);font-size:.93rem}.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:8px 0 0;padding:0;list-style:none}.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+.notes li.head{background:transparent;border:0;padding:4px 0;font:700 .9rem var(--head);margin-top:6px}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}.insights p{margin:6px 0;max-width:80ch}.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Joining and assembly lab<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">The last step in the life of the part: how do you join the pieces, and will the assembly still fit and hold? Weigh bolting against welding and the other ways to join, tighten a bolt into cast aluminum, weld 6061-T6 and watch it soften, then stack the tolerances of the parts to see how many assemblies fit.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Joining%20and%20assembly%20(beta%20v0.1)">send feedback</a>.</p>
+  <div class="cases" id="cases"></div><p class="blurb" id="blurb"></p><section class="mission" id="mission"></section>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2 id="dt"></h2><canvas id="diag" width="560" height="300"></canvas><p class="fine" id="dcap"></p></div>
+    <div class="box" id="sec2"><div class="row2">
+      <div><h3 style="margin-top:0" id="c1t"></h3><canvas id="c1" width="440" height="290"></canvas><p class="fine" id="c1cap"></p></div>
+      <div id="c2w"><h3 style="margin-top:0" id="c2t"></h3><canvas id="c2" width="440" height="290"></canvas><p class="fine" id="c2cap"></p></div></div>
+      <div id="c3w" style="margin-top:12px"><h3 style="margin-top:0" id="c3t"></h3><div class="row2"><div><canvas id="c3" width="440" height="260"></canvas></div><p class="fine" id="c3cap" style="margin-top:0"></p></div></div>
+      <div id="kv"></div></div>
+    <div class="box" id="testBox" style="display:none"><h2>Tensile test across the weld</h2>
+      <div class="btns"><button class="btn tbtn" data-i="0" type="button">Test 1</button><button class="btn tbtn" data-i="1" type="button">Test 2</button><button class="btn tbtn" data-i="2" type="button">Test 3</button><button class="btn primary" id="allBtn" type="button">Test all three</button><label class="chk" style="margin:0 0 0 8px"><input type="checkbox" id="scat"> five specimens each</label></div>
+      <div class="row2"><div><canvas id="spec" width="460" height="130" role="img" aria-label="Test specimen"></canvas><p class="fine">The strain concentrates in the softened zone next to the weld, so the joint stretches much less than the plate. The specimen is drawn stretched more than real.</p></div>
+        <div><canvas id="ss" width="520" height="340" role="img" aria-label="Stress-strain curves"></canvas></div></div></div>
+    <div class="box"><h2>Results</h2>
+      <div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul><div class="tw" style="margin-top:8px"><table id="tbl"></table></div><div class="insights" id="insights"></div><button class="btn small" id="saveBtn" type="button">Save result (JSON)</button></div>
+    <p class="disclaimer">A teaching model, not validated design software. The joint choice is engineering judgement, written out so you can change it. The bolted-joint relations are textbook (torque-tension, joint stiffness, thread stripping, fatigue) with typical constants; the weld heat-affected zone uses a thin-plate heat-flow estimate, and the strength, distortion and defect rules are simple trend models; the stack-up uses typical process spreads. Real preload, weld quality and part spread depend on the shop. Check any number you rely on against codes, data sheets and test pieces.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: joining and assembly ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x),y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+const Phi=x=>0.5*(1+erf(x/Math.SQRT2));
+
+/* ---------- A: choose the joint (a judgement matrix, not a physical model) ---------- */
+const JOINTS={bolt:'Bolted',weld:'Welded (TIG)',adh:'Adhesive',press:'Press fit'};
+const CRIT=[['strength','Strength'],['fatigue','Fatigue life'],['mass','Low mass'],['cost','Low cost'],['apart','Can be taken apart'],['temper','Keeps the aluminum temper'],['skill','Easy in the student shop']];
+const SCORE={bolt:{strength:4,fatigue:4,mass:2,cost:4,apart:5,temper:5,skill:5},weld:{strength:3,fatigue:2,mass:5,cost:3,apart:1,temper:1,skill:2},adh:{strength:2,fatigue:4,mass:5,cost:5,apart:1,temper:5,skill:4},press:{strength:2,fatigue:3,mass:5,cost:4,apart:2,temper:5,skill:3}};
+function choose(P){
+  const ws=CRIT.map(c=>P['w_'+c[0]]),W=ws.reduce((a,b)=>a+b,0)||1,out=[];
+  for(const j of Object.keys(JOINTS)){
+    let sc=0;CRIT.forEach((c,i)=>{sc+=ws[i]*SCORE[j][c[0]];});sc/=W;
+    const why=[];
+    if(P.removable&&(j==='weld'||j==='adh'))why.push('cannot be taken apart');
+    if(P.hot&&j==='adh')why.push('adhesive softens above about 100 °C');
+    if(P.steel&&j==='weld')why.push('aluminum cannot be welded to steel by ordinary fusion welding');
+    if(P.leak&&(j==='bolt'||j==='press'))why.push('not leak-tight without a seal');
+    if(P.t6&&j==='weld')why.push('welding takes about half the strength out of 6061-T6 beside the weld');
+    const hard=why.filter(w=>!/welding takes about half/.test(w));
+    out.push({j,name:JOINTS[j],score:sc,out:hard.length>0,why});
+  }
+  out.sort((a,b)=>(a.out-b.out)||(b.score-a.score));
+  const ok=!out[0].out&&out[0].j===P.expect;
+  return {rank:out,best:out[0]};
+}
+
+/* ---------- B: the bolted joint ---------- */
+const BOLT={4:{p:0.7,At:8.78,Dh:4.5},5:{p:0.8,At:14.2,Dh:5.5},6:{p:1.0,At:20.1,Dh:6.6},8:{p:1.25,At:36.6,Dh:9},10:{p:1.5,At:58,Dh:11}};
+const GRADE={'4.6':{n:'Grade 4.6 steel',Sp:225,Su:400,Eb:205000},'8.8':{n:'Grade 8.8 steel',Sp:600,Su:830,Eb:205000},'10.9':{n:'Grade 10.9 steel',Sp:830,Su:1040,Eb:205000},'A2-70':{n:'A2-70 stainless',Sp:450,Su:700,Eb:193000}};
+const BOSS={a356f:{n:'A356 casting, as cast',Su:150},a356t6:{n:'A356 casting, T6',Su:230}};
+const FRIC={dry:{n:'Dry',K:0.25},oil:{n:'Lightly oiled',K:0.20},grease:{n:'Molybdenum grease',K:0.15}};
+function bolt(P){
+  const b=BOLT[P.d],g=GRADE[P.grade],d=P.d,K=FRIC[P.fric].K,Fi=P.T*1000/(K*d),Fmin=0.7*Fi,Fmax=1.3*Fi;
+  const washer=P.washer?1.6:0,l=P.t1+washer+0.5*P.Le,Dw=P.washer?2.2*d:1.5*d,tan=Math.tan(Math.PI/6);
+  const kb=b.At*g.Eb/l,km=Math.PI*70000*d*tan/Math.log(((2*l*tan+Dw-d)*(Dw+d))/((2*l*tan+Dw+d)*(Dw-d))),C=kb/(kb+km);
+  const Pn=P.load,Fproof=b.At*g.Sp,Fb=Fmax+C*Pn,SFyield=Fproof/Fb;
+  const Psep=Fmin/(1-C),SFsep=Psep/Math.max(Pn,1e-6);
+  const tau=0.6*BOSS[P.boss].Su,Fstrip=tau*Math.PI*d*P.Le*0.6,SFstrip=Fstrip/Fb;
+  const Ab=Math.PI/4*(Dw*Dw-b.Dh*b.Dh),Fcrush=275*Ab,SFcrush=Fcrush/Fmax;
+  const Se=0.155*g.Su,si=Fi/b.At,sa=P.cyc?C*Pn/(2*b.At):0.0001,SFfat=P.cyc?Math.max(0,Se*(g.Su-si)/(sa*(g.Su+Se))):99;
+  const Fcl=Fi-(1-C)*Pn;
+  const modes=[['Bolt yields',SFyield],['Joint separates',SFsep],['Thread strips in the casting',SFstrip],['Plate crushed under the head',SFcrush],['Bolt fatigue',SFfat]];
+  const sfmin=Math.min(...modes.map(m=>m[1]));
+  // preload scatter
+  const r=mulberry32(11),pre=[];for(let i=0;i<4000;i++)pre.push(Fi*Math.exp(0.15*gauss(r)));pre.sort((a,b)=>a-b);
+  const flags=[],add=(l,t)=>flags.push([l,t]);
+  if(Fi>0.9*Fproof)add('bad','The nominal preload of '+(Fi/1000).toFixed(1)+' kN is '+Math.round(Fi/Fproof*100)+' % of the bolt proof load ('+(Fproof/1000).toFixed(1)+' kN). With the usual scatter in torque-tension some bolts will be tightened into yield.');
+  else if(Fi>0.8*Fproof)add('warn','Preload is '+Math.round(Fi/Fproof*100)+' % of proof. The usual target is about 75 %.');
+  else if(Fi<0.4*Fproof)add('warn','Preload is only '+Math.round(Fi/Fproof*100)+' % of proof. A well-tightened bolt is nearer 75 %, and a loose one fatigues.');
+  if(SFyield<1.5)add('bad','Bolt yield safety factor '+SFyield.toFixed(2)+': the worst-case preload plus its share of the load ('+(Fb/1000).toFixed(1)+' kN) is too close to the proof load.');
+  if(SFsep<1.5)add('bad','Joint separation safety factor '+SFsep.toFixed(2)+': the load would pull the parts apart at about '+(Psep/1000).toFixed(1)+' kN. Raise the preload or use a stiffer bolt for the same torque.');
+  if(SFstrip<1.5)add('bad','The thread strips out of the casting at about '+(Fstrip/1000).toFixed(1)+' kN (safety factor '+SFstrip.toFixed(2)+'). Aluminum threads are weaker than a steel bolt, so engage more thread (1.5 to 2 diameters) or use the T6 casting.');
+  if(SFcrush<1.5)add('bad','The head crushes into the plate (safety factor '+SFcrush.toFixed(2)+'): the bearing area is small for this preload. Use a hardened washer.');
+  if(P.cyc&&SFfat<1.5)add(SFfat<1?'bad':'warn','Fatigue safety factor '+SFfat.toFixed(2)+' under the repeated load. A bigger bolt or a higher preload (so the bolt sees less of the swing) helps.');
+  if(P.Le<d)add('warn','Only '+P.Le+' mm of thread is engaged, less than one diameter ('+d+' mm).');
+  if(P.fric==='grease')add('ok','Lubrication lowers the torque needed for a given preload, so the same torque as a dry bolt would overload it.');
+  const nBad=flags.filter(f=>f[0]==='bad').length,ok=sfmin>=1.5&&nBad===0;
+  const short=modes.filter(m=>m[1]<1.5).map(m=>m[0].toLowerCase()+' (safety factor '+m[1].toFixed(2)+')');
+  return {b,g,Fi,Fmin,Fmax,kb,km,C,Fproof,Fb,Psep,Fstrip,Fcrush,Fcl,modes,sfmin,pre,Dw,flags,ok,nBad,short,Se,sa,si};
+}
+
+/* ---------- C: a welded joint in 6061-T6 ---------- */
+const RC=2.43e-3,TM=615,YB=275,UB=310,ELB=10;
+function peakT(P,y,H){return P.T0+1/(4.13*RC*P.t*y/H+1/(TM-P.T0));}
+function weldFracs(pw){return {none:0.42,age:0.62,t6:0.88}[pw];}
+function weld(P){
+  const eta=P.proc==='tig'?0.6:0.8,H=eta*P.V*P.I/P.v,dp=0.0083*H*(1+0.0015*(P.T0-20));
+  const lack=dp<0.85*P.t,burn=dp>1.6*P.t,yT=Tp=>H/(4.13*RC*P.t)*(1/(Tp-P.T0)-1/(TM-P.T0));
+  const w250=yT(300),w400=yT(380),w500=yT(500),wf=2+0.8*dp,fmin=weldFracs(P.pwht);
+  const frac=Tp=>Tp<300?1:Tp<380?1-(1-fmin)*(Tp-300)/80:Tp<450?fmin:Tp<580?fmin+(Math.min(0.78,fmin+0.2)-fmin)*(Tp-450)/130:Math.min(0.78,fmin+0.2);
+  const YFZ={none:0,'4043':(P.pwht==='t6'?130:85)*1.5,'5356':125*1.5}[P.filler];
+  const clean=P.clean,por=(clean?0.4:2.5)*(1+0.1*P.v)+(lack?0.5:0),crackFZ=P.filler==='none';
+  const prof=[];for(let y=0;y<=45;y+=0.5){let Yv;if(y<wf)Yv=crackFZ?20:YFZ;else Yv=YB*frac(peakT(P,y,H));prof.push([y,Yv]);}
+  const Yhaz=YB*fmin,Yj0=Math.min(crackFZ?20:YFZ,Yhaz+ (P.filler==='5356'?0:0));
+  let Yj=Math.min(YFZ>0?YFZ:20,Yhaz)*(1-0.03*por);if(lack)Yj*=0.5;if(crackFZ)Yj=Math.min(Yj,30);
+  const dist=0.0375*H/(P.t*P.t)+(P.pwht==='t6'?0.8+0.3*P.t:0);
+  const ELj=ELB*(0.3+0.5*(Yj/YB))*(lack?0.5:1),cond=[{YS:YB,UTS:UB,EL:ELB,E:69000,brittle:false}];
+  const asw=Math.min(crackFZ?20:({'4043':85*1.5,'5356':125*1.5}[P.filler]),YB*0.42)*(1-0.03*por)*(lack?0.5:1);
+  cond.push({YS:crackFZ?Math.min(asw,30):asw,UTS:Math.min(UB,1.5*(crackFZ?Math.min(asw,30):asw)),EL:ELB*(0.3+0.5*(asw/YB)),E:69000,brittle:false});
+  cond.push({YS:Yj,UTS:Math.min(UB*1.05,1.5*Yj),EL:ELj,E:69000,brittle:false});
+  cond.forEach(c=>{c.UTS=Math.max(c.UTS,c.YS);c.EL=Math.max(0.3,c.EL);});
+  const flags=[],add=(l,t)=>flags.push([l,t]);
+  if(lack)add('bad','Lack of fusion: the weld only penetrates about '+dp.toFixed(1)+' mm of the '+P.t+' mm plate. The joint is hollow and weak. Raise the heat input (more current or a slower travel).');
+  if(burn)add('bad','Burn-through: the heat melts about '+dp.toFixed(1)+' mm through a '+P.t+' mm plate. Lower the current or travel faster.');
+  if(crackFZ)add('bad','6061 is crack-sensitive: welded without filler it hot-cracks along the centre of the weld. Use a 4043 or 5356 filler wire.');
+  if(por>2)add(por>3.5?'bad':'warn','Porosity of about '+por.toFixed(1)+' %: hydrogen from an oily or oxidized surface is trapped in the weld. '+(clean?'A slower travel speed lets gas escape.':'Degrease and brush off the oxide first.'));
+  if(2*w250>55)add('warn','The heat-affected zone is wide: metal is softened about '+(2*w250).toFixed(0)+' mm across. More travel speed or less current narrows it.');
+  if(P.pwht==='none')add('warn','As welded, the joint yields at only about '+(YB*0.42).toFixed(0)+' MPa, 42 % of the T6 parent metal. The weld heat overages the aluminum beside the weld.');
+  if(P.pwht==='age')add('warn','Aging alone brings the heat-affected zone back only part of the way (about '+(0.60*YB).toFixed(0)+' MPa).');
+  if(P.pwht==='t6')add('warn','Solution treating and aging after welding restores most of the strength, but the quench adds distortion (about '+(0.8+0.3*P.t).toFixed(1)+'° here) and the part must fit the furnace.');
+  if(dist>2)add(dist>3?'bad':'warn','Angular distortion of about '+dist.toFixed(1)+'°. Less heat per length, a thicker plate or clamping reduces it.');
+  if(P.filler==='4043'&&P.pwht==='age')add('warn','4043 filler is the weak link after aging: the weld metal (about '+Math.round(85*1.5)+' MPa effective) holds the joint down even though the heat-affected zone recovers. 5356 is stronger.');
+  if(P.filler==='5356'&&P.pwht==='t6')add('ok','5356 filler does not respond to the heat treatment, so the weld metal stays near 190 MPa effective.');
+  const nBad=flags.filter(f=>f[0]==='bad').length,crit=[],C=(l,v,need,u,pass,dec)=>crit.push({l,v,need,u,pass,dec:dec||0});
+  C('joint yield strength',Yj,160,'MPa',Yj>=160);C('angular distortion',dist,'2.0 or less','°',dist<=2.0,1);
+  const ok=crit.every(c=>c.pass)&&nBad===0;const short=crit.filter(c=>!c.pass).map(c=>c.l+' is '+c.v.toFixed(c.dec)+' '+c.u+' (needs '+c.need+')');
+  return {eta,H,dp,lack,burn,w250,w400,w500,wf,fmin,prof,Yj,dist,por,cond,flags,nBad,ok,short,yT,frac};
+}
+function weldWindow(P,n){const rows=[],I0=60,I1=300,v0=1,v1=12;for(let i=0;i<n;i++){const row=[];for(let j=0;j<n;j++){const I=I0+(I1-I0)*i/(n-1),v=v0+(v1-v0)*j/(n-1),eta=P.proc==='tig'?0.6:0.8,H=eta*P.V*I/v,dp=0.0083*H*(1+0.0015*(P.T0-20));row.push({lack:dp<0.85*P.t,burn:dp>1.6*P.t,I,v});}rows.push(row);}return {rows,I0,I1,v0,v1};}
+
+/* ---------- D: tolerance stack-up and process capability ---------- */
+const PROC={sand:{n:'Sand casting',s:0.30,b:0.10,c:1.0},inv:{n:'Investment casting',s:0.10,b:0.03,c:3.0},cnc:{n:'CNC machining',s:0.015,b:0,c:6.0},man:{n:'Manual machining',s:0.04,b:0,c:4.0},roll:{n:'Rolled plate (bought)',s:0.06,b:0,c:2.0},resin:{n:'3D-printed resin',s:0.08,b:0.03,c:3.0},stamp:{n:'Stamped sheet',s:0.05,b:0,c:0.8}};
+const GMIN=0.2,GMAX=0.8,NOM=[12.0,8.0,3.5];
+function stack(P){
+  const dims=[['Pocket depth (the part the others sit in)',P.pA,P.tA],['Plate thickness',P.pB,P.tB],['Cap thickness',P.pC,P.tC]];
+  const info=dims.map(d=>{const pr=PROC[d[1]],tol=d[2],s=pr.s,b=pr.b,scrap=Phi((-tol-b)/s)+1-Phi((tol-b)/s);return {name:d[0],proc:pr,tol,sigma:s,bias:b,scrap,cost:pr.c/(1-Math.min(0.95,scrap))};});
+  const N=20000,r=mulberry32(77),gaps=new Float32Array(N);
+  for(let i=0;i<N;i++){const xs=info.map(f=>{let x;do{x=f.bias+f.sigma*gauss(r);}while(Math.abs(x)>f.tol);return x;});gaps[i]=0.5+xs[0]-xs[1]-xs[2];}
+  let sum=0,sq=0,fit=0;for(let i=0;i<N;i++){sum+=gaps[i];}const mu=sum/N;for(let i=0;i<N;i++){sq+=(gaps[i]-mu)*(gaps[i]-mu);if(gaps[i]>=GMIN&&gaps[i]<=GMAX)fit++;}
+  const sd=Math.sqrt(sq/N),fitF=fit/N,Cp=(GMAX-GMIN)/(6*sd),Cpk=Math.min(mu-GMIN,GMAX-mu)/(3*sd);
+  const wc=info.reduce((a,f)=>a+f.tol,0),rss=Math.sqrt(info.reduce((a,f)=>a+f.tol*f.tol,0));
+  const cost=info.reduce((a,f)=>a+f.cost,0)+(1-fitF)*4;
+  const rb=mulberry32(5),five=[];for(let k=0;k<5;k++){const xs=info.map(f=>{let x;do{x=f.bias+f.sigma*gauss(rb);}while(Math.abs(x)>f.tol);return x;});five.push(0.5+xs[0]-xs[1]-xs[2]);}
+  const flags=[],add=(l,t)=>flags.push([l,t]);
+  const wcOK=0.5-wc>=GMIN&&0.5+wc<=GMAX,rssOK=0.5-rss>=GMIN&&0.5+rss<=GMAX;
+  if(fitF<0.99)add(fitF<0.9?'bad':'warn',(100-fitF*100).toFixed(1)+' % of assemblies would not fit: the gap lands outside '+GMIN+' to '+GMAX+' mm. Tighten the dimension that contributes the most spread, or change its process.');
+  info.forEach((f,i)=>{if(f.scrap>0.1)add('warn','The '+f.name.toLowerCase().split(' (')[0]+' tolerance of ±'+f.tol+' mm is tighter than '+f.proc.n.toLowerCase()+' can hold ('+(f.scrap*100).toFixed(0)+' % of parts are scrapped), which raises the cost.');});
+  if(Cpk<1.33&&fitF>=0.99)add('warn','Cpk is '+Cpk.toFixed(2)+', under the usual 1.33. It fits today, but a small drift in the process would not.');
+  if(!wcOK)add('ok','Worst-case stacking does not guarantee a fit ('+(0.5-wc).toFixed(2)+' to '+(0.5+wc).toFixed(2)+' mm). Statistical stacking is more optimistic ('+(0.5-rss).toFixed(2)+' to '+(0.5+rss).toFixed(2)+' mm).');
+  if(info.some(f=>f.bias>0))add('ok','Cast and printed parts have a mean shift (about '+(info.find(f=>f.bias>0).bias).toFixed(2)+' mm for casting) from shrinkage the pattern did not fully allow for.');
+  const nBad=flags.filter(f=>f[0]==='bad').length,crit=[],C=(l,v,need,u,pass,dec)=>crit.push({l,v,need,u,pass,dec:dec||0});
+  C('assemblies that fit',fitF*100,99,'%',fitF>=0.99,1);C('Cpk of the gap',Cpk,1.33,'',Cpk>=1.33,2);C('cost per assembly',cost,9,'units',cost<=9,1);
+  const ok=crit.every(c=>c.pass)&&nBad===0,short=crit.filter(c=>!c.pass).map(c=>c.l+' is '+c.v.toFixed(c.dec)+(c.u?' '+c.u:'')+' (needs '+(c.l.indexOf('cost')>=0?c.need+' or less':c.need+' or more')+')');
+  return {info,gaps,mu,sd,fitF,Cp,Cpk,wc,rss,wcOK,rssOK,cost,five,flags,nBad,ok,short};
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt){
+  ctx.clearRect(0,0,W,H);const sx=v=>L+(R-L)*(v-x0)/(x1-x0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(+(+v).toFixed(2),L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(+(+v).toFixed(2),sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function pline(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>{const x=f.sx(p[0]),y=f.sy(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+function curveOf(pr){
+  const E=pr.E,sy=pr.YS,su=pr.UTS;
+  if(pr.brittle||pr.EL<0.5){const ef=su/E;return {epsF:Math.max(ef,1e-4),epsU:ef,brittle:true,f:e=>Math.min(su,E*e),sigF:su};}
+  const epsF=pr.EL/100+0.9*su/E,e0=0.9*sy/E,epsU=e0+0.8*(epsF-e0),k=4/(epsU-e0),s0=0.9*sy,sigF=su*(pr.EL>3?0.82:0.95);
+  const f=e=>{if(e<=e0)return E*e;if(e<=epsU)return s0+(su-s0)*(1-Math.exp(-k*(e-e0)))/(1-Math.exp(-k*(epsU-e0)));return su+(sigF-su)*(e-epsU)/(epsF-epsU);};
+  return {epsF,epsU,brittle:false,f,sigF};
+}
+function scatterSet(pr,seed,n){const r=mulberry32(seed),out=[],cv=0.10+0.30*(1-Math.min(1,pr.EL/6));
+  for(let i=0;i<n;i++){const z1=gauss(r),z2=gauss(r);out.push(Object.assign({},pr,{YS:pr.YS*(1+0.03*z1),UTS:pr.UTS*(1+0.03*z1+0.01*gauss(r)),EL:Math.max(0.1,pr.EL*Math.exp(cv*z2))}));}
+  return out.map(p=>{p.UTS=Math.max(p.UTS,p.YS);return p;});}
+function drawSpecimen(ctx,W,H,cv,eps,fractured,tBreak,weldNote){
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2,gx0=70,L0=W-2*gx0-80,w0=46,stretch=cv.brittle?30:5,vis=Math.min(eps*stretch,0.3),L=L0*(1+vis),x0=gx0-10,neckC=x0+L/2;
+  const neckT=cv.brittle||eps<=cv.epsU?0:Math.max(0,Math.min(1,(eps-cv.epsU)/(cv.epsF-cv.epsU)))*0.55;
+  const hw=x=>{let h=w0/2*(1-0.22*Math.min(1,eps*stretch/1.4));if(neckT>0){const d=(x-neckC)/(L*0.1);h*=1-neckT*Math.exp(-d*d);}return h;};
+  const grad=ctx.createLinearGradient(0,cy-w0/2,0,cy+w0/2);grad.addColorStop(0,'#eef1f4');grad.addColorStop(0.5,'#b7bfc7');grad.addColorStop(1,'#8a949e');
+  ctx.fillStyle='#3a4650';ctx.fillRect(4,cy-34,gx0-10,68);ctx.fillRect(x0+L+10,cy-34,gx0+6,68);
+  ctx.fillStyle='#4d5b67';ctx.fillRect(gx0-14,cy-w0/2-8,12,w0+16);ctx.fillRect(x0+L+10,cy-w0/2-8,12,w0+16);
+  const body=(xa,xb)=>{ctx.beginPath();const n=40;for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy-hw(x));}for(let i=n;i>=0;i--){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy+hw(x));}ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#5d6872';ctx.lineWidth=1.2;ctx.stroke();};
+  if(!fractured)body(x0,x0+L);
+  else{const gap=Math.min(40,tBreak*40);ctx.save();ctx.beginPath();ctx.rect(0,0,neckC-gap/2,H);ctx.clip();body(x0,x0+L);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(neckC+gap/2,0,W,H);ctx.clip();ctx.translate(gap,0);body(x0,x0+L);ctx.restore();
+    ctx.fillStyle='#e0261c';ctx.font='700 13px sans-serif';ctx.textAlign='center';ctx.fillText(cv.brittle?'brittle fracture: flat, no neck':'ductile fracture: necked',W/2,18);}
+  if(weldNote){ctx.fillStyle='rgba(168,106,0,.35)';ctx.fillRect(neckC-16,cy-w0/2-4,32,w0+8);ctx.fillStyle='#14222B';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText('weld',neckC,cy+w0/2+16);}
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('strain '+(eps*100).toFixed(2)+' %',gx0,H-6);
+}
+
+/* ---------- A: choosing the joint ---------- */
+function drawRanking(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);const rk=A.rank,bh=46,y0=24,mx=5;
+  ctx.font='700 13px sans-serif';ctx.fillStyle='#14222B';ctx.textAlign='left';ctx.fillText('Weighted score out of 5',12,16);
+  rk.forEach((r,i)=>{const y=y0+i*(bh+16),w=(W-210)*r.score/mx;ctx.fillStyle=r.out?'#c9ced3':(i===0?'#1f6f47':'#6d7b86');ctx.fillRect(150,y,w,bh);
+    ctx.fillStyle='#14222B';ctx.font='700 13px sans-serif';ctx.textAlign='right';ctx.fillText(r.name,142,y+bh/2+5);ctx.textAlign='left';ctx.fillText(r.score.toFixed(2),150+w+6,y+bh/2+5);
+    if(r.out){ctx.fillStyle='#b3261e';ctx.font='12px sans-serif';ctx.fillText('ruled out: '+r.why.filter(x=>!/about half/.test(x))[0],156,y+bh/2+5);}});
+}
+function drawHeat(c,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);const js=Object.keys(JOINTS),cw=(W-190)/js.length,rh=(H-40)/CRIT.length;
+  ctx.font='700 12px sans-serif';ctx.fillStyle='#14222B';ctx.textAlign='center';js.forEach((j,i)=>ctx.fillText(JOINTS[j],180+cw*(i+0.5),16));
+  CRIT.forEach((cr,r)=>{ctx.textAlign='right';ctx.fillStyle='#14222B';ctx.font='12px sans-serif';ctx.fillText(cr[1]+' (×'+P['w_'+cr[0]]+')',172,26+r*rh+rh/2+4);
+    js.forEach((j,i)=>{const s=SCORE[j][cr[0]],u=(s-1)/4;ctx.fillStyle='rgb('+Math.round(230-120*u)+','+Math.round(200+0*u-30*u)+','+Math.round(190-90*u)+')';ctx.fillRect(180+cw*i+2,26+r*rh+2,cw-4,rh-4);ctx.fillStyle='#14222B';ctx.font='700 14px sans-serif';ctx.textAlign='center';ctx.fillText(s,180+cw*(i+0.5),26+r*rh+rh/2+5);});});
+}
+
+/* ---------- B: the bolted joint ---------- */
+function drawBoltSection(c,P,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const k=Math.min(9,(H-70)/(P.t1+Math.max(P.Le,2)+14)),cx=W*0.5,d=P.d*k,t1=P.t1*k,Le=P.Le*k,y0=60,Dw=A.Dw*k;
+  const bossH=Le+10*k,bw=Math.max(150,Dw*3);
+  ctx.fillStyle='#d9b78a';ctx.fillRect(cx-bw/2,y0+t1,bw,bossH);ctx.strokeStyle='#7a6a50';ctx.strokeRect(cx-bw/2,y0+t1,bw,bossH);
+  ctx.fillStyle='#c8d0d6';ctx.fillRect(cx-bw*0.8,y0,bw*1.6,t1);ctx.strokeStyle='#5d6872';ctx.strokeRect(cx-bw*0.8,y0,bw*1.6,t1);
+  if(P.washer){ctx.fillStyle='#8a949e';ctx.fillRect(cx-Dw/2,y0-1.6*k,Dw,1.6*k);}
+  const hy=y0-(P.washer?1.6*k:0);ctx.fillStyle='#3a4650';ctx.fillRect(cx-d*0.9,hy-d*0.7,d*1.8,d*0.7);
+  ctx.fillRect(cx-d/2,hy,d,t1+(P.washer?1.6*k:0)+Le);
+  ctx.strokeStyle='#8a949e';ctx.lineWidth=1;for(let y=y0+t1+4;y<y0+t1+Le;y+=Math.max(3,P.d*0.12*k)){ctx.beginPath();ctx.moveTo(cx-d/2,y);ctx.lineTo(cx+d/2,y+2);ctx.stroke();}
+  // arrows
+  const arrow=(x,y1,y2,col,lbl)=>{ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();const s=y2>y1?1:-1;ctx.beginPath();ctx.moveTo(x,y2);ctx.lineTo(x-6,y2-s*10);ctx.lineTo(x+6,y2-s*10);ctx.closePath();ctx.fill();ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(lbl,x+10,(y1+y2)/2+4);};
+  arrow(cx-bw*0.55,y0+t1+bossH*0.7,y0+t1+bossH*0.7+Math.min(60,P.load/150),'#b3261e','load '+(P.load/1000).toFixed(1)+' kN pulls the casting down');
+  arrow(cx+bw*0.55,hy-4,hy+Math.min(50,A.Fi/250)-4+30,'#1f6f47','preload '+(A.Fi/1000).toFixed(1)+' kN');
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('6061 plate',cx-bw*0.78,y0+t1/2+4);ctx.fillText('cast boss, '+P.Le+' mm of thread engaged',cx-bw/2+6,y0+t1+bossH-8);ctx.fillText('bolt M'+P.d+', '+GRADE[P.grade].n,cx-bw*0.8,22);
+}
+function drawJointDiagram(c,P,A){
+  const Psn=A.Fi/(1-A.C),ctx=c.getContext('2d'),W=c.width,H=c.height,Pmax=Math.max(P.load*1.8,Psn*1.2),Fmax=Math.max(A.Fproof*1.15,A.Fi*1.4)/1000;
+  const f=chartFrame(ctx,W,H,52,W-14,14,H-40,0,Pmax/1000,0,Fmax,'external load, kN','force, kN',niceTicks(Pmax/1000,5),niceTicks(Fmax,5));
+  const bolt=[],clamp=[];for(let p=0;p<=Pmax;p+=Pmax/60){bolt.push([p/1000,(p<=Psn?A.Fi+A.C*p:p)/1000]);clamp.push([p/1000,Math.max(0,A.Fi-(1-A.C)*p)/1000]);}
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#b3261e';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(A.Fproof/1000));ctx.lineTo(f.sx(Pmax/1000),f.sy(A.Fproof/1000));ctx.stroke();
+  ctx.strokeStyle='#a86a00';ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(A.Fstrip/1000));ctx.lineTo(f.sx(Pmax/1000),f.sy(A.Fstrip/1000));ctx.stroke();ctx.setLineDash([]);
+  pline(ctx,bolt,f,'#c0271b',3);pline(ctx,clamp,f,'#2b6cb0',3);
+  ctx.strokeStyle='#14222B';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(f.sx(P.load/1000),14);ctx.lineTo(f.sx(P.load/1000),H-40);ctx.stroke();
+  ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#b3261e';ctx.fillText('bolt proof load',58,f.sy(A.Fproof/1000)-4);ctx.fillStyle='#a86a00';ctx.fillText('thread strips out',58,f.sy(A.Fstrip/1000)-4);
+  ctx.fillStyle='#c0271b';ctx.fillRect(60,H-92,14,4);ctx.fillStyle='#14222B';ctx.fillText('force in the bolt',80,H-87);ctx.fillStyle='#2b6cb0';ctx.fillRect(60,H-76,14,4);ctx.fillStyle='#14222B';ctx.fillText('clamping force on the parts',80,H-71);
+  ctx.textAlign='right';ctx.fillText('your load',f.sx(P.load/1000)-4,22);
+}
+function drawSF(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,n=A.modes.length,ymax=Math.max(3,Math.min(8,Math.max(...A.modes.map(m=>m[1]))*1.1));
+  const f=chartFrame(ctx,W,H,52,W-14,16,H-62,0,n,0,ymax,'','safety factor',[],niceTicks(ymax,5));
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#1f6f47';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(1.5));ctx.lineTo(f.sx(n),f.sy(1.5));ctx.stroke();ctx.setLineDash([]);
+  A.modes.forEach((m,i)=>{const x=f.sx(i+0.5),w=Math.min(42,(W-80)/n*0.6),v=Math.min(ymax,m[1]);ctx.fillStyle=m[1]>=1.5?'#1f6f47':'#b3261e';ctx.fillRect(x-w/2,f.sy(v),w,f.sy(0)-f.sy(v));ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='center';ctx.fillText(m[1]>=50?'n/a':m[1].toFixed(2),x,f.sy(v)-5);
+    ctx.font='11px sans-serif';const words=m[0].split(' ');ctx.fillText(words.slice(0,2).join(' '),x,H-40);ctx.fillText(words.slice(2).join(' '),x,H-27);});
+  ctx.fillStyle='#1f6f47';ctx.font='11px sans-serif';ctx.textAlign='right';ctx.fillText('target 1.5',W-18,f.sy(1.5)-4);
+}
+function drawPreload(c,P,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,pre=A.pre,lo=pre[40],hi=pre[pre.length-40],x1=Math.max(A.Fproof*1.2,hi*1.05)/1000;
+  const bins=34,cnt=new Array(bins).fill(0);pre.forEach(v=>{const b=Math.min(bins-1,Math.floor(v/1000/x1*bins));cnt[b]++;});const ymax=Math.max(...cnt)*1.1;
+  const f=chartFrame(ctx,W,H,52,W-14,16,H-40,0,x1,0,ymax,'preload actually achieved, kN','bolts',niceTicks(x1,5),[]);
+  cnt.forEach((n,i)=>{const xa=f.sx(i/bins*x1),xb=f.sx((i+1)/bins*x1),over=(i+0.5)/bins*x1*1000>A.Fproof;ctx.fillStyle=over?'#b3261e':'#6d7b86';ctx.fillRect(xa,f.sy(n),xb-xa-1,f.sy(0)-f.sy(n));});
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#b3261e';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(A.Fproof/1000),16);ctx.lineTo(f.sx(A.Fproof/1000),H-40);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#b3261e';ctx.font='600 11px sans-serif';ctx.textAlign='right';ctx.fillText('proof load',f.sx(A.Fproof/1000)-4,46);
+  const over=pre.filter(v=>v>A.Fproof).length/pre.length*100;ctx.fillStyle='#14222B';ctx.textAlign='left';ctx.fillText('same torque on 4000 bolts: '+over.toFixed(0)+' % end up past proof',58,28);
+}
+
+/* ---------- C: the weld ---------- */
+function drawWeldSection(c,P,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const k=Math.min(26,(H-110)/Math.max(P.t,2)),tp=P.t*k,cx=W/2,cy=H*0.5,Hz=A.w250*2.4,half=W/2-24;
+  const tilt=Math.min(10,A.dist*1.6)*Math.PI/180;
+  const strip=(sgn)=>{ctx.save();ctx.translate(cx,cy+tp/2);ctx.rotate(sgn*tilt);
+    for(let x=0;x<half;x+=2){const y=x/2.4,Tp=peakT(P,Math.max(y,0.1),A.H),fr=y<A.wf?0:A.frac(Tp);const u=Math.max(0,Math.min(1,(fr-0.3)/0.7));ctx.fillStyle='rgb('+Math.round(200-120*(1-u)*0+(1-u)*40)+','+Math.round(120+110*u)+','+Math.round(90+120*u)+')';
+      if(y<A.wf)ctx.fillStyle='#c98a3a';ctx.fillRect(sgn*x-(sgn<0?2:0),-tp,2.4,tp);}
+    ctx.restore();};
+  strip(-1);strip(1);
+  ctx.fillStyle='#c98a3a';ctx.beginPath();ctx.ellipse(cx,cy+tp/2-tp*0.25,Math.max(6,A.wf*2.4),Math.max(6,tp*0.7),0,0,6.283);ctx.fill();
+  ctx.strokeStyle='#14222B';ctx.lineWidth=1.4;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx-A.w250*2.4,cy+tp/2+16);ctx.lineTo(cx+A.w250*2.4,cy+tp/2+16);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='center';ctx.fillText('heat-affected zone about '+(2*A.w250).toFixed(0)+' mm wide',cx,cy+tp/2+34);
+  ctx.textAlign='left';ctx.fillText('weld metal ('+P.filler+')',cx+A.wf*2.4+8,cy-tp/2-8);ctx.fillText('penetration '+A.dp.toFixed(1)+' mm of '+P.t+' mm',12,22);
+  ctx.fillStyle='#4b5a64';ctx.font='11px sans-serif';ctx.fillText('green: full T6 strength    teal to red: overaged and softened    orange: weld metal',12,H-8);
+  ctx.textAlign='right';ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.fillText('angular distortion '+A.dist.toFixed(1)+'° (drawn larger)',W-12,22);
+}
+function drawWeldProfile(c,P,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ymax=300;
+  const f=chartFrame(ctx,W,H,52,W-14,16,H-40,0,45,0,ymax,'distance from the weld centreline, mm','local yield strength, MPa',niceTicks(45,6),niceTicks(ymax,5));
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#1f6f47';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(160));ctx.lineTo(f.sx(45),f.sy(160));ctx.stroke();ctx.strokeStyle='#8d99a3';ctx.beginPath();ctx.moveTo(f.sx(0),f.sy(YB));ctx.lineTo(f.sx(45),f.sy(YB));ctx.stroke();ctx.setLineDash([]);
+  pline(ctx,A.prof,f,'#c0271b',3);ctx.font='600 11px sans-serif';ctx.textAlign='right';ctx.fillStyle='#1f6f47';ctx.fillText('target 160 MPa',W-18,f.sy(160)-4);ctx.fillStyle='#4b5a64';ctx.fillText('parent metal 275 MPa',W-18,f.sy(YB)-4);
+}
+function drawWeldWindow(c,P){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,w=weldWindow(P,26),L=56,R=W-14,T=16,B=H-42,n=26;ctx.clearRect(0,0,W,H);
+  w.rows.forEach((row,i)=>row.forEach((cell,j)=>{ctx.fillStyle=cell.lack?'rgba(168,106,0,.28)':(cell.burn?'rgba(179,38,30,.25)':'rgba(31,111,71,.42)');ctx.fillRect(L+(R-L)*j/n,B-(B-T)*(i+1)/n,(R-L)/n+0.5,(B-T)/n+0.5);}));
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='center';[2,4,6,8,10,12].forEach(v=>ctx.fillText(v,L+(R-L)*(v-w.v0)/(w.v1-w.v0),B+16));ctx.fillText('travel speed, mm/s',(L+R)/2,H-6);
+  ctx.textAlign='right';[100,150,200,250,300].forEach(v=>ctx.fillText(v,L-6,B-(B-T)*(v-w.I0)/(w.I1-w.I0)+4));ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('welding current, A',0,0);ctx.restore();
+  const px=L+(R-L)*(P.v-w.v0)/(w.v1-w.v0),py=B-(B-T)*(P.I-w.I0)/(w.I1-w.I0);ctx.fillStyle='#14222B';ctx.beginPath();ctx.arc(px,py,7,0,6.283);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.font='600 11px sans-serif';ctx.textAlign='left';ctx.fillStyle='#1f6f47';ctx.fillText('green: full penetration',L+8,T+14);ctx.fillStyle='#a86a00';ctx.fillText('amber: lack of fusion (too little heat)',L+8,T+28);ctx.fillStyle='#b3261e';ctx.fillText('red: burn-through (too much heat)',L+8,T+42);
+}
+
+/* ---------- D: the stack ---------- */
+function drawChain(c,P,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);
+  const k=(H-70)/13,x0=34,w=W*0.22,top=34,y=(mm)=>top+mm*k;
+  ctx.fillStyle='#d9b78a';ctx.fillRect(x0,top,34,12*k+20);ctx.fillRect(x0+34+w,top,34,12*k+20);ctx.fillRect(x0,top+12*k,w+68,20);
+  ctx.strokeStyle='#7a6a50';ctx.lineWidth=1;ctx.strokeRect(x0,top,34,12*k+20);ctx.strokeRect(x0+34+w,top,34,12*k+20);
+  const px=x0+34;
+  ctx.fillStyle='#c8d0d6';ctx.fillRect(px,y(4),w,8*k);ctx.strokeStyle='#5d6872';ctx.strokeRect(px,y(4),w,8*k);
+  ctx.fillStyle='#8a949e';ctx.fillRect(px,y(0.5),w,3.5*k);ctx.strokeRect(px,y(0.5),w,3.5*k);
+  ctx.fillStyle='rgba(31,111,71,.35)';ctx.fillRect(px,y(0),w,0.5*k);
+  const lx=W*0.45,rows=[['A','Pocket depth 12.0 ± '+P.tA.toFixed(2)+' mm',PROC[P.pA].n,x0+17,y(6),'#d9b78a'],['B','Plate thickness 8.0 ± '+P.tB.toFixed(2)+' mm',PROC[P.pB].n,px+w/2,y(8),'#c8d0d6'],['C','Cap thickness 3.5 ± '+P.tC.toFixed(2)+' mm',PROC[P.pC].n,px+w/2,y(2.2),'#8a949e']];
+  rows.forEach((r,i)=>{const yy=60+i*72;ctx.strokeStyle='#8d99a3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(r[3],r[4]);ctx.lineTo(lx-8,yy+10);ctx.stroke();ctx.fillStyle=r[5];ctx.fillRect(lx,yy-4,16,16);ctx.strokeStyle='#5d6872';ctx.strokeRect(lx,yy-4,16,16);
+    ctx.fillStyle='#14222B';ctx.font='700 13px sans-serif';ctx.textAlign='left';ctx.fillText(r[0]+'  '+r[1],lx+24,yy+8);ctx.font='12px sans-serif';ctx.fillStyle='#4b5a64';ctx.fillText(r[2],lx+24,yy+25);});
+  ctx.fillStyle='#1f6f47';ctx.font='700 13px sans-serif';ctx.fillText('gap = A − B − C, nominal 0.5 mm',lx,H-46);ctx.font='12px sans-serif';ctx.fillText('it must stay between 0.2 and 0.8 mm',lx,H-28);
+  ctx.strokeStyle='#1f6f47';ctx.beginPath();ctx.moveTo(px+w+2,y(0));ctx.lineTo(lx-8,H-52);ctx.stroke();
+}
+function drawGapHist(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,bins=50,lo=-0.2,hi=1.3,cnt=new Array(bins).fill(0);
+  for(let i=0;i<A.gaps.length;i++){const b=Math.floor((A.gaps[i]-lo)/(hi-lo)*bins);if(b>=0&&b<bins)cnt[b]++;}
+  const ymax=Math.max(...cnt)*1.1,f=chartFrame(ctx,W,H,52,W-14,16,H-40,lo,hi,0,ymax,'gap, mm','assemblies (of 20 000)',[0,0.2,0.5,0.8,1.0,1.2],[]);
+  cnt.forEach((n,i)=>{const g0=lo+(hi-lo)*i/bins,g1=lo+(hi-lo)*(i+1)/bins,mid=(g0+g1)/2,ok=mid>=GMIN&&mid<=GMAX;ctx.fillStyle=ok?'#1f6f47':'#b3261e';ctx.fillRect(f.sx(g0),f.sy(n),f.sx(g1)-f.sx(g0)-1,f.sy(0)-f.sy(n));});
+  ctx.setLineDash([6,5]);ctx.strokeStyle='#14222B';ctx.lineWidth=1.4;[GMIN,GMAX].forEach(g=>{ctx.beginPath();ctx.moveTo(f.sx(g),16);ctx.lineTo(f.sx(g),H-40);ctx.stroke();});ctx.setLineDash([]);
+  ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(A.fitF*100>=99.95?'all fit':'fit '+(A.fitF*100).toFixed(1)+' %',60,28);
+}
+function drawRanges(c,A){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,lo=-0.4,hi=1.4,f=chartFrame(ctx,W,H,150,W-14,16,H-40,lo,hi,0,4,'gap, mm','',[ -0.2,0,0.2,0.5,0.8,1.0,1.2],[]);
+  ctx.fillStyle='rgba(31,111,71,.14)';ctx.fillRect(f.sx(GMIN),16,f.sx(GMAX)-f.sx(GMIN),H-56);
+  const rows=[['Worst case',0.5-A.wc,0.5+A.wc,A.wcOK],['Statistical (RSS)',0.5-A.rss,0.5+A.rss,A.rssOK],['Simulated, 99.7 %',A.mu-3*A.sd,A.mu+3*A.sd,A.mu-3*A.sd>=GMIN&&A.mu+3*A.sd<=GMAX]];
+  rows.forEach((r,i)=>{const y=40+i*(H-90)/3;ctx.fillStyle=r[3]?'#1f6f47':'#b3261e';ctx.fillRect(f.sx(r[1]),y,f.sx(r[2])-f.sx(r[1]),24);ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='right';ctx.fillText(r[0],142,y+16);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(r[1].toFixed(2)+' to '+r[2].toFixed(2),(f.sx(r[1])+f.sx(r[2]))/2,y+16);});
+  ctx.fillStyle='#1f6f47';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('0.2 to 0.8 mm allowed',f.sx(GMIN)+4,H-46);
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const COL=['#6d7b86','#d9822b','#c0271b'];
+const PRESET={orn:{w_strength:3,w_fatigue:2,w_mass:3,w_cost:3,w_apart:3,w_temper:4,w_skill:4,removable:false,hot:false,steel:false,leak:false,t6:true},
+  lid:{w_strength:3,w_fatigue:2,w_mass:2,w_cost:3,w_apart:1,w_temper:2,w_skill:3,removable:false,hot:false,steel:false,leak:true,t6:false},
+  air:{w_strength:4,w_fatigue:4,w_mass:5,w_cost:1,w_apart:1,w_temper:3,w_skill:1,removable:false,hot:false,steel:false,leak:false,t6:true},
+  hatch:{w_strength:3,w_fatigue:2,w_mass:2,w_cost:3,w_apart:5,w_temper:3,w_skill:3,removable:true,hot:false,steel:false,leak:false,t6:false}};
+const W5=(k,l)=>({g:'What matters (0 to 5)',k:'w_'+k,type:'range',l:l,min:0,max:5,step:1,fmt:v=>String(v)});
+const CASES={
+ A:{tag:'A',title:'Choose the joint',sub:'Bolted, welded, adhesive or press fit: weigh what matters',
+  blurb:'Welding and fastening answer the same question: how do you join these two parts? Weigh what matters for the job, switch on the hard constraints, and see which joint comes out on top and which ones the situation rules out. The scores are engineering judgement, written out so you can argue with them.',
+  ctrl:[{g:'The situation',k:'scn',type:'select',l:'Start from a situation',opts:[['custom','My own'],['orn','The ornament hanging bracket'],['lid','A watertight lid'],['air','A light aircraft panel'],['hatch','A service hatch']]},
+        W5('strength','Strength'),W5('fatigue','Fatigue life'),W5('mass','Low mass'),W5('cost','Low cost'),W5('apart','Can be taken apart'),W5('temper','Keeps the aluminum temper'),W5('skill','Easy in the student shop'),
+        {g:'Hard constraints',k:'removable',type:'toggle',l:'Must come apart again'},{g:'Hard constraints',k:'hot',type:'toggle',l:'Runs hotter than 100 °C'},{g:'Hard constraints',k:'steel',type:'toggle',l:'Joins aluminum to steel'},{g:'Hard constraints',k:'leak',type:'toggle',l:'Must be leak-tight'},{g:'Hard constraints',k:'t6',type:'toggle',l:'The aluminum is heat treated (T6)'},
+        {g:'Your decision',k:'pick',type:'select',l:'The joint you choose',opts:Object.keys(JOINTS).map(k=>[k,JOINTS[k]])}],
+  def:Object.assign({scn:'orn',pick:'weld'},PRESET.orn)},
+ B:{tag:'B',title:'The bolted joint',sub:'Preload, thread strength in aluminum, and what the load does to the joint',
+  blurb:'Tighten a bolt into a cast aluminum boss to clamp a plate. The torque sets the preload, but only roughly. The joint has to hold the load without the bolt yielding, the parts separating, the thread stripping out of the casting, the plate crushing under the head, or the bolt fatiguing.',
+  ctrl:[{g:'The bolt',k:'d',type:'select',num:true,l:'Size',opts:[[4,'M4'],[5,'M5'],[6,'M6'],[8,'M8'],[10,'M10']]},
+        {g:'The bolt',k:'grade',type:'select',l:'Grade',opts:Object.keys(GRADE).map(k=>[k,GRADE[k].n])},
+        {g:'The bolt',k:'washer',type:'toggle',l:'Hardened washer under the head'},
+        {g:'The parts',k:'boss',type:'select',l:'Cast boss',opts:Object.keys(BOSS).map(k=>[k,BOSS[k].n])},
+        {g:'The parts',k:'Le',type:'range',l:'Thread engaged in the casting',min:2,max:24,step:1,fmt:v=>v+' mm'},
+        {g:'The parts',k:'t1',type:'range',l:'6061 plate thickness',min:3,max:15,step:1,fmt:v=>v+' mm'},
+        {g:'Tightening',k:'fric',type:'select',l:'Thread condition',opts:Object.keys(FRIC).map(k=>[k,FRIC[k].n])},
+        {g:'Tightening',k:'T',type:'range',l:'Tightening torque',min:0.5,max:40,step:0.5,fmt:v=>fx(v,1)+' N·m'},
+        {g:'The load',k:'load',type:'select',num:true,l:'Pull the joint must carry',opts:[[1000,'1 kN'],[3000,'3 kN'],[8000,'8 kN']]},
+        {g:'The load',k:'cyc',type:'toggle',l:'Load repeats (0 to full)'}],
+  def:{d:6,grade:'8.8',fric:'oil',T:10,Le:9,t1:6,boss:'a356f',washer:true,load:3000,cyc:true}},
+ C:{tag:'C',title:'The welded joint',sub:'Heat input, the softened zone, distortion and heat treating after welding',
+  blurb:'Weld two 6061-T6 plates end to end. The heat that fuses the joint also over-ages the aluminum beside it, so the joint ends up much weaker than the plate. How much depends on the heat per length, the filler, and whether you heat treat afterwards, which brings strength back at the price of distortion.',
+  ladder:['Parent metal (6061-T6)','As welded','After your post-weld treatment'],
+  ctrl:[{g:'The plate',k:'t',type:'range',l:'Thickness',min:2,max:8,step:1,fmt:v=>v+' mm'},
+        {g:'The plate',k:'clean',type:'toggle',l:'Degrease and brush off the oxide'},{g:'The plate',k:'T0',type:'range',l:'Preheat',min:20,max:200,step:10,fmt:v=>v+' °C'},
+        {g:'The weld',k:'proc',type:'seg',l:'Process',opts:[['tig','TIG'],['mig','MIG']]},
+        {g:'The weld',k:'filler',type:'select',l:'Filler wire',opts:[['none','None (autogenous)'],['4043','4043'],['5356','5356']]},
+        {g:'The weld',k:'I',type:'range',l:'Current',min:40,max:320,step:5,fmt:v=>v+' A'},
+        {g:'The weld',k:'V',type:'range',l:'Voltage',min:10,max:28,step:1,fmt:v=>v+' V'},
+        {g:'The weld',k:'v',type:'range',l:'Travel speed',min:1,max:12,step:0.5,fmt:v=>fx(v,1)+' mm/s'},
+        {g:'After welding',k:'pwht',type:'select',l:'Heat treatment',opts:[['none','None'],['age','Age artificially only'],['t6','Solution treat, quench and age (T6)']]}],
+  def:{proc:'tig',I:130,V:14,v:3,t:3,filler:'4043',clean:true,T0:20,pwht:'none'}},
+ D:{tag:'D',title:'Stack-up and capability',sub:'Will the parts still fit together when each has its own tolerance?',
+  blurb:'Three parts stack up in a pocket and leave a small gap that has to stay between 0.2 and 0.8 mm. Choose the process and the tolerance for each dimension. Tighter tolerances and better processes cost more, but scrapping parts and assemblies that do not fit costs too. See the worst case, the statistical case and a simulated batch.',
+  ctrl:[{g:'A: pocket depth, 12.0 mm',k:'pA',type:'select',l:'Process',opts:['sand','inv','cnc','man'].map(k=>[k,PROC[k].n])},{g:'A: pocket depth, 12.0 mm',k:'tA',type:'range',l:'Tolerance, plus or minus',min:0.02,max:0.6,step:0.01,fmt:v=>'± '+fx(v,2)+' mm'},
+        {g:'B: plate thickness, 8.0 mm',k:'pB',type:'select',l:'Process',opts:['roll','cnc','man'].map(k=>[k,PROC[k].n])},{g:'B: plate thickness, 8.0 mm',k:'tB',type:'range',l:'Tolerance, plus or minus',min:0.02,max:0.3,step:0.01,fmt:v=>'± '+fx(v,2)+' mm'},
+        {g:'C: cap thickness, 3.5 mm',k:'pC',type:'select',l:'Process',opts:['cnc','man','resin','stamp'].map(k=>[k,PROC[k].n])},{g:'C: cap thickness, 3.5 mm',k:'tC',type:'range',l:'Tolerance, plus or minus',min:0.01,max:0.2,step:0.01,fmt:v=>'± '+fx(v,2)+' mm'}],
+  def:{pA:'sand',tA:0.5,pB:'roll',tB:0.15,pC:'cnc',tC:0.05}}
+};
+let CK='B',P={},A=null,TD=[null,null,null],TSEL=1,ANIM=null;
+function setCase(k){CK=k;P=Object.assign({},CASES[k].def);TD=[null,null,null];stopAnim();document.querySelectorAll('.casebtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  $('blurb').textContent=CASES[k].blurb;$('testBox').style.display=k==='C'?'':'none';buildControls();changed();}
+function buildControls(){
+  const C=CASES[CK],box=$('controls');box.innerHTML='';let lastG='',n=0;
+  C.ctrl.forEach(c=>{
+    if(c.g!==lastG){const h=document.createElement('h3');h.textContent=(++n)+'. '+c.g;box.appendChild(h);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(String(P[c.k])===String(o[0])?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+      w.querySelector('select').addEventListener('change',e=>{P[c.k]=c.num?+e.target.value:e.target.value;if(CK==='A'&&c.k==='scn'&&PRESET[P.scn])Object.assign(P,PRESET[P.scn]);if(CK==='A'&&c.k.indexOf('w_')===0)P.scn='custom';buildControls();changed();});}
+    else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else if(c.type==='toggle'){w.innerHTML='<label class="chk"><input type="checkbox" id="c_'+c.k+'"'+(P[c.k]?' checked':'')+'> '+c.l+'</label>';w.querySelector('input').addEventListener('change',e=>{P[c.k]=e.target.checked;if(CK==='A')P.scn='custom';buildControls();changed();});}
+    else{w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;if(CK==='A')P.scn='custom';outs();changed();});}
+    box.appendChild(w);
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},C.def);buildControls();changed();});box.appendChild(b);outs();
+}
+function outs(){CASES[CK].ctrl.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k]);}});}
+function changed(){TD=[null,null,null];stopAnim();
+  if(CK==='A'){const r=choose(P),picked=r.rank.find(x=>x.j===P.pick),top=r.best,fl=[],add=(l,t)=>fl.push([l,t]);
+    if(picked.out)add('bad',picked.name+' is ruled out here: '+picked.why.filter(w=>!/about half/.test(w)).join('; ')+'.');
+    else if(picked.j!==top.j)add('warn',picked.name+' ranks '+(r.rank.indexOf(picked)+1)+' with these weights. '+top.name+' scores '+fx(top.score,2)+' against '+fx(picked.score,2)+'.');
+    r.rank.forEach(x=>{if(x.why.some(w=>/about half/.test(w))&&x.j===P.pick)add('warn','Welding takes about half the strength out of 6061-T6 beside the weld, unless you heat treat after welding (see the welded joint).');});
+    if(!picked.out&&picked.j===top.j&&!fl.length)add('ok',picked.name+' scores highest ('+fx(picked.score,2)+') and nothing in the situation rules it out.');
+    const ok=!picked.out&&picked.j===top.j;
+    A=Object.assign({},r,{flags:fl,ok,short:ok?[]:[picked.out?picked.name+' is ruled out':picked.name+' does not score highest'],mission:['the joint you choose scores highest','and is not ruled out by the situation']});}
+  else if(CK==='B'){A=bolt(P);A.mission=['carry the '+(P.load/1000)+' kN pull'+(P.cyc?' (repeating)':''),'every safety factor 1.5 or more','no yielding, stripping, separation, crushing or fatigue'];}
+  else if(CK==='C'){A=weld(P);A.mission=['joint yield 160 MPa or more','angular distortion 2.0° or less','no defects'];}
+  else{A=stack(P);A.mission=['99 % or more of assemblies fit','Cpk of the gap 1.33 or more','cost 9 or less per assembly'];}
+  draw();}
+
+function kv(rows){return '<dl class="kv">'+rows.map(r=>'<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>').join('')+'</dl>';}
+function draw(){
+  const C=CASES[CK];$('mission').innerHTML='<b>Mission: '+({A:'choose the right joint',B:'make a bolted joint that holds',C:'weld a joint that keeps its strength',D:'make the parts fit together'})[CK]+'</b>'+A.mission.map(x=>'<span class="chip">'+x+'</span>').join('');
+  const show=(id,on)=>$(id).style.display=on?'':'none';
+  const T={A:['The ranking','The scores behind it','',''],B:['The joint','The load on the bolt and on the parts','The five ways it can fail','Same torque, many bolts'],C:['Across the weld','Strength along the plate','The settings window',''],D:['The stack','Where the gap lands','Worst case, statistical, simulated','']}[CK];
+  show('sec2',CK==='A'||CK==='B'||CK==='C'||CK==='D');show('c2w',CK!=='A');show('c3w',CK==='B');
+  $('dt').textContent=T[0];$('c1t').textContent=T[1];$('c2t').textContent=T[2];$('c3t').textContent=T[3];
+  const capD={A:'Weighted scores. Grey bars are ruled out by a hard constraint.',B:'Bolted joint in section. The casting is the lower, orange block.',C:'Cross-section of the weld. Colour shows the local strength.',D:'The stack: the pocket is cast or machined, the plate and cap sit inside it.'}[CK];
+  $('dcap').textContent=capD;
+  if(CK==='A'){drawRanking($('diag'),A);drawHeat($('c1'),P);$('c1cap').textContent='The score of each joint on each criterion, 1 (poor) to 5 (best), and the weight you gave it.';$('kv').innerHTML='';
+    $('tbl').innerHTML='<tr><th>Joint</th><th>Weighted score</th><th>Status</th></tr>'+A.rank.map((r,i)=>'<tr><td>'+(i+1)+'. '+r.name+(r.j===P.pick?' (your choice)':'')+'</td><td>'+fx(r.score,2)+'</td><td>'+(r.out?'ruled out: '+r.why.filter(w=>!/about half/.test(w)).join('; '):(r.why.length?r.why.join('; '):'in the running'))+'</td></tr>').join('');}
+  if(CK==='B'){drawBoltSection($('diag'),P,A);drawJointDiagram($('c1'),P,A);drawSF($('c2'),A);drawPreload($('c3'),P,A);
+    $('c1cap').textContent='Until the load pulls the parts apart, the bolt only sees a small share of it (the joint constant). Past the separation point the bolt carries all of it.';$('c2cap').textContent='Each bar is the load a failure mode can take divided by the load it sees. Below 1.5 is not enough.';$('c3cap').textContent='Torque gives a preload that scatters widely from friction alone.';
+    $('kv').innerHTML=kv([['Nominal preload',fx(A.Fi/1000,1)+' kN ('+Math.round(A.Fi/A.Fproof*100)+' % of proof)'],['Range from friction scatter',fx(A.Fmin/1000,1)+' to '+fx(A.Fmax/1000,1)+' kN'],['Joint constant (bolt share of the load)',fx(A.C,2)],['Bolt proof load',fx(A.Fproof/1000,1)+' kN'],['Thread strips out at',fx(A.Fstrip/1000,1)+' kN'],['Joint separates at (lowest preload)',fx(A.Psep/1000,1)+' kN'],['Clamping force left under load',fx(Math.max(0,A.Fcl)/1000,1)+' kN']]);
+    $('tbl').innerHTML='<tr><th>Failure mode</th><th>Safety factor</th></tr>'+A.modes.map(m=>'<tr><td>'+m[0]+'</td><td style="color:'+(m[1]>=1.5?'#1f6f47':'#b3261e')+';font-weight:700">'+(m[1]>=50?'not applicable':fx(m[1],2))+'</td></tr>').join('');}
+  if(CK==='C'){drawWeldSection($('diag'),P,A);drawWeldProfile($('c1'),P,A);drawWeldWindow($('c2'),P);
+    $('c1cap').textContent='The weld metal in the middle, then a softened band, then the parent metal at full strength.';$('c2cap').textContent='Heat per length decides penetration. Too little leaves the joint hollow, too much burns through. Your setting is the dark dot.';
+    $('kv').innerHTML=kv([['Heat input (net)',fx(A.H,0)+' J/mm'],['Penetration',fx(A.dp,1)+' mm of '+P.t+' mm'],['Heat-affected zone',fx(2*A.w250,0)+' mm wide (above 300 °C)'],['Weakest zone',fx(A.fmin*100,0)+' % of the parent strength'],['Porosity',fx(A.por,1)+' %'],['Angular distortion',fx(A.dist,1)+'°']]);
+    $('tbl').innerHTML='<tr><th></th><th>Yield, MPa</th><th>Tensile, MPa</th><th>Elongation, %</th></tr>'+A.cond.map((p,i)=>'<tr><td><span class="dot" style="background:'+COL[i]+'"></span>'+(i+1)+'. '+CASES.C.ladder[i]+'</td><td>'+fx(p.YS,0)+'</td><td>'+fx(p.UTS,0)+'</td><td>'+fx(p.EL,1)+'</td></tr>').join('');
+    drawSS();drawSpec(TSEL,0,false,0);updBtns();}
+  if(CK==='D'){drawChain($('diag'),P,A);drawGapHist($('c1'),A);drawRanges($('c2'),A);
+    $('c1cap').textContent='20 000 simulated assemblies. Green falls inside 0.2 to 0.8 mm.';$('c2cap').textContent='Worst case adds every tolerance. Statistical stacking is more optimistic. The simulation is closest to a real batch.';
+    $('kv').innerHTML=kv([['Gap, average',fx(A.mu,3)+' mm'],['Gap, standard deviation',fx(A.sd,3)+' mm'],['Cp',fx(A.Cp,2)],['Cpk',fx(A.Cpk,2)],['Assemblies that fit',fx(A.fitF*100,1)+' %'],['Cost per assembly',fx(A.cost,1)+' units'],['Five sample assemblies',A.five.map(g=>fx(g,2)).join(', ')+' mm']]);
+    $('tbl').innerHTML='<tr><th>Dimension</th><th>Process</th><th>Tolerance</th><th>Spread (σ)</th><th>Parts scrapped</th><th>Cost per good part</th></tr>'+A.info.map(i=>'<tr><td>'+i.name.split(' (')[0]+'</td><td>'+i.proc.n+'</td><td>± '+fx(i.tol,2)+' mm</td><td>'+fx(i.sigma,3)+' mm</td><td>'+fx(i.scrap*100,0)+' %</td><td>'+fx(i.cost,1)+'</td></tr>').join('');}
+  results();
+}
+function results(){
+  $('verdict').className='verdict '+(A.ok?'ok':'bad');$('verdict').innerHTML=A.ok?'Mission met':'Not there yet';
+  let h='';if(!A.ok&&A.short&&A.short.length)h+='<li class="head">Short of the mission</li><li class="warn">'+A.short.join('; ')+'.</li>';
+  if(A.flags.length)h+='<li class="head">Notes</li>'+A.flags.map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  $('flags').innerHTML=h||'<li class="ok">No problems found with this recipe.</li>';
+  let ins=[];
+  if(CK==='A')ins=['<b>What the scores say:</b> a bolt is the only joint that is strong, fatigue-resistant, removable and does not touch the aluminum temper. Welding wins on mass and tightness but costs the temper. Adhesives are light and cheap but cannot be undone and dislike heat. Move the sliders and see the order change.'];
+  if(CK==='B')ins=['<b>Preload does the work.</b> A bolt that is tightened well sees only about '+fx(A.C*100,0)+' % of the external load, which is why it survives fatigue. But tightened torque is only a rough guide: friction alone scatters the preload by about ±30 %, so some bolts in a batch are tightened to '+fx(A.Fmax/A.Fproof*100,0)+' % of proof. <b>The casting is the weak part:</b> the bolt\'s steel threads can carry '+fx(A.Fproof/1000,1)+' kN, but the aluminum threads strip at '+fx(A.Fstrip/1000,1)+' kN, so engage 1.5 to 2 diameters of thread.'];
+  if(CK==='C')ins=['<b>The weld heat is what weakens the plate:</b> beside the weld the aluminum was over-aged, so as welded the joint yields at about '+fx(A.cond[1].YS,0)+' MPa against '+YB+' MPa for the parent metal. <b>Post-weld treatment:</b> aging only helps if the filler can keep up (5356 can, 4043 cannot), and a full T6 restores most of the strength at the cost of about '+fx(0.8+0.3*P.t,1)+'° of extra distortion from the quench.'];
+  if(CK==='D')ins=['<b>Worst case against statistical:</b> adding every tolerance ('+fx(A.wc,2)+' mm) is safe but forces expensive tight parts. Statistical stacking ('+fx(A.rss,2)+' mm) assumes the parts vary independently, and it is closer to what a real batch does. <b>Capability:</b> Cpk of '+fx(A.Cpk,2)+' tells you how much room the process has before it drifts out; 1.33 is the usual minimum.'];
+  $('insights').innerHTML=ins.map(t=>'<p>'+t+'</p>').join('');
+}
+function drawSS(){
+  const c=$('ss'),ctx=c.getContext('2d'),W=c.width,H=c.height,cvs=A.cond.map(curveOf),xm=Math.max(2,Math.max(...cvs.map(v=>v.epsF*100))*1.1),ym=Math.max(...A.cond.map(p=>p.UTS))*1.15;
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,0,xm,0,ym,'strain, %','engineering stress, MPa',niceTicks(xm,6),niceTicks(ym,5));
+  const draw=(cv,frac,col,w,alpha)=>{const em=cv.epsF*frac;ctx.strokeStyle=col;ctx.globalAlpha=alpha;ctx.lineWidth=w;ctx.beginPath();const n=140;for(let i=0;i<=n;i++){const e=em*i/n;i?ctx.lineTo(f.sx(e*100),f.sy(cv.f(e))):ctx.moveTo(f.sx(0),f.sy(0));}ctx.stroke();ctx.globalAlpha=1;};
+  TD.forEach((t,i)=>{if(!t)return;(t.scat||[]).forEach(sc=>draw(sc.cv,t.frac,COL[i],1.2,0.35));draw(cvs[i],t.frac,COL[i],3,1);
+    if(t.frac>=1){const cv=cvs[i];ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(cv.epsF*100),f.sy(cv.sigF),5,0,6.283);ctx.fill();ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(fx(A.cond[i].EL,1)+' % elongation',Math.min(f.sx(cv.epsF*100)+8,W-120),f.sy(cv.sigF)-8);}});
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';CASES.C.ladder.forEach((l,i)=>{ctx.fillStyle=COL[i];ctx.fillRect(66,22+i*17,14,4);ctx.fillStyle='#14222B';ctx.fillText((i+1)+'. '+l,86,27+i*17);});
+  if(!TD.some(Boolean)){ctx.fillStyle='#4b5a64';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Run a test to draw the curves',W/2,H/2+30);}
+}
+function drawSpec(i,frac,broken,tb){const cv=curveOf(A.cond[i]);drawSpecimen($('spec').getContext('2d'),460,130,cv,frac*cv.epsF,broken,tb,i>0);}
+function updBtns(){document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.i)===TSEL&&!ANIM));}
+function stopAnim(){if(ANIM){cancelAnimationFrame(ANIM.raf);ANIM=null;}}
+function runTests(list){stopAnim();const scat=$('scat').checked;list.forEach(i=>{TD[i]={frac:0,scat:scat?scatterSet(A.cond[i],100+i,4).map(p=>({cv:curveOf(p)})):[]};});ANIM={list,pos:0,t0:performance.now()};TSEL=list[0];step();}
+function step(){const a=ANIM;if(!a)return;const now=performance.now(),i=a.list[a.pos],cv=curveOf(A.cond[i]),dur=cv.brittle?2000:3400,frac=Math.min(1,(now-a.t0)/dur);TD[i].frac=frac;TSEL=i;
+  const broken=frac>=1,tb=broken?Math.min(1,(now-a.t0-dur)/500):0;drawSpec(i,frac,broken,Math.max(0,tb));drawSS();
+  if(frac>=1&&now-a.t0>dur+900){a.pos++;if(a.pos>=a.list.length){ANIM=null;updBtns();return;}a.t0=performance.now();}updBtns();a.raf=requestAnimationFrame(step);}
+function save(){const C=CASES[CK],rec={tool:'Joining and assembly lab (standalone beta v0.1)',saved:new Date().toISOString(),case:C.title,settings:P,missionMet:A.ok,flags:A.flags.map(f=>f[0]+': '+f[1]),
+  result:CK==='B'?{preload_kN:+fx(A.Fi/1000,1),safety_factors:A.modes.map(m=>({mode:m[0],sf:+fx(m[1],2)}))}:CK==='C'?{joint_yield_MPa:+fx(A.Yj,0),distortion_deg:+fx(A.dist,1),haz_mm:+fx(2*A.w250,0)}:CK==='D'?{fit_pct:+fx(A.fitF*100,1),Cpk:+fx(A.Cpk,2),cost:+fx(A.cost,1)}:{best:A.best.name,ranking:A.rank.map(r=>({joint:r.name,score:+fx(r.score,2),ruled_out:r.out}))}};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='joining-assembly-lab-'+CK+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);}
+(function init(){
+  const box=$('cases');['A','B','C','D'].forEach(k=>{const C=CASES[k],b=document.createElement('button');b.type='button';b.className='casebtn';b.dataset.k=k;b.innerHTML='<span class="tag">'+C.tag+'</span><b>'+C.title+'</b><span>'+C.sub+'</span>';b.addEventListener('click',()=>setCase(k));box.appendChild(b);});
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>runTests([+b.dataset.i])));
+  $('allBtn').addEventListener('click',()=>runTests([0,1,2]));$('saveBtn').addEventListener('click',save);
+  setCase('B');
+})();
+
+})();
+</script>
+</body>
+</html>

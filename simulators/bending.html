@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bending | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Interactive bending simulator from the Sintering Materials Research Lab at the University of Saskatchewan. Bend a strip and look inside it: grains, strain hardening, springback and cracking, then bend a hook repeatedly and anneal it.">
+<link rel="canonical" href="https://sintrlab.ca/simulators/bending.html">
+<meta property="og:title" content="Bending | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Bend a strip and look inside it, then bend a hook again and again.">
+<meta property="og:url" content="https://sintrlab.ca/simulators/bending.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#EEF0F1">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site-shell.css">
+<!--
+  Bending simulator (beta v0.1). The simulator makes no network calls.
+  The header, dropdown and footer come from ../site-nav.js; colours and fonts from ../site-shell.css.
+-->
+<style>
+:root{--bg:#EEF0F1;--surface:#fff;--ink:#14222B;--ink-soft:#4b5a64;--line:#cfd5da;--line-soft:#e3e7ea;--accent:#C0271B;--accent-deep:#9f1f15;--accent-soft:#f6e1de;--ok:#1f6f47;--ok-soft:#dff0e6;--warn:#a86a00;--warn-soft:#fbefd2;--bad:#b3261e;--bad-soft:#f9dedb;--head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Serif 4',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.02rem;line-height:1.5}
+h1,h2,h3,h4,.btn,.casebtn,.chip,table,select{font-family:var(--head)}
+h1{font-size:2.3rem;margin:0 0 6px;line-height:1.1}h2{font-size:1.25rem;margin:0 0 6px}h3{font-size:1.02rem;margin:18px 0 6px}h4{margin:10px 0 4px;font-size:.95rem}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}.top{padding:28px 0 8px}
+.badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.sub{color:var(--ink-soft);max-width:78ch;margin:6px 0 0}.fine{font-size:.85rem;color:var(--ink-soft)}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 10px}
+@media (max-width:760px){.cases{grid-template-columns:minmax(0,1fr)}}
+.casebtn{text-align:left;padding:11px 14px;border:1px solid var(--line);border-radius:2px;background:var(--surface);cursor:pointer;color:var(--ink);line-height:1.3;position:relative}
+.casebtn b{display:block;font-size:1.05rem;margin-right:26px}.casebtn span:not(.tag){font:400 .88rem var(--body);color:var(--ink-soft)}
+.casebtn .tag{position:absolute;right:12px;top:10px;font:700 .85rem var(--head);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:24px}
+.casebtn:hover{border-color:var(--ink)}.casebtn[aria-pressed="true"]{border:2px solid var(--accent);padding:10px 13px;background:var(--accent-soft)}.casebtn[aria-pressed="true"] .tag{background:var(--accent)}
+.blurb{max-width:90ch;margin:8px 0 10px}
+.mission{padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:2px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.mission b{font:700 1.02rem var(--head);margin-right:6px}.chip{font-size:.85rem;padding:2px 9px;border:1px solid var(--line);border-radius:2px;background:var(--bg);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:18px;margin:16px 0 40px;align-items:start}
+.grid>*,.row2>*{min-width:0}@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel,.box{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:16px 18px}.box{margin-bottom:16px}.panel h3:first-child{margin-top:0}
+.slider{margin:0 0 9px}.slider label,.sl{display:flex;justify-content:space-between;font-size:.92rem;font-weight:500;font-family:var(--head);margin:6px 0 3px}.slider label span{font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:.9rem;margin-bottom:6px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.seg button{flex:1;padding:7px 4px;border:0;border-right:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font:500 .85rem var(--head)}
+.seg button:last-child{border-right:0}.seg button:hover{background:rgba(20,34,43,.08)}.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-block;font-weight:500;font-size:.95rem;padding:9px 16px;border-radius:4px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.small{padding:5px 11px;font-size:.88rem;margin-top:8px}.btn:hover{background:rgba(20,34,43,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-deep)}.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:7px;font:500 .92rem var(--head)}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--line-soft);border-radius:2px;background:#fff}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media (max-width:900px){.row2{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}th{font-weight:500;color:var(--ink-soft)}#tbl td,#tbl th{text-align:right}#tbl td:first-child,#tbl th:first-child{text-align:left}
+#work td.n{width:26px;color:var(--ink-soft)}#work td.st{font-weight:700;width:150px}#work td.fm{font-family:'Source Serif 4',Georgia,serif;color:var(--ink-soft)}#work td.rs{font-weight:700;width:30%}
+#work tr.bad td.rs{color:var(--bad)}#work tr.warn td.rs{color:var(--warn)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}
+.verdict{padding:10px 14px;border-radius:2px;font:700 1.15rem var(--head);margin:4px 0 10px}.verdict.ok{background:var(--ok-soft);border-left:5px solid var(--ok)}.verdict.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.notes{margin:0 0 12px;padding:0;list-style:none}.notes li{padding:8px 11px;border-radius:2px;margin:0 0 6px;font-size:.92rem;line-height:1.42;border-left:4px solid var(--line);background:var(--bg)}
+li.ok{border-left-color:var(--ok);background:var(--ok-soft)}li.warn{border-left-color:var(--warn);background:var(--warn-soft)}li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.vw{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:8px 0}.vw span{font:600 .9rem var(--head)}
+.insights p{margin:6px 0;max-width:80ch}.disclaimer{font-size:.88rem;color:var(--ink-soft);max-width:85ch;margin:0 0 50px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<div data-site-header></div>
+<div class="top"><div class="wrap">
+  <h1>Forming lab: bending<span class="badge">Beta v0.1</span></h1>
+  <p class="sub">Bend a strip and look inside it: the grains stretch on the outside and squash on the inside, the metal work hardens, and a tight enough bend cracks. Then bend a hook again and again and watch the ductility run out. Three tensile tests show what the bending did to the strength.</p>
+  <p class="fine">This is a beta. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%20Bending%20(beta%20v0.1)">send feedback</a>.</p>
+  <div class="cases" id="cases"></div>
+  <p class="blurb" id="blurb"></p>
+  <section class="mission" id="mission" aria-live="polite"></section>
+</div></div>
+<main id="main" class="wrap"><div class="grid">
+  <aside class="panel" id="controls"></aside>
+  <div>
+    <div class="box"><h2>Inside the bend</h2>
+      <div class="row2">
+        <div><div class="seg" id="modes"></div><canvas id="bend" width="440" height="320" role="img" aria-label="Grain structure of the bent strip"></canvas>
+          <div class="vw"><span id="viewLabel"></span><input type="range" id="view" min="0" max="100" value="100"><span id="viewOut"></span></div>
+          <p class="fine" id="bendCap"></p></div>
+        <div><h4 style="margin-top:0">Yield strength through the thickness</h4><canvas id="prof" width="440" height="300"></canvas>
+          <p class="fine">The metal at the neutral axis stays as it was. The outside and inside have been strained, so they are harder.</p></div>
+      </div>
+      <p class="fine">Schematic grains drawn by deforming a grain pattern through the bend. They illustrate trends, not a real sample.</p>
+    </div>
+    <div class="box" id="histBox" style="display:none"><h2>Bend after bend</h2>
+      <div class="row2"><div><canvas id="hS" width="440" height="260"></canvas></div><div><canvas id="hD" width="440" height="260"></canvas></div></div>
+      <p class="fine">Hardening raises the strength with each bend while the ductility is used up. An anneal resets the ductility (grey lines).</p></div>
+    <div class="box"><h2>The calculation</h2><div class="tw"><table id="work"></table></div>
+      <p class="fine">Textbook relations with typical constants. Red and amber rows need attention.</p></div>
+    <div class="box"><h2>Tensile test</h2>
+      <div class="btns"><button class="btn tbtn" data-i="0" type="button">Test 1</button><button class="btn tbtn" data-i="1" type="button">Test 2</button><button class="btn tbtn" data-i="2" type="button">Test 3</button><button class="btn primary" id="allBtn" type="button">Test all three</button><label class="chk" style="margin-left:8px"><input type="checkbox" id="scat"> five specimens each</label></div>
+      <div class="row2"><div><canvas id="spec" width="460" height="130" role="img" aria-label="Tensile specimen"></canvas><p class="fine">The specimen is drawn stretched more than real to make it visible. Test 2 is a strip cut across the whole thickness of the bend.</p></div>
+        <div><canvas id="ss" width="520" height="340" role="img" aria-label="Stress-strain curves"></canvas></div></div></div>
+    <div class="box"><h2>Results</h2>
+      <div class="row2"><div><div class="verdict" id="verdict"></div><ul class="notes" id="flags"></ul><button class="btn" id="saveBtn" type="button">Save result (JSON)</button></div>
+        <div><h4 style="margin-top:0">Strength and ductility map</h4><canvas id="map" width="460" height="320"></canvas></div></div>
+      <div class="tw"><table id="tbl"></table></div><div class="insights" id="insights"></div></div>
+    <p class="disclaimer">A teaching model, not validated process software. Strain hardening, springback and the cracking limit use textbook relations with typical constants; the strength of a strip cut from a bend, the fatigue life, the anneal grain sizes and the grain pictures are simple trend models. Real results depend on temper, grain direction, tooling and edge condition. Check the numbers against data and test pieces.</p>
+  </div>
+</div></main>
+<div data-site-footer></div>
+<script src="../site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+// ==== MODEL: bending, strain hardening, repeated bending, annealing ====
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let x=Math.imul(a^(a>>>15),1|a);x=(x+Math.imul(x^(x>>>7),61|x))^x;return((x^(x>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const WID=25, KB=0.4, CSTR=-0.6, EPCAP=0.3;
+const MATS={
+  a6061o:{n:'6061-O aluminum (annealed)',E:69000,Y0:55,UTS0:125,nn:0.20,ef:0.75,aniso:0.9,d0:60,Yann:55},
+  a6061t6:{n:'6061-T6 aluminum (heat treated)',E:69000,Y0:275,UTS0:310,nn:0.05,ef:0.22,aniso:0.6,d0:50,annealTo:'a6061o'},
+  brass:{n:'Cartridge brass C260, annealed',E:110000,Y0:95,UTS0:330,nn:0.49,ef:0.9,aniso:0.85,d0:35},
+  steel:{n:'Mild steel 1008, annealed',E:200000,Y0:175,UTS0:330,nn:0.26,ef:0.9,aniso:0.85,d0:25}
+};
+Object.values(MATS).forEach(m=>{m.K=m.UTS0*Math.exp(m.nn)/Math.pow(m.nn,m.nn);m.eq0=Math.pow(m.Y0/m.K,1/m.nn);});
+const annealed=m=>m.annealTo?MATS[m.annealTo]:m;
+
+/* strength and ductility of metal carrying a given plastic prestrain and ductility damage */
+function propsAt(m,epsAcc,D){
+  const tot=Math.min(EPCAP,m.eq0+epsAcc),Y=m.K*Math.pow(tot,m.nn),uRem=Math.max(0,m.nn-tot);
+  const UTS=uRem>0?m.K*Math.pow(m.nn,m.nn)/Math.exp(uRem):Y;
+  const remTot=Math.max(0.002,m.ef*(1-D)),post=Math.max(0,remTot-uRem);
+  const EL=100*(Math.exp(uRem+0.1*post)-1);
+  return {YS:Y,UTS:Math.max(UTS,Y),EL,E:m.E,HV:0.37*Y,brittle:false};
+}
+const crackedProps=(prev)=>({YS:prev.YS*0.6,UTS:prev.YS*0.6,EL:0.3,E:prev.E,HV:prev.HV,brittle:true,cracked:true});
+
+/* strain through the thickness of a bend, outside is tension */
+function layers(m,t,R,n){
+  n=n||41;const Rn=R+0.5*t,out=[];
+  for(let i=0;i<n;i++){const y=(i/(n-1)-0.5)*t,e=y/Rn;const ae=Math.abs(e),mag=y>=0?Math.log(1+ae):-Math.log(1-Math.min(0.97,ae));
+    const epsP=Math.max(0,mag-m.Y0/m.E);out.push({y,mag,epsP});}
+  return out;
+}
+const meanOf=(a,f)=>a.reduce((s,v)=>s+f(v),0)/a.length;
+function minBendRatio(efEff){const e=Math.exp(efEff)-1;return Math.max(0,((1/e)-1)/2);}
+function springback(m,t,R,alphaTool){
+  const x=R*m.Y0/(m.E*t),ratio=4*x*x*x-3*x+1,Rf=R/ratio,af=alphaTool*(R+KB*t)/(Rf+KB*t);
+  return {ratio,Rf,alphaFinal:af,deg:alphaTool-af};
+}
+const recrystFactor=ep=>ep<0.01?1:(ep<0.08?1+3.5*Math.exp(-Math.pow(Math.log(ep/0.04),2)/0.8):Math.max(0.45,0.7-0.8*(ep-0.08)));
+
+/* ---------- Case A: one bend ---------- */
+function singleBend(P){
+  const m=MATS[P.mat],L=layers(m,P.t,P.R),Rn=P.R+0.5*P.t;
+  const eo=P.t/(2*P.R+P.t),epsO=Math.log(1+eo),efEff=m.ef*(P.dir==='along'?m.aniso:1);
+  const crack=epsO>efEff,margin=efEff/epsO,RminT=minBendRatio(efEff);
+  const epsPmax=Math.max(...L.map(l=>l.epsP)),epsPmean=meanOf(L,l=>l.epsP);
+  const D=Math.min(0.98,epsO/efEff*0.5);
+  const c1=propsAt(m,0,0);
+  const layerY=L.map(l=>propsAt(m,l.epsP,0).YS);
+  let c2;
+  if(crack)c2=crackedProps(propsAt(m,epsPmean,D));
+  else{const mean=meanOf(L,l=>propsAt(m,l.epsP,0).YS),meanU=meanOf(L,l=>propsAt(m,l.epsP,0).UTS),eff=0.6*epsPmax+0.4*epsPmean,pe=propsAt(m,eff,D);
+    c2={YS:mean,UTS:Math.max(meanU,mean),EL:pe.EL,E:m.E,HV:0.37*mean,brittle:false};}
+  const ma=annealed(m),a0=propsAt(ma,0,0),gf=L.map(l=>recrystFactor(l.epsP)),Yl=L.map((l,i)=>ma.Y0*Math.sqrt(1/gf[i]));
+  const Yann=meanOf(Yl,v=>v)*(ma.Yann?1:1);
+  const c3={YS:crack?a0.YS*0.9:Yann,UTS:crack?a0.UTS:a0.UTS*Yann/ma.Y0,EL:crack?a0.EL*0.9:a0.EL*(gf.some(g=>g>2)?0.9:1),E:m.E,HV:0.37*Yann,brittle:false,coarse:gf.some(g=>g>2)};
+  c3.UTS=Math.max(c3.UTS,c3.YS);
+  const tool=90+P.over,sb=springback(m,P.t,P.R,tool),force=1.33*m.UTS0*WID*P.t/8;
+  const layerYann=Yl;
+  return {m,L,Rn,eo,epsO,efEff,crack,margin,RminT,epsPmax,epsPmean,D,conds:[c1,c2,c3],layerY,layerYann,gf,tool,sb,angle:sb.alphaFinal,angleErr:sb.alphaFinal-90,force,annealedTo:ma};
+}
+
+/* ---------- Case B: repeated bending ---------- */
+function repeatBend(P,annEvery){
+  const base=MATS[P.mat],path=P.cyc==='rev'?4:2,ampF=P.cyc==='rev'?1:0.5;
+  let m=base,s=0,D=0,failAt=null;const rec=[],anneals=[];
+  for(let i=1;i<=P.N;i++){
+    const L=layers(m,P.t,P.R),epsPo=Math.max(...L.map(l=>l.epsP)),amp=ampF*epsPo;
+    const efat=m.ef*(P.dir==='along'?m.aniso:1);
+    const Nf=amp>1e-6?0.5*Math.pow(amp/efat,1/CSTR):1e9;
+    s++;D+=1/Nf;
+    const accL=L.map(l=>s*path*l.epsP),Ymean=meanOf(accL,a=>propsAt(m,a,0).YS),Umean=meanOf(accL,a=>propsAt(m,a,0).UTS),accMean=meanOf(accL,a=>a),accMax=Math.max(...accL);
+    const pe=propsAt(m,0.6*accMax+0.4*accMean,Math.min(D,0.99));
+    if(D>=1){failAt=i;rec.push({i,YS:Ymean,UTS:Ymean,EL:0.3,D:1,s,Nf,cracked:true,mat:m,accL,L});break;}
+    rec.push({i,YS:Ymean,UTS:Math.max(Umean,Ymean),EL:pe.EL,D,s,Nf,cracked:false,mat:m,accL,L});
+    if(annEvery>0&&i%annEvery===0){anneals.push(i);m=annealed(base);s=0;D=0;rec[rec.length-1].annealedAfter=true;}
+  }
+  return {rec,failAt,anneals,path,ampF};
+}
+function stateAtB(P,rec){return rec;}
+function repeatConds(P){
+  const m=MATS[P.mat],c1=propsAt(m,0,0),r2=repeatBend(P,0),r3=repeatBend(P,P.ann);
+  const mk=(r)=>{const last=r.rec[r.rec.length-1];if(r.failAt)return Object.assign(crackedProps({YS:last.YS,E:m.E,HV:0.37*last.YS}),{failAt:r.failAt});
+    if(last.annealedAfter){const p=propsAt(annealed(m),0,0);return Object.assign(p,{annealedLast:true});}
+    return {YS:last.YS,UTS:last.UTS,EL:last.EL,E:m.E,HV:0.37*last.YS,brittle:false};};
+  return {conds:[c1,mk(r2),mk(r3)],r2,r3};
+}
+// ==== END MODEL ====
+
+// ==== RENDER ====
+function niceTicks(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/mag,s=(f<1.5?1:f<3?2:f<7?5:10)*mag,out=[];for(let v=0;v<=max+1e-9;v+=s)out.push(+v.toFixed(6));return out;}
+function chartFrame(ctx,W,H,L,R,T,B,x0,x1,y0,y1,xl,yl,xt,yt){
+  ctx.clearRect(0,0,W,H);const sx=v=>L+(R-L)*(v-x0)/(x1-x0),sy=v=>B-(B-T)*(v-y0)/(y1-y0);
+  ctx.strokeStyle='#5a6872';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,B);ctx.lineTo(R,B);ctx.stroke();
+  ctx.font='13px sans-serif';ctx.fillStyle='#4b5a64';ctx.textAlign='right';
+  yt.forEach(v=>{ctx.fillText(v,L-6,sy(v)+4);ctx.strokeStyle='#d4d9de';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(R,sy(v));ctx.stroke();});
+  ctx.textAlign='center';xt.forEach(v=>{ctx.fillStyle='#4b5a64';ctx.fillText(+(+v).toFixed(2),sx(v),B+16);});
+  ctx.fillText(xl,(L+R)/2,H-6);ctx.save();ctx.translate(13,(T+B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  return {sx,sy};
+}
+function pline(ctx,pts,f,col,w,dash){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();pts.forEach((p,i)=>{const x=f.sx(p[0]),y=f.sy(p[1]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);}
+
+/* ---------- stress-strain curve and specimen (same approach as the heat treatment lab) ---------- */
+function curveOf(pr){
+  const E=pr.E,sy=pr.YS,su=pr.UTS;
+  if(pr.brittle||pr.EL<0.5){const ef=su/E;return {epsF:ef,epsU:ef,brittle:true,f:e=>Math.min(su,E*e),sigF:su};}
+  const epsF=pr.EL/100+0.9*su/E,e0=0.9*sy/E,epsU=e0+0.8*(epsF-e0),k=4/(epsU-e0),s0=0.9*sy,sigF=su*(pr.EL>3?0.82:0.95);
+  const f=e=>{if(e<=e0)return E*e;if(e<=epsU)return s0+(su-s0)*(1-Math.exp(-k*(e-e0)))/(1-Math.exp(-k*(epsU-e0)));return su+(sigF-su)*(e-epsU)/(epsF-epsU);};
+  return {epsF,epsU,brittle:false,f,sigF};
+}
+function scatterSet(pr,seed,n){
+  const r=mulberry32(seed),out=[],cv=0.10+0.30*(1-Math.min(1,pr.EL/6))+(pr.brittle?0.25:0);
+  for(let i=0;i<n;i++){const z1=gauss(r),z2=gauss(r);out.push(Object.assign({},pr,{YS:pr.YS*(1+0.02*z1),UTS:pr.UTS*(1+0.02*z1+0.01*gauss(r)),EL:Math.max(0.1,pr.EL*Math.exp(cv*z2))}));}
+  return out.map(p=>{p.UTS=Math.max(p.UTS,p.YS);return p;});
+}
+function drawSpecimen(ctx,W,H,cv,eps,fractured,tBreak){
+  ctx.clearRect(0,0,W,H);
+  const cy=H/2,gx0=70,L0=W-2*gx0-80,w0=46,stretch=cv.brittle?30:5,vis=Math.min(eps*stretch,0.3),L=L0*(1+vis),x0=gx0-10,neckC=x0+L/2;
+  const neckT=cv.brittle||eps<=cv.epsU?0:Math.max(0,Math.min(1,(eps-cv.epsU)/(cv.epsF-cv.epsU)))*0.55;
+  const hw=x=>{let h=w0/2*(1-0.22*Math.min(1,eps*stretch/1.4));if(neckT>0){const d=(x-neckC)/(L*0.1);h*=1-neckT*Math.exp(-d*d);}return h;};
+  const grad=ctx.createLinearGradient(0,cy-w0/2,0,cy+w0/2);grad.addColorStop(0,'#eef1f4');grad.addColorStop(0.5,'#b7bfc7');grad.addColorStop(1,'#8a949e');
+  ctx.fillStyle='#3a4650';ctx.fillRect(4,cy-34,gx0-10,68);ctx.fillRect(x0+L+10,cy-34,gx0+6,68);
+  ctx.fillStyle='#4d5b67';ctx.fillRect(gx0-14,cy-w0/2-8,12,w0+16);ctx.fillRect(x0+L+10,cy-w0/2-8,12,w0+16);
+  const body=(xa,xb)=>{ctx.beginPath();const n=40;for(let i=0;i<=n;i++){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy-hw(x));}for(let i=n;i>=0;i--){const x=xa+(xb-xa)*i/n;ctx.lineTo(x,cy+hw(x));}ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.strokeStyle='#5d6872';ctx.lineWidth=1.2;ctx.stroke();};
+  if(!fractured)body(x0,x0+L);
+  else{const gap=Math.min(40,tBreak*40);ctx.save();ctx.beginPath();ctx.rect(0,0,neckC-gap/2,H);ctx.clip();body(x0,x0+L);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(neckC+gap/2,0,W,H);ctx.clip();ctx.translate(gap,0);body(x0,x0+L);ctx.restore();
+    ctx.fillStyle='#e0261c';ctx.font='700 13px sans-serif';ctx.textAlign='center';ctx.fillText(cv.brittle?'brittle fracture: flat, no neck':'ductile fracture: necked',W/2,18);}
+  ctx.fillStyle='#14222B';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('strain '+(eps*100).toFixed(2)+' %',gx0,H-6);
+}
+
+/* ---------- the bent strip, drawn from its grains ---------- */
+const CEN={};
+function genCenters(seed,dy,ar,tp,cap){
+  const key=seed+'|'+dy.toFixed(1)+'|'+ar+'|'+(tp|0);if(CEN[key])return CEN[key];
+  const S0=-160,S1=420,h=tp+4,rnd=mulberry32(seed);let d=dy,n=Math.round((S1-S0)*h/(d*d*ar));while(n>cap){d*=1.1;n=Math.round((S1-S0)*h/(d*d*ar));}
+  const c=new Float32Array(n*2);for(let i=0;i<n;i++){c[2*i]=S0+rnd()*(S1-S0);c[2*i+1]=(rnd()-0.5)*h;}
+  return CEN[key]={c,n,ar};
+}
+function nearest2(F,s,y){let a=1e9,b=1e9,ai=0;const c=F.c,ar=F.ar;
+  for(let i=0;i<F.n;i++){const ds=(s-c[2*i])/ar,dv=y-c[2*i+1],d=ds*ds+dv*dv;if(d<a){b=a;a=d;ai=i;}else if(d<b)b=d;}
+  return {d1:Math.sqrt(a),d2:Math.sqrt(b),i:ai};}
+function heat(u){u=Math.max(0,Math.min(1,u));const st=[[43,108,176],[88,160,140],[238,200,70],[215,100,40],[180,30,25]],x=u*4,i=Math.min(3,Math.floor(x)),t=x-i,a=st[i],b=st[i+1];return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}
+function epsPLocal(m,yt,Rnp){const e=Math.abs(yt)/Rnp,mag=yt>=0?Math.log(1+e):-Math.log(1-Math.min(0.97,e));return Math.max(0,mag-m.Y0/m.E);}
+function bendGeom(W,H,t,R){const pxmm=Math.max(6,Math.min(30,185/(R+t)));return {pxmm,tp:t*pxmm,Rnp:(R+0.5*t)*pxmm,cx:W*0.42,cy:H*0.36,L1:150,L2:90};}
+function drawAxis(ctx,g,angDeg,col,dash){
+  const a=angDeg*Math.PI/180,pts=[[g.cx-g.L1,g.cy+g.Rnp]];
+  for(let i=0;i<=30;i++){const ph=-Math.PI/2+a*i/30;pts.push([g.cx+g.Rnp*Math.cos(ph),g.cy-g.Rnp*Math.sin(ph)]);}
+  const pe=-Math.PI/2+a,E=pts[pts.length-1],tx=-Math.sin(pe),ty=-Math.cos(pe);pts.push([E[0]+tx*g.L2,E[1]+ty*g.L2]);
+  ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.setLineDash(dash);ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.setLineDash([]);
+}
+function renderBend(ctx,W,H,P,o){
+  const m=o.matObj||MATS[P.mat],ma=annealed(m),g=bendGeom(W,H,P.t,P.R),{tp,Rnp,cx,cy,L1,L2}=g,alpha=o.ang*Math.PI/180;
+  ctx.fillStyle='#f3f5f6';ctx.fillRect(0,0,W,H);
+  const img=ctx.getImageData(0,0,W,H),D=img.data;
+  const dy=Math.max(3,tp/7),arO=o.ar||1.3;
+  const Fo=genCenters(11,dy,arO,tp,520),Fc=genCenters(23,dy*3.3,1,tp,520),Ff=genCenters(37,dy*0.62,1,tp,520);
+  const pe=-Math.PI/2+alpha,Ex=cx+Rnp*Math.cos(pe),Ey=cy-Rnp*Math.sin(pe),tx=-Math.sin(pe),ty=-Math.cos(pe),nx=Math.cos(pe),ny=-Math.sin(pe);
+  const ymin=Math.min(m.Y0,ma.Y0*0.45),ymax=m.K*Math.pow(EPCAP,m.nn);
+  for(let py=0;py<H;py++)for(let px=0;px<W;px++){
+    let s,yt,inArc=false,ok=false;
+    const dx=px-cx,dyy=cy-py,r=Math.hypot(dx,dyy);
+    if(Math.abs(r-Rnp)<=tp/2){let th=Math.atan2(dyy,dx)+Math.PI/2;if(th<0)th+=2*Math.PI;if(th<=alpha){s=th*Rnp;yt=r-Rnp;inArc=true;ok=true;}}
+    if(!ok&&px<=cx&&px>=cx-L1&&Math.abs(py-(cy+Rnp))<=tp/2){s=px-cx;yt=py-(cy+Rnp);ok=true;}
+    if(!ok){const vx=px-Ex,vy=py-Ey,sl=vx*tx+vy*ty,y2=vx*nx+vy*ny;if(sl>0&&sl<=L2&&Math.abs(y2)<=tp/2){s=alpha*Rnp+sl;yt=y2;ok=true;}}
+    if(!ok)continue;
+    const ep=inArc?epsPLocal(m,yt,Rnp):0;
+    let F=Fo;if(o.anneal&&ep>=0.01)F=ep<0.08?Fc:Ff;
+    const q=nearest2(F,s,yt),bd=(q.d2-q.d1)<1.1;
+    let r0,g0,b0;
+    if(o.mode==='hard'){let Y;if(o.anneal){Y=ma.Y0*Math.sqrt(1/recrystFactor(ep));}else{Y=propsAt(m,(o.acc||1)*ep,0).YS;}
+      const c=heat((Y-ymin)/(ymax-ymin));r0=c[0];g0=c[1];b0=c[2];}
+    else{const tone=206+((q.i*37)%26);r0=tone;g0=tone+2;b0=tone+6;}
+    if(bd){r0*=0.45;g0*=0.45;b0*=0.5;}
+    const k=4*(py*W+px);D[k]=r0;D[k+1]=g0;D[k+2]=b0;D[k+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  // slip bands from accumulated strain
+  if(o.slip>0.02&&!o.anneal){const rnd=mulberry32(77),n=Math.floor(Math.min(1.5,o.slip)*320);ctx.strokeStyle='rgba(20,24,30,.30)';ctx.lineWidth=1;
+    for(let i=0,tries=0;i<n&&tries<n*30;tries++){const th=rnd()*alpha,rr=Rnp+(rnd()-0.5)*tp;const x=cx+rr*Math.cos(-Math.PI/2+th),y=cy-rr*Math.sin(-Math.PI/2+th);
+      const ang=-Math.PI/2+th+Math.PI/2+(rnd()<0.5?0.6:-0.6);ctx.beginPath();ctx.moveTo(x-Math.cos(ang)*3,y+Math.sin(ang)*3);ctx.lineTo(x+Math.cos(ang)*3,y-Math.sin(ang)*3);ctx.stroke();i++;}}
+  // cracks on the outside
+  if(o.crack>0.02){const rnd=mulberry32(5),n=6;ctx.fillStyle='#14161a';
+    for(let i=0;i<n;i++){const th=alpha*(0.1+0.8*(i+rnd()*0.4)/n),dep=Math.min(1,o.crack)*tp*(0.45+0.55*rnd())*(o.crack>=1?1.1:1),ro=Rnp+tp/2,rd=ro-dep,w=0.03+0.025*o.crack;
+      const p=(r,t)=>[cx+r*Math.cos(-Math.PI/2+t),cy-r*Math.sin(-Math.PI/2+t)],a=p(ro,th-w),b=p(ro,th+w),c=p(rd,th);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.closePath();ctx.fill();}}
+  if(o.showAngles){drawAxis(ctx,g,90,'#1f6f47',[6,5]);if(Math.abs(o.tool-o.ang)>0.3)drawAxis(ctx,g,o.tool,'#d9822b',[3,4]);}
+  ctx.fillStyle='#14222B';ctx.font='600 12px sans-serif';ctx.textAlign='right';ctx.fillText('outside of the bend: tension',W-8,H-8);ctx.textAlign='left';ctx.fillText('inside: compression',10,H-8);
+  if(o.showAngles){ctx.font='11px sans-serif';ctx.fillStyle='#1f6f47';ctx.fillText('green dashed: 90° target',10,16);ctx.fillStyle='#d9822b';ctx.fillText('orange dashed: tool angle',10,30);}
+}
+
+/* ---------- charts for the repeated-bending history ---------- */
+function drawHistory(c,P,sim,kind){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,rec=sim.rec,N=P.N;
+  if(kind==='str'){
+    const ymax=Math.max(400,Math.max(...rec.map(r=>r.UTS))*1.1);
+    const f=chartFrame(ctx,W,H,50,W-14,14,H-40,0,Math.max(2,N),0,ymax,'bend number','strength, MPa',niceTicks(Math.max(2,N),5),niceTicks(ymax,5));
+    sim.anneals.forEach(a=>{ctx.strokeStyle='#8d99a3';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(f.sx(a),14);ctx.lineTo(f.sx(a),H-40);ctx.stroke();ctx.setLineDash([]);});
+    pline(ctx,[[0,MATS[P.mat].Y0]].concat(rec.map(r=>[r.i,r.UTS])),f,'#d9822b',2.4);pline(ctx,[[0,MATS[P.mat].Y0]].concat(rec.map(r=>[r.i,r.YS])),f,'#c0271b',3);
+    ctx.font='600 12px sans-serif';ctx.textAlign='left';[['#c0271b','yield'],['#d9822b','tensile']].forEach((l,i)=>{ctx.fillStyle=l[0];ctx.fillRect(60,20+i*16,14,4);ctx.fillStyle='#14222B';ctx.fillText(l[1],80,25+i*16);});
+    if(sim.anneals.length){ctx.fillStyle='#4b5a64';ctx.fillText('grey lines: anneals',60,56);}
+  } else {
+    const ymax=Math.max(10,Math.max(...rec.map(r=>r.EL))*1.1);
+    const f=chartFrame(ctx,W,H,50,W-50,14,H-40,0,Math.max(2,N),0,ymax,'bend number','elongation left, %',niceTicks(Math.max(2,N),5),niceTicks(ymax,5));
+    const g=v=>14+(H-54)*(1-v);
+    sim.anneals.forEach(a=>{ctx.strokeStyle='#8d99a3';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(f.sx(a),14);ctx.lineTo(f.sx(a),H-40);ctx.stroke();ctx.setLineDash([]);});
+    pline(ctx,[[0,propsAt(MATS[P.mat],0,0).EL]].concat(rec.map(r=>[r.i,r.EL])),f,'#1f6f47',3);
+    ctx.strokeStyle='#b3261e';ctx.lineWidth=2.4;ctx.setLineDash([6,4]);ctx.beginPath();[[0,0]].concat(rec.map(r=>[r.i,r.D])).forEach((p,i)=>{const x=f.sx(p[0]),y=g(Math.min(1,p[1]));i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#b3261e';ctx.font='11px sans-serif';ctx.textAlign='left';ctx.fillText('1.0',W-46,g(1)+4);ctx.fillText('0',W-46,g(0)+4);ctx.save();ctx.translate(W-6,(14+H-40)/2);ctx.rotate(Math.PI/2);ctx.textAlign='center';ctx.fillText('ductility used up (damage)',0,0);ctx.restore();
+    ctx.font='600 12px sans-serif';ctx.textAlign='left';[['#1f6f47','elongation left'],['#b3261e','damage']].forEach((l,i)=>{ctx.fillStyle=l[0];ctx.fillRect(60,20+i*16,14,4);ctx.fillStyle='#14222B';ctx.fillText(l[1],80,25+i*16);});
+    if(sim.failAt){ctx.fillStyle='#b3261e';ctx.font='700 13px sans-serif';ctx.textAlign='right';ctx.fillText('cracks at bend '+sim.failAt,W-56,H-48);}
+  }
+}
+function drawProfile(c,P,series,t){
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,ymax=Math.max(...series.map(s=>Math.max(...s.v)))*1.12;
+  const f=chartFrame(ctx,W,H,52,W-14,40,H-40,-t/2,t/2,0,ymax,'position through the thickness, mm (inside to outside)','yield strength, MPa',[-t/2,0,t/2],niceTicks(ymax,5));
+  series.forEach(s=>pline(ctx,s.v.map((v,i)=>[(i/(s.v.length-1)-0.5)*t,v]),f,s.col,s.w||3,s.dash));
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';series.forEach((s,i)=>{ctx.fillStyle=s.col;ctx.fillRect(56+i*128,18,14,4);ctx.fillStyle='#14222B';ctx.fillText(s.n,76+i*128,23);});
+}
+// ==== END RENDER ====
+
+// ==== UI ====
+const $=id=>document.getElementById(id);
+const fx=(v,n)=>v.toFixed(n);
+const AR={a6061t6:2.5};
+const MATOPT=Object.keys(MATS).map(k=>[k,MATS[k].n]);
+const COL=['#6d7b86','#d9822b','#c0271b'];
+const CASES={
+ A:{id:'A',tag:'A',title:'Bend it once',sub:'Strain hardening, springback and cracking',
+  blurb:'Bend a strip to 90 degrees and look inside. The outside of the bend is stretched and the inside squashed, so the grains deform and the metal there work hardens. Springback opens the bend again, and too tight a bend cracks the outside. Then anneal the bent part and see what that does.',
+  ctrl:[{g:'The strip',k:'mat',type:'select',l:'Material',opts:MATOPT},
+        {g:'The strip',k:'t',type:'range',l:'Thickness',min:1,max:6,step:0.5,fmt:v=>fx(v,1)+' mm'},
+        {g:'The strip',k:'dir',type:'seg',l:'Bend line against the grain',opts:[['across','Across (best)'],['along','Along']]},
+        {g:'The bend',k:'R',type:'range',l:'Inside bend radius',min:0.5,max:30,step:0.5,fmt:(v,P)=>fx(v,1)+' mm (R/t = '+fx(v/P.t,1)+')'},
+        {g:'The bend',k:'over',type:'range',l:'Overbend beyond 90°',min:0,max:20,step:0.5,fmt:v=>fx(v,1)+'°'}],
+  def:{mat:'a6061t6',t:3,dir:'across',R:9,over:0},
+  ladder:['As received (flat strip)','After the bend (strip cut from the bend)','Bent, then annealed'],
+  modes:[['grain','Grains'],['hard','Hardness'],['anneal','Grains after anneal']]},
+ B:{id:'B',tag:'B',title:'Bend it many times',sub:'Fatigue, cumulative hardening and annealing',
+  blurb:'A hook gets bent and straightened again and again. Each bend adds strain, so the metal hardens and its ductility is used up until the outside cracks. Annealing resets the damage, but a heat treated aluminum part comes out soft for good. Choose the radius and an anneal schedule to get a hook that survives.',
+  ctrl:[{g:'The strip',k:'mat',type:'select',l:'Material',opts:MATOPT},
+        {g:'The strip',k:'t',type:'range',l:'Thickness',min:1,max:6,step:0.5,fmt:v=>fx(v,1)+' mm'},
+        {g:'The strip',k:'dir',type:'seg',l:'Bend line against the grain',opts:[['across','Across (best)'],['along','Along']]},
+        {g:'The bending',k:'R',type:'range',l:'Inside bend radius',min:0.5,max:30,step:0.5,fmt:(v,P)=>fx(v,1)+' mm (R/t = '+fx(v/P.t,1)+')'},
+        {g:'The bending',k:'cyc',type:'seg',l:'How it is bent',opts:[['one','One way and straighten'],['rev','Back and forth']]},
+        {g:'The bending',k:'N',type:'range',l:'Number of bends',min:1,max:40,step:1,fmt:v=>v+' bends'},
+        {g:'Annealing',k:'ann',type:'select',num:true,l:'Anneal the hook',opts:[[0,'Never'],[1,'After every bend'],[2,'After every 2 bends'],[3,'After every 3 bends'],[5,'After every 5 bends'],[10,'After every 10 bends']]}],
+  def:{mat:'a6061t6',t:3,dir:'across',R:15,cyc:'one',N:10,ann:0},
+  ladder:['As received','After the bends, never annealed','After the bends, your anneal schedule'],
+  modes:[['grain','Grains'],['hard','Hardness']]}
+};
+let CK='A',P={},R=null,MODE='grain',VIEW=1,TD=[null,null,null],TSEL=1,ANIM=null,pend=false;
+
+function setCase(k){CK=k;P=Object.assign({},CASES[k].def);MODE='grain';VIEW=k==='A'?1:CASES.B.def.N;TD=[null,null,null];TSEL=1;stopAnim();
+  document.querySelectorAll('.casebtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  $('blurb').textContent=CASES[k].blurb;buildControls();buildModes();$('histBox').style.display=k==='B'?'':'none';
+  $('viewLabel').textContent=k==='A'?'Bending progress':'Look at bend number';compute();draw();}
+function buildModes(){const C=CASES[CK],box=$('modes');box.innerHTML=C.modes.map(m=>'<button type="button" data-v="'+m[0]+'" aria-pressed="'+(m[0]===MODE)+'">'+m[1]+'</button>').join('');}
+function buildControls(){
+  const C=CASES[CK],box=$('controls');box.innerHTML='';let lastG='',n=0;
+  C.ctrl.forEach(c=>{
+    if(c.g!==lastG){const h=document.createElement('h3');h.textContent=(++n)+'. '+c.g;box.appendChild(h);lastG=c.g;}
+    const w=document.createElement('div');
+    if(c.type==='select'){w.innerHTML='<label class="sl" for="c_'+c.k+'">'+c.l+'</label><select id="c_'+c.k+'">'+c.opts.map(o=>'<option value="'+o[0]+'"'+(String(P[c.k])===String(o[0])?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+      w.querySelector('select').addEventListener('change',e=>{P[c.k]=c.num?+e.target.value:e.target.value;changed();});}
+    else if(c.type==='seg'){w.innerHTML='<div class="fine">'+c.l+'</div><div class="seg">'+c.opts.map(o=>'<button type="button" data-v="'+o[0]+'" aria-pressed="'+(P[c.k]===o[0])+'">'+o[1]+'</button>').join('')+'</div>';
+      w.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P[c.k]=b.dataset.v;w.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});}
+    else{w.className='slider';w.innerHTML='<label for="c_'+c.k+'">'+c.l+' <span id="o_'+c.k+'"></span></label><input type="range" id="c_'+c.k+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'" value="'+P[c.k]+'">';
+      const inp=w.querySelector('input');inp.addEventListener('input',()=>{P[c.k]=+inp.value;outs();changed();});}
+    box.appendChild(w);
+  });
+  const b=document.createElement('button');b.type='button';b.className='btn small';b.textContent='Reset to the starting recipe';b.addEventListener('click',()=>{P=Object.assign({},C.def);buildControls();changed();});box.appendChild(b);outs();
+}
+function outs(){CASES[CK].ctrl.forEach(c=>{if(c.type==='range'){const o=$('o_'+c.k);if(o)o.textContent=c.fmt(P[c.k],P);}});}
+function changed(){TD=[null,null,null];stopAnim();compute();draw();}
+
+/* ---------- computing ---------- */
+function compute(){
+  const m=MATS[P.mat];
+  if(CK==='A'){
+    const sb=singleBend(P);R={kind:'A',sb,conds:sb.conds,m};
+    const needOver=P.over-sb.angleErr*sb.tool/sb.angle,fl=[],add=(l,t)=>fl.push([l,t]);
+    if(sb.crack)add('bad','The outside of the bend cracks: it is stretched '+fx(sb.eo*100,0)+' %, and this metal'+(P.dir==='along'?' bent along the grain':'')+' can take about '+fx((Math.exp(sb.efEff)-1)*100,0)+' %. The minimum bend radius is about '+fx(sb.RminT*P.t,1)+' mm (R/t of '+fx(sb.RminT,1)+').');
+    else if(sb.margin<1.2)add('warn','Close to cracking: the outside uses up '+fx(100/sb.margin,0)+' % of the ductility. Real parts with a rough edge would crack. Open the radius a little.');
+    if(Math.abs(sb.angleErr)>2)add('bad','After springback the bend is '+fx(sb.angle,1)+'°, '+fx(Math.abs(sb.angleErr),1)+'° '+(sb.angleErr<0?'short of':'past')+' 90°. Set the overbend to about '+fx(Math.max(0,Math.min(20,needOver)),1)+'°.');
+    if(!sb.crack&&sb.conds[1].YS<120)add('bad','The bent region only reaches '+fx(sb.conds[1].YS,0)+' MPa yield on average, under 120. A tighter bend work hardens it more.');
+    if(P.dir==='along'&&!sb.crack&&m.aniso<0.8)add('warn','The bend line runs along the grain, which cuts the ductility to about '+fx(m.aniso*100,0)+' %. Bend across the grain where you can.');
+    if(m.annealTo)add('warn','Annealing a heat treated 6061-T6 part turns it into soft O temper: yield falls from '+fx(sb.conds[0].YS,0)+' to about '+fx(sb.conds[2].YS,0)+' MPa, and it cannot be brought back without solution treating and aging again.');
+    if(sb.conds[2].coarse&&!sb.crack)add('warn','Annealing after a bend leaves a band of very coarse grains near the neutral axis, where the strain was just enough to recrystallize but not enough to refine. It is weak and gives an orange-peel surface.');
+    R.flags=fl;R.ok=!sb.crack&&Math.abs(sb.angleErr)<=2&&sb.conds[1].YS>=120&&!fl.some(f=>f[0]==='bad');
+    R.mission={title:'Mission: a clean 90° bend that is stronger than the strip it came from',chips:['90° ± 2° after springback','no crack on the outside','yield 120 MPa or more in the bend']};
+    R.work=workA(sb,m);R.ins=insA(sb,m);
+  } else {
+    const rc=repeatConds(P),m2=MATS[P.mat];R={kind:'B',conds:rc.conds,r2:rc.r2,r3:rc.r3,m:m2};
+    const fl=[],add=(l,t)=>fl.push([l,t]),c3=rc.conds[2],c2=rc.conds[1];
+    const first=rc.r3.rec[0],Nf0=first.Nf;
+    if(c3.cracked)add('bad','The hook cracks at bend '+rc.r3.failAt+'. Each bend uses '+fx(100/Nf0,0)+' % of the ductility, so this metal at R/t of '+fx(P.R/P.t,1)+' lasts about '+fx(Nf0,0)+' bends.');
+    if(P.ann>0&&c2.cracked&&!c3.cracked)add('ok','Without annealing it would crack at bend '+c2.failAt+'. Your anneal schedule saves it.');
+    if(!c3.cracked&&c3.EL<5)add('bad','Only '+fx(c3.EL,1)+' % elongation is left at the end, under 5 %. The hook is nearly out of ductility.');
+    if(!c3.cracked&&c3.YS<100)add('bad','The hook ends at '+fx(c3.YS,0)+' MPa yield, under 100.');
+    const last3=rc.r3.rec[rc.r3.rec.length-1];if(!c3.cracked&&last3.D>0.7)add('warn',fx(last3.D*100,0)+' % of the ductility is used up at the end. It will not take many more bends.');
+    if(m2.annealTo&&P.ann>0)add('warn','Annealing 6061-T6 turns it into soft O temper for good. The hook is strong again only through the strain hardening of the bends after the last anneal.');
+    if(P.dir==='along')add('warn','Bending along the grain cuts the fatigue ductility to about '+fx(m2.aniso*100,0)+' %.');
+    R.flags=fl;R.ok=!c3.cracked&&c3.YS>=100&&c3.EL>=5&&!fl.some(f=>f[0]==='bad');
+    R.mission={title:'Mission: a hook that survives '+P.N+' bends and still has some strength and stretch',chips:['no crack in '+P.N+' bends','yield 100 MPa or more at the end','elongation 5 % or more at the end']};
+    R.work=workB(rc,m2,Nf0);R.ins=insB(rc,m2);
+    const lim=rc.r3.rec.length;VIEW=Math.max(1,Math.min(VIEW,lim));
+  }
+}
+function workA(sb,m){
+  const rows=[],sbk=sb.sb;
+  rows.push(['Strain on the outside','e = 1 ÷ (2R/t + 1) = 1 ÷ (2 × '+fx(P.R/P.t,1)+' + 1) = '+fx(sb.eo,3)+', true strain ln(1 + e)',fx(sb.epsO*100,1)+' % true strain','ok']);
+  rows.push(['What the metal can take','fracture strain '+fx(m.ef,2)+(P.dir==='along'?' × '+m.aniso+' (along the grain)':'')+' = '+fx(sb.efEff,2)+'; minimum R/t from e = exp(εf) − 1',(sb.RminT<=0?'any radius':'minimum R/t '+fx(sb.RminT,2)+' ('+fx(sb.RminT*P.t,1)+' mm)')+', margin '+fx(sb.margin,2)+' ×',sb.crack?'bad':(sb.margin<1.2?'warn':'ok')]);
+  rows.push(['Strain hardening','flow stress σ = K εⁿ, K = '+fx(m.K,0)+' MPa, n = '+m.nn+'; outside plastic strain '+fx(sb.epsPmax,3),'outside '+fx(sb.layerY[sb.layerY.length-1],0)+' MPa, average '+fx(sb.conds[1].YS,0)+' MPa (was '+fx(m.Y0,0)+')','ok']);
+  rows.push(['Springback','x = R Y ÷ (E t) = '+fx(P.R*m.Y0/(m.E*P.t),4)+'; Ri/Rf = 4x³ − 3x + 1 = '+fx(sbk.ratio,3)+'; angle × (R + 0.4t) ÷ (Rf + 0.4t)','tool '+fx(sb.tool,1)+'° springs back '+fx(sbk.deg,1)+'° to '+fx(sb.angle,1)+'°',Math.abs(sb.angleErr)>2?'bad':'ok']);
+  rows.push(['Bending force','F ≈ 1.33 × UTS × w × t ÷ 8 (die opening 8 t) = 1.33 × '+fx(m.UTS0,0)+' × '+WID+' × '+fx(P.t,1)+' ÷ 8',fx(sb.force/1000,1)+' kN','ok']);
+  rows.push(['Strip cut from the bend','tensile test across the whole thickness',fx(sb.conds[1].YS,0)+' MPa yield, '+(sb.crack?'cracked':fx(sb.conds[1].EL,1)+' % elongation'),'ok']);
+  return rows;
+}
+function workB(rc,m,Nf0){
+  const rows=[],L=layers(m,P.t,P.R),ep=Math.max(...L.map(l=>l.epsP)),amp=(P.cyc==='rev'?1:0.5)*ep,last=rc.r3.rec[rc.r3.rec.length-1];
+  rows.push(['Plastic strain per bend','outside strain ln(1 + 1 ÷ (2R/t + 1)) minus the elastic strain Y ÷ E',fx(ep*100,2)+' %','ok']);
+  rows.push(['Strain amplitude',(P.cyc==='rev'?'back and forth: full amplitude':'one way and straighten: half amplitude')+' × plastic strain',fx(amp*100,2)+' %','ok']);
+  rows.push(['Bends to crack','Coffin–Manson: Nf = ½ (εa ÷ ε′f)^(1/c), ε′f = '+fx(m.ef*(P.dir==='along'?m.aniso:1),2)+', c = −0.6',fx(Nf0,0)+' bends',Nf0<P.N&&P.ann===0?'bad':'ok']);
+  rows.push(['Damage','Miner: D = bends ÷ Nf, reset to zero by an anneal','D = '+fx(last.D,2)+' after bend '+last.i+(rc.r3.failAt?' (cracked)':''),rc.r3.failAt?'bad':'ok']);
+  rows.push(['Strength','strain hardening from the accumulated strain ('+rc.r3.path+' × plastic strain per bend since the last anneal)',fx(last.YS,0)+' MPa yield','ok']);
+  return rows;
+}
+const dpct=(a,b)=>(b>=a?'+':'')+fx((b/a-1)*100,0)+' %';
+function insA(sb,m){const [a,b,c]=sb.conds;if(sb.crack)return ['The strip cracks at this radius, so the strip cut from the bend would already be damaged. The fix is a larger radius, a softer temper, or bending across the grain.'];
+  return ['<b>Bending:</b> yield '+fx(a.YS,0)+' to '+fx(b.YS,0)+' MPa ('+dpct(a.YS,b.YS)+') and elongation '+fx(a.EL,1)+' % to '+fx(b.EL,1)+' %. The metal on the outside and inside was strained, the metal at the neutral axis was not.',
+   '<b>Annealing:</b> yield '+fx(b.YS,0)+' to '+fx(c.YS,0)+' MPa and elongation back to '+fx(c.EL,0)+' %. '+(m.annealTo?'For 6061-T6 this is a permanent loss of the heat treatment, not just the cold work.':'Annealing removed the cold work.'),
+   'The point of the three tests: bending buys strength and costs ductility, annealing gives the ductility back and takes the strength with it.'];}
+function insB(rc,m){const [a,b,c]=rc.conds;return ['<b>Without annealing:</b> '+(b.cracked?'the hook cracks at bend '+b.failAt+'.':'yield '+fx(a.YS,0)+' to '+fx(b.YS,0)+' MPa and elongation '+fx(a.EL,1)+' % to '+fx(b.EL,1)+' % after '+P.N+' bends.'),
+  '<b>With your schedule:</b> '+(c.cracked?'the hook cracks at bend '+c.failAt+'.':'yield '+fx(c.YS,0)+' MPa and elongation '+fx(c.EL,1)+' % at the end.'),
+  'The point: every bend hardens the metal and uses up ductility, so a hook has a limited number of bends. Annealing resets the ductility but also the strength, and for a heat treated alloy the strength does not come back.'];}
+
+/* ---------- drawing ---------- */
+function request(){if(pend)return;pend=true;requestAnimationFrame(()=>{pend=false;drawBend();});}
+function drawBend(){
+  const c=$('bend'),ctx=c.getContext('2d'),m=R.m,ar=AR[P.mat]||1.3;
+  if(CK==='A'){const p=+$('view').value/100,sb=R.sb;
+    renderBend(ctx,c.width,c.height,P,{mode:MODE==='hard'?'hard':'grain',anneal:MODE==='anneal',ang:Math.max(2,sb.angle*p),tool:sb.tool,showAngles:p>0.98,crack:sb.crack?1:0,acc:1,ar,slip:0});
+    $('viewOut').textContent=Math.round(p*100)+' %';
+    $('bendCap').textContent=MODE==='anneal'?'After annealing: new grains grow in the strained metal. Fine grains outside and inside, a coarse band near the neutral axis, the original grains where nothing was strained.':(MODE==='hard'?'Colour shows the yield strength through the bend, from soft (blue) to hard (red).':'The grains of the strip, stretched on the outside and squashed on the inside. The metal at the neutral axis is unchanged.');
+  } else {
+    const rec=R.r3.rec[Math.max(0,Math.min(R.r3.rec.length,VIEW)-1)],mat=rec.mat,accMean=rec.accL.reduce((s,v)=>s+v,0)/rec.accL.length;
+    renderBend(ctx,c.width,c.height,P,{mode:MODE==='hard'?'hard':'grain',anneal:false,ang:90,tool:90,showAngles:false,crack:rec.cracked?1.1:Math.max(0,(rec.D-0.65)/0.35)*0.9,acc:rec.s*R.r3.path,ar,slip:accMean/0.6,matObj:mat});
+    $('viewOut').textContent='bend '+rec.i+' of '+R.r3.rec.length;
+    $('bendCap').textContent='The hook at bend '+rec.i+'. Dark dashes are slip bands, which pile up with every bend; the dark notches on the outside are cracks.'+(rec.annealedAfter?' (It is annealed right after this bend.)':'');
+  }
+}
+function drawProf(){
+  const m=R.m,t=P.t,n=41;const flat=v=>Array(n).fill(v);
+  if(CK==='A'){drawProfile($('prof'),P,[{n:'as received',v:flat(m.Y0),col:'#6d7b86',w:2.4},{n:'after the bend',v:R.sb.layerY,col:'#c0271b'},{n:'after annealing',v:R.sb.layerYann,col:'#2b6cb0',dash:[6,4],w:2.4}],t);}
+  else{const rec=R.r3.rec[Math.max(0,Math.min(R.r3.rec.length,VIEW)-1)];drawProfile($('prof'),P,[{n:'as received',v:flat(m.Y0),col:'#6d7b86',w:2.4},{n:'at bend '+rec.i,v:rec.accL.map(a=>propsAt(rec.mat,a,0).YS),col:'#c0271b'},{n:'fully annealed',v:flat(annealed(m).Y0),col:'#2b6cb0',dash:[6,4],w:2.4}],t);}
+}
+function drawSS(){
+  const c=$('ss'),ctx=c.getContext('2d'),W=c.width,H=c.height,cvs=R.conds.map(curveOf);
+  const xm=Math.max(2,Math.max(...cvs.map(v=>v.epsF*100))*1.1),ym=Math.max(...R.conds.map(p=>p.UTS))*1.15;
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,0,xm,0,ym,'strain, %','engineering stress, MPa',niceTicks(xm,6),niceTicks(ym,5));
+  const draw=(cv,frac,col,w,alpha)=>{const em=cv.epsF*frac;ctx.strokeStyle=col;ctx.globalAlpha=alpha;ctx.lineWidth=w;ctx.beginPath();const n=140;for(let i=0;i<=n;i++){const e=em*i/n;i?ctx.lineTo(f.sx(e*100),f.sy(cv.f(e))):ctx.moveTo(f.sx(0),f.sy(0));}ctx.stroke();ctx.globalAlpha=1;};
+  TD.forEach((t,i)=>{if(!t)return;(t.scat||[]).forEach(sc=>draw(sc.cv,t.frac,COL[i],1.2,0.35));draw(cvs[i],t.frac,COL[i],3,1);
+    if(t.frac>=1){const cv=cvs[i];ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(cv.epsF*100),f.sy(cv.sigF),5,0,6.283);ctx.fill();ctx.font='600 12px sans-serif';ctx.textAlign='left';ctx.fillText(R.conds[i].cracked?'cracked':fx(R.conds[i].EL,1)+' % elongation',Math.min(f.sx(cv.epsF*100)+8,W-120),f.sy(cv.sigF)-8);}});
+  ctx.font='600 12px sans-serif';ctx.textAlign='left';CASES[CK].ladder.forEach((l,i)=>{ctx.fillStyle=COL[i];ctx.fillRect(66,22+i*17,14,4);ctx.fillStyle='#14222B';ctx.fillText((i+1)+'. '+l,86,27+i*17);});
+  if(!TD.some(Boolean)){ctx.fillStyle='#4b5a64';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Run a tensile test to draw the curves',W/2,H/2+20);}
+}
+function drawMap(){
+  const c=$('map'),ctx=c.getContext('2d'),W=c.width,H=c.height,PR=R.conds;
+  const xm=Math.max(450,Math.max(...PR.map(p=>p.YS))*1.15),ym=Math.max(14,Math.max(...PR.map(p=>p.EL))*1.2);
+  const f=chartFrame(ctx,W,H,56,W-16,16,H-42,0,xm,0,ym,'yield strength, MPa','elongation, %',niceTicks(xm,5),niceTicks(ym,5));
+  ctx.strokeStyle='#8d99a3';ctx.lineWidth=2;ctx.beginPath();PR.forEach((p,i)=>{i?ctx.lineTo(f.sx(p.YS),f.sy(p.EL)):ctx.moveTo(f.sx(p.YS),f.sy(p.EL));});ctx.stroke();
+  PR.forEach((p,i)=>{ctx.fillStyle=COL[i];ctx.beginPath();ctx.arc(f.sx(p.YS),f.sy(p.EL),7,0,6.283);ctx.fill();ctx.fillStyle='#14222B';ctx.font='700 12px sans-serif';ctx.textAlign='left';ctx.fillText(String(i+1),f.sx(p.YS)+10,f.sy(p.EL)-8);});
+}
+function drawResults(){
+  const C=CASES[CK];
+  $('mission').innerHTML='<b>'+R.mission.title+'</b>'+R.mission.chips.map(x=>'<span class="chip">'+x+'</span>').join('');
+  $('work').innerHTML=R.work.map((r,i)=>'<tr class="'+r[3]+'"><td class="n">'+(i+1)+'</td><td class="st">'+r[0]+'</td><td class="fm">'+r[1]+'</td><td class="rs">'+r[2]+'</td></tr>').join('');
+  $('tbl').innerHTML='<tr><th></th><th>Yield, MPa</th><th>Tensile, MPa</th><th>Elongation, %</th><th>Hardness, HV</th></tr>'+R.conds.map((p,i)=>'<tr><td><span class="dot" style="background:'+COL[i]+'"></span>'+(i+1)+'. '+C.ladder[i]+'</td><td>'+fx(p.YS,0)+'</td><td>'+(p.cracked?'cracked':fx(p.UTS,0))+'</td><td>'+(p.cracked?'cracked':fx(p.EL,1))+'</td><td>'+fx(p.HV,0)+'</td></tr>').join('');
+  $('verdict').className='verdict '+(R.ok?'ok':'bad');$('verdict').innerHTML=R.ok?'Mission met':'Not there yet';
+  $('flags').innerHTML=(R.flags.length?R.flags:[['ok','No problems found with this setup.']]).map(f=>'<li class="'+f[0]+'">'+f[1]+'</li>').join('');
+  $('insights').innerHTML=R.ins.map(t=>'<p>'+t+'</p>').join('');
+  const v=$('view');if(CK==='B'){v.min=1;v.max=Math.max(1,R.r3.rec.length);v.value=Math.max(1,Math.min(VIEW,R.r3.rec.length));v.step=1;}else{v.min=0;v.max=100;v.step=1;if(!v.dataset.set){v.value=100;v.dataset.set=1;}}
+}
+function draw(){drawBend();drawProf();if(CK==='B'){drawHistory($('hS'),P,R.r3,'str');drawHistory($('hD'),P,R.r3,'dam');}drawSS();drawMap();drawResults();drawSpec(TSEL,0,false,0);updBtns();}
+
+/* ---------- tensile test ---------- */
+function drawSpec(i,frac,broken,tb){const cv=curveOf(R.conds[i]);drawSpecimen($('spec').getContext('2d'),460,130,cv,frac*cv.epsF,broken,tb);}
+function updBtns(){document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.i)===TSEL&&!ANIM));}
+function stopAnim(){if(ANIM){cancelAnimationFrame(ANIM.raf);ANIM=null;}}
+function runTests(list){stopAnim();const scat=$('scat').checked;list.forEach(i=>{TD[i]={frac:0,scat:scat?scatterSet(R.conds[i],100+i,4).map(p=>({cv:curveOf(p)})):[]};});ANIM={list,pos:0,t0:performance.now()};TSEL=list[0];step();}
+function step(){const A=ANIM;if(!A)return;const now=performance.now(),i=A.list[A.pos],cv=curveOf(R.conds[i]),dur=cv.brittle?2000:3400,frac=Math.min(1,(now-A.t0)/dur);TD[i].frac=frac;TSEL=i;
+  const broken=frac>=1,tb=broken?Math.min(1,(now-A.t0-dur)/500):0;drawSpec(i,frac,broken,Math.max(0,tb));drawSS();
+  if(frac>=1&&now-A.t0>dur+900){A.pos++;if(A.pos>=A.list.length){ANIM=null;updBtns();return;}A.t0=performance.now();}
+  updBtns();A.raf=requestAnimationFrame(step);}
+function save(){const C=CASES[CK],rec={tool:'Forming lab: bending (standalone beta v0.1)',saved:new Date().toISOString(),case:C.title+': '+C.sub,settings:P,
+  conditions:R.conds.map((p,i)=>({condition:C.ladder[i],yield_MPa:+fx(p.YS,0),tensile_MPa:+fx(p.UTS,0),elongation_pct:+fx(p.EL,1),hardness_HV:+fx(p.HV,0),cracked:!!p.cracked})),missionMet:R.ok,flags:R.flags.map(f=>f[0]+': '+f[1])};
+  const u=URL.createObjectURL(new Blob([JSON.stringify(rec,null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='forming-lab-'+CK+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),500);}
+
+(function init(){
+  const box=$('cases');['A','B'].forEach(k=>{const C=CASES[k],b=document.createElement('button');b.type='button';b.className='casebtn';b.dataset.k=k;b.innerHTML='<span class="tag">'+C.tag+'</span><b>'+C.title+'</b><span>'+C.sub+'</span>';b.addEventListener('click',()=>setCase(k));box.appendChild(b);});
+  $('view').addEventListener('input',e=>{if(CK==='B'){VIEW=+e.target.value;}request();drawProf();});
+  $('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;MODE=b.dataset.v;buildModes();request();});
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>runTests([+b.dataset.i])));
+  $('allBtn').addEventListener('click',()=>runTests([0,1,2]));$('saveBtn').addEventListener('click',save);
+  setCase('A');
+})();
+
+})();
+</script>
+</body>
+</html>
