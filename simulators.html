@@ -66,6 +66,7 @@
 .btn2:hover{background:rgba(20,34,43,.08)}
 .side input[type=text]{font:500 .85rem ui-monospace,Menlo,Consolas,monospace;padding:7px 8px;border:1px solid var(--line,#cfd5da);border-radius:2px;width:100%;background:var(--bg,#EEF0F1);box-sizing:border-box}
 .pidline{font:700 1.05rem var(--head);letter-spacing:.5px}
+.side details.listbox{margin:0 0 6px}.side summary{font:700 1.05rem var(--head);cursor:pointer;padding:4px 0}.side summary:hover{color:var(--accent,#C0271B)}
 .labs{list-style:none;padding:0!important;margin:6px 0 0!important}.labs li{padding:5px 0;border-bottom:1px solid var(--line-soft,#e3e7ea)}.labs a{font-family:var(--head);font-weight:700;text-decoration:none;color:var(--ink)}.labs a:hover{color:var(--accent)}.labs span{display:block;font-size:.85rem;color:var(--ink-soft)}.labs .st{float:right;font:600 .75rem var(--head);color:var(--ok,#1f6f47)}
 .lab{position:fixed;inset:0;z-index:100;background:rgba(13,2,33,.92);display:flex;flex-direction:column;padding:10px}
 .lab[hidden]{display:none}
@@ -81,7 +82,7 @@
 <main id="main" class="wrap fx">
   <div style="padding:30px 0 4px">
   <h1>Sintrlab Quest<span class="badge">Beta v0.2</span></h1>
-  <p class="sub"><b>The Ornament Run.</b> Grab the ornament and carry it through the factory. Every station is one of the manufacturing simulators: meet its mission and the part earns a stamp. Print the pattern, cast it, heat treat it, machine it, form it, and assemble it. Prefer a plain list? It is beside the game (or just below it on a phone), and every simulator also opens directly from the Sintrlab Quest menu.</p>
+  <p class="sub"><b>The Ornament Run.</b> Grab the ornament and carry it through the factory. Every station is one of the manufacturing simulators: meet its mission and the part earns a stamp. Print the pattern, cast it, heat treat it, machine it, form it, and assemble it. Prefer not to walk? Open &ldquo;Skip the walk&rdquo; beside the game (or just below it on a phone) for a plain list of the simulators.</p>
   </div>
   <section class="arcade">
     <div class="cab">
@@ -110,9 +111,9 @@
       <div class="pad" id="pad"><div class="dpad"><span></span><button data-k="up" aria-label="Up">▲</button><span></span><button data-k="left" aria-label="Left">◀</button><span></span><button data-k="right" aria-label="Right">▶</button><span></span><button data-k="down" aria-label="Down">▼</button><span></span></div><button class="ab" data-k="act" aria-label="Interact">E</button></div>
     </div>
     <aside class="side">
-      <h2>The simulators, as a list</h2>
-      <p>Open any simulator directly, no walking needed.</p>
-      <ul class="labs" id="labs"></ul>
+      <details class="listbox"><summary>Skip the walk: the simulators as a list</summary>
+      <p>Open any simulator directly, no walking needed. This list is here for keyboard and screen-reader users, for phones where walking is awkward, and for teachers who want to jump to one.</p>
+      <ul class="labs" id="labs"></ul></details>
       <h3>Your player number</h3>
       <p class="pidline" id="pidside">P-000000</p>
       <p style="font-size:.88rem;color:var(--ink-soft);margin-top:2px">It is random and has no name attached. Your progress is saved in this browser. To keep it, hand it in or move it to another device, use the passport file or the save code.</p>
