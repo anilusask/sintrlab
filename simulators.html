@@ -3,50 +3,377 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
-<meta name="description" content="Interactive simulators for learning how things are made, from the Sintering Materials Research Lab at the University of Saskatchewan.">
+<title>Sinter Quest | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Sinter Quest: The Ornament Run. A walkable retro arcade factory from the Sintering Materials Research Lab at the University of Saskatchewan. Carry an ornament through printing, casting, heat treatment, machining, forming, powder metallurgy and assembly, earning a stamp at every station.">
 <link rel="canonical" href="https://sintrlab.ca/simulators.html">
-<meta property="og:title" content="Manufacturing Simulator | Sintering Materials Research Lab">
-<meta property="og:description" content="Interactive simulators for learning how things are made.">
+<meta property="og:title" content="Sinter Quest | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:description" content="Carry an ornament through a retro arcade factory, one manufacturing simulator at a time.">
 <meta property="og:url" content="https://sintrlab.ca/simulators.html">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#EEF0F1">
 <link rel="icon" type="image/svg+xml" href="sintrlab_symbol.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site-shell.css">
+<!--
+  Sinter Quest: The Ornament Run (beta v0.2). A walkable retro arcade front door to the Manufacturing Simulator. It makes no network calls.
+  There are no accounts and no names: each browser gets a random player number, progress is kept in that browser (localStorage),
+  and a save code or a passport file moves it to another device or hands it in. Each simulator opens inside the game with ?embed=1
+  and reports back through site-nav.js when the mission is met. The header, dropdown and footer come from site-nav.js.
+-->
 <style>
-.hub{padding:48px 0 8px}
-.hub .sub{font-size:1.2rem;color:var(--ink-soft);margin:16px 0 0;max-width:60ch}
-.sim-cards{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.sim-card{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:24px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.sim-card__top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-.sim-card h2{font-size:1.5rem;font-weight:700}
-.sim-card__tag{font-family:var(--head);font-weight:500;font-size:.78rem;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:1px 8px}
-.sim-card p{color:var(--ink-soft);flex:1}
-.sim-card__soon{font-family:var(--head);font-weight:500;color:var(--ink-soft)}
-.note{margin:28px 0 0;color:var(--ink-soft);font-size:.95rem;max-width:64ch}
+.fx{--ink:#14222B;--neon1:#ff2a6d;--neon2:#05d9e8;--neon3:#ffd319;--neon4:#39ff14;--arc:'Press Start 2P',ui-monospace,Menlo,Consolas,monospace}
+.fx h1{margin-bottom:6px}
+.fx .badge{display:inline-block;font:500 .78rem var(--head);color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:2px 8px;margin-left:10px;vertical-align:middle}
+.fx .sub{color:var(--ink-soft);max-width:78ch;margin:6px 0 16px}
+.fx .arcade{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:20px;align-items:start;margin-bottom:40px}
+@media (max-width:980px){.fx .arcade{grid-template-columns:minmax(0,1fr)}}
+.cab{background:linear-gradient(#2a1458,#150a30);border:3px solid #3a2272;border-radius:14px;padding:12px;box-shadow:0 0 0 2px #0d0221,0 12px 30px rgba(13,2,33,.45),0 0 26px rgba(255,42,109,.25)}
+.hud{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;font-family:var(--arc);font-size:10px;color:var(--neon2);margin:0 2px 10px;text-shadow:0 0 6px rgba(5,217,232,.7)}
+.hud b{color:var(--neon3);font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-family:var(--arc);font-size:8px;padding:4px 5px;border:1px solid #5a3fa0;color:#7b6aa8;background:#0d0221;border-radius:2px}
+.chip.on{color:#0d0221;background:var(--neon4);border-color:var(--neon4);box-shadow:0 0 8px rgba(57,255,20,.7)}
+.screen{position:relative;border:3px solid #0d0221;border-radius:6px;overflow:hidden;background:#0d0221;aspect-ratio:3/2}
+.screen canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;border:0;background:#0d0221}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px),radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.42) 100%)}
+@media (prefers-reduced-motion:no-preference){.screen{animation:flick 6s infinite}@keyframes flick{0%,96%,100%{filter:none}97%{filter:brightness(1.08)}98%{filter:brightness(.96)}}}
+.ov{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;background:rgba(13,2,33,.9);color:#fff;text-align:center;font-family:var(--arc);font-size:10px;line-height:1.7;overflow:auto}
+.ov[hidden]{display:none}
+.ov h2{font-family:var(--arc);font-weight:400;font-size:clamp(14px,3.4vw,26px);color:var(--neon1);text-shadow:0 0 12px rgba(255,42,109,.8);margin:0;line-height:1.3}
+.ov h3{font-family:var(--arc);font-weight:400;font-size:clamp(8px,1.6vw,11px);color:var(--neon3);margin:0}
+.ov p{margin:0;color:#cdd6ff;max-width:46ch}
+.ov .blink{color:var(--neon3)}@media (prefers-reduced-motion:no-preference){.ov .blink{animation:bl 1s steps(2) infinite}@keyframes bl{50%{opacity:0}}}
+.ov .pid{color:var(--neon2);font-size:13px;letter-spacing:1px;text-shadow:0 0 8px rgba(5,217,232,.8)}
+.ov ul{list-style:none;margin:0;padding:0;text-align:left;font-size:9px}.ov li{padding:2px 0}.ov li.done{color:var(--neon4)}.ov li.todo{color:#ff8fb1}
+.abtn{font-family:var(--arc);font-size:11px;padding:10px 14px;background:var(--neon1);color:#fff;border:0;border-bottom:4px solid #9c1243;border-radius:3px;cursor:pointer}
+.abtn.alt{background:#2f2a63;border-bottom-color:#1a1640;color:var(--neon2)}
+.abtn:hover,.abtn:focus-visible{filter:brightness(1.15);outline:2px solid var(--neon3)}
+.toast{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:2;font-family:var(--arc);font-size:9px;color:#0d0221;background:var(--neon4);padding:7px 10px;border-radius:3px;box-shadow:0 0 14px rgba(57,255,20,.8);max-width:90%;text-align:center}
+.toast[hidden]{display:none}
+.prompt{font-family:var(--arc);font-size:10px;color:var(--neon3);min-height:30px;margin:10px 4px 0;text-shadow:0 0 6px rgba(255,211,25,.6)}
+.pad{display:none;justify-content:space-between;align-items:center;margin:10px 2px 0;user-select:none;-webkit-user-select:none;touch-action:none}
+@media (pointer:coarse),(max-width:720px){.pad{display:flex}}
+.dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:2px}
+.dpad button,.pad .ab{font-family:var(--arc);font-size:14px;background:#2f2a63;color:var(--neon2);border:2px solid #5a3fa0;border-radius:8px;touch-action:none}
+.dpad button:active,.pad .ab:active{background:var(--neon1);color:#fff}
+.pad .ab{width:76px;height:76px;border-radius:50%;background:#7a1237;color:#fff;border-color:#ff2a6d;font-size:18px}
+.side{background:var(--surface,#fff);border:1px solid var(--line,#cfd5da);border-radius:2px;padding:16px 18px}
+.side h2{font-size:1.15rem;margin:0 0 6px}.side h3{font-size:1rem;margin:16px 0 4px}.side p,.side li{font-size:.95rem}
+.side .row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.btn2{font-family:var(--head);font-weight:500;font-size:.92rem;padding:7px 12px;border:1px solid var(--ink);border-radius:4px;background:transparent;color:var(--ink);cursor:pointer}
+.btn2:hover{background:rgba(20,34,43,.08)}
+.side input[type=text]{font:500 .85rem ui-monospace,Menlo,Consolas,monospace;padding:7px 8px;border:1px solid var(--line,#cfd5da);border-radius:2px;width:100%;background:var(--bg,#EEF0F1);box-sizing:border-box}
+.pidline{font:700 1.05rem var(--head);letter-spacing:.5px}
+.labs{list-style:none;padding:0!important;margin:6px 0 0!important}.labs li{padding:5px 0;border-bottom:1px solid var(--line-soft,#e3e7ea)}.labs a{font-family:var(--head);font-weight:700;text-decoration:none;color:var(--ink)}.labs a:hover{color:var(--accent)}.labs span{display:block;font-size:.85rem;color:var(--ink-soft)}.labs .st{float:right;font:600 .75rem var(--head);color:var(--ok,#1f6f47)}
+.lab{position:fixed;inset:0;z-index:100;background:rgba(13,2,33,.92);display:flex;flex-direction:column;padding:10px}
+.lab[hidden]{display:none}
+.labbar{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:6px 8px 10px;font-family:var(--arc);font-size:10px;color:var(--neon2)}
+.labbar b{color:var(--neon3);font-weight:400}
+.lab iframe{flex:1;width:100%;border:3px solid var(--neon2);border-radius:8px;background:#EEF0F1;box-shadow:0 0 24px rgba(5,217,232,.45)}
+.fx .note{font-size:.88rem;color:var(--ink-soft);max-width:80ch;margin:0 0 50px}
 </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to main content</a>
 <div data-site-header></div>
-
-<main id="main">
-  <section class="hub">
-    <div class="wrap">
-      <h1>Manufacturing Simulator</h1>
-      <p class="sub">Interactive tools for learning how things are made. Each simulator is its own page, so you can open one directly or share a link to it.</p>
-      <ul class="sim-cards" data-sim-cards>
-        <noscript><li class="sim-card"><p>These simulators need JavaScript. <a href="simulators/casting.html">Open the casting simulator</a>.</p></li></noscript>
-      </ul>
-      <p class="note">More simulators will be added here as they are developed. They are teaching models, not validated engineering software.</p>
+<main id="main" class="wrap fx">
+  <div style="padding:30px 0 4px">
+  <h1>Sinter Quest<span class="badge">Beta v0.2</span></h1>
+  <p class="sub"><b>The Ornament Run.</b> Grab the ornament and carry it through the factory. Every station is one of the manufacturing simulators: meet its mission and the part earns a stamp. Print the pattern, cast it, heat treat it, machine it, form it, and assemble it. Prefer a plain list? It is beside the game (or just below it on a phone), and every simulator also opens directly from the Manufacturing Simulator menu.</p>
+  </div>
+  <section class="arcade">
+    <div class="cab">
+      <div class="hud"><span>PLAYER <b id="pidhud">P-000000</b></span><span>SCORE <b id="score">000000</b></span><span>STAMPS <b id="count">0/9</b></span><span class="chips" id="chips" aria-label="Stamps earned"></span></div>
+      <div class="screen" id="screen">
+        <canvas id="g" width="960" height="640" tabindex="0" role="application" aria-label="Sinter Quest factory game. Use the arrow keys or W A S D to walk, and E to interact. A plain list of the simulators is next to the game."></canvas>
+        <div class="toast" id="toast" role="status" hidden></div>
+        <div class="ov" id="start">
+          <h2>SINTER<br>QUEST</h2>
+          <h3>THE ORNAMENT RUN</h3>
+          <p>GRAB THE ORNAMENT. CARRY IT THROUGH EVERY STATION.</p>
+          <p>YOUR PLAYER NUMBER IS <span class="pid" id="pidstart">P-000000</span><br>WRITE IT DOWN. NO NAME NEEDED.</p>
+          <button class="abtn" id="go" type="button">START</button>
+          <button class="abtn alt" id="cont" type="button" hidden>CONTINUE</button>
+          <p class="blink">ARROWS OR WASD TO WALK, E TO USE</p>
+        </div>
+        <div class="ov" id="how" hidden>
+          <h2>HOW TO PLAY</h2>
+          <ul><li>1. GRAB THE PART FROM THE PEDESTAL</li><li>2. WALK UP TO A STATION AND PRESS E</li><li>3. MEET THE MISSION FOR A STAMP</li><li>4. COLLECT STAMPS, THEN SHIP THE PART</li></ul>
+          <p>THE CORE PATH: PRINT, CAST, HEAT TREAT, MACHINE, ASSEMBLE. THE REST ARE SIDE TRIPS. THE FOUNDRY HAS TWO ROOMS: SAND AND INVESTMENT CASTING.</p>
+          <button class="abtn" id="howok" type="button">OK</button>
+        </div>
+        <div class="ov" id="card" hidden><h2 id="cardt">SHIPPING</h2><ul id="cardl"></ul><p id="cardp"></p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="abtn" id="cardpass" type="button">DOWNLOAD PASSPORT</button><button class="abtn alt" id="cardok" type="button">BACK</button></div></div>
+      </div>
+      <div class="prompt" id="prompt" aria-live="polite"></div>
+      <div class="pad" id="pad"><div class="dpad"><span></span><button data-k="up" aria-label="Up">▲</button><span></span><button data-k="left" aria-label="Left">◀</button><span></span><button data-k="right" aria-label="Right">▶</button><span></span><button data-k="down" aria-label="Down">▼</button><span></span></div><button class="ab" data-k="act" aria-label="Interact">E</button></div>
     </div>
+    <aside class="side">
+      <h2>The simulators, as a list</h2>
+      <p>Open any simulator directly, no walking needed.</p>
+      <ul class="labs" id="labs"></ul>
+      <h3>Your player number</h3>
+      <p class="pidline" id="pidside">P-000000</p>
+      <p style="font-size:.88rem;color:var(--ink-soft);margin-top:2px">It is random and has no name attached. Your progress is saved in this browser. To keep it, hand it in or move it to another device, use the passport file or the save code.</p>
+      <div class="row"><button class="btn2" id="pass" type="button">Download passport</button><button class="btn2" id="copycode" type="button">Copy save code</button></div>
+      <label for="codein" style="font-size:.88rem;font-weight:500;font-family:var(--head)">Load a save code</label>
+      <input type="text" id="codein" placeholder="Paste a save code here" autocomplete="off" spellcheck="false">
+      <div class="row"><button class="btn2" id="loadcode" type="button">Load</button><button class="btn2" id="mute" type="button" aria-pressed="false">Sound: on</button><button class="btn2" id="reset" type="button">Start over</button></div>
+      <p id="codemsg" style="font-size:.88rem;color:var(--ink-soft)" role="status"></p>
+      <p style="font-size:.88rem;color:var(--ink-soft)">Keys: arrows or WASD to walk, E or Space to use, Esc to leave a simulator, M for sound. The passport and the save code are not tamper-proof: they record what you did, they do not prove it.</p>
+    </aside>
   </section>
+  <p class="note">A beta. In this version the part earns a stamp when you meet the mission at a station; the properties of the part do not yet carry from one simulator to the next, which is the next step. Progress is stored in your browser, not on a server, and the site collects no names.</p>
 </main>
-
+<div id="lab" class="lab" hidden role="dialog" aria-modal="true" aria-label="Simulator"><div class="labbar"><span id="labt"></span><span id="labmsg"></span><button class="abtn alt" id="labclose" type="button">BACK TO FACTORY (ESC)</button></div><iframe id="labf" title="Simulator" src="about:blank"></iframe></div>
 <div data-site-footer></div>
 <script src="site-nav.js" defer></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var TS=16,MW=30,MH=20,K=2,KEY='sintr.factory.v2';
+/* the nine simulators, in course order */
+var ST=[
+ {id:'printing',ab:'3DP',col:'#05d9e8',title:'3D printing',d:'Print the resin pattern'},
+ {id:'sand-casting',ab:'SND',col:'#ff9f1c',title:'Sand casting',d:'Cast it in a sand mold'},
+ {id:'investment-casting',ab:'INV',col:'#ffd319',title:'Investment casting',d:'Lost-wax casting in plaster'},
+ {id:'heat-treatment',ab:'HT',col:'#ff2a6d',title:'Heat treatment',d:'Strengthen it in the furnace'},
+ {id:'machining',ab:'MCH',col:'#7dff7a',title:'Machining',d:'Turn it to size and finish'},
+ {id:'bending',ab:'BND',col:'#b388ff',title:'Bending',d:'Bend the hanging hook'},
+ {id:'extrusion-rolling',ab:'EXT',col:'#ff7a45',title:'Extrusion and rolling',d:'Make the wrought tube or plate'},
+ {id:'powder-metallurgy',ab:'PM',col:'#5ee6c8',title:'Powder metallurgy',d:'Press and sinter an insert'},
+ {id:'joining-assembly',ab:'ASM',col:'#ffb3d1',title:'Joining and assembly',d:'Bolt, weld and fit it together'}
+];
+function T(id){return ST.filter(function(s){return s.id===id;})[0];}
+/* what is in each place: kind lab (opens a simulator), door (to another place), disp, kiosk, ship */
+var SCENES={
+ out:{name:'FACTORY FLOOR',things:[
+  {k:'lab',id:'printing',n:'3D PRINTING\nSHOP',x:1,y:1,w:7,h:3,col:'#05d9e8',door:[4,4]},
+  {k:'door',id:'foundry',n:'FOUNDRY',x:9,y:1,w:8,h:3,col:'#ff9f1c',door:[12,4],to:'foundry',arrive:[14,16]},
+  {k:'lab',id:'heat-treatment',n:'FURNACE HALL',x:18,y:1,w:7,h:3,col:'#ff2a6d',door:[21,4]},
+  {k:'lab',id:'machining',n:'MACHINE SHOP',x:23,y:6,w:6,h:3,col:'#7dff7a',door:[22,7]},
+  {k:'ship',id:'shipping',n:'SHIPPING',x:23,y:11,w:6,h:3,col:'#ffffff',door:[22,12]},
+  {k:'lab',id:'bending',n:'BENDING BAY',x:1,y:16,w:6,h:3,col:'#b388ff',door:[3,15]},
+  {k:'lab',id:'extrusion-rolling',n:'ROLLING MILL',x:8,y:16,w:6,h:3,col:'#ff7a45',door:[10,15]},
+  {k:'lab',id:'powder-metallurgy',n:'POWDER METALLURGY\nSHOP',x:15,y:16,w:7,h:3,col:'#5ee6c8',door:[18,15]},
+  {k:'lab',id:'joining-assembly',n:'ASSEMBLY BAY',x:23,y:16,w:6,h:3,col:'#ffb3d1',door:[26,15]},
+  {k:'disp',id:'disp',n:'PART',x:1,y:8,w:2,h:3,col:'#ffd319',door:[3,9]},
+  {k:'kiosk',id:'kiosk',n:'HELP',x:1,y:12,w:2,h:2,col:'#05d9e8',door:[3,12]}]},
+ foundry:{name:'THE FOUNDRY',things:[
+  {k:'lab',id:'sand-casting',n:'SAND CASTING\nROOM',x:3,y:3,w:9,h:4,col:'#ff9f1c',door:[7,7]},
+  {k:'lab',id:'investment-casting',n:'INVESTMENT\nCASTING ROOM',x:18,y:3,w:9,h:4,col:'#ffd319',door:[22,7]},
+  {k:'decor',id:'crucible',x:13,y:9,w:4,h:3,col:'#ff9f1c'},
+  {k:'door',id:'exit',n:'EXIT',x:14,y:19,w:2,h:1,col:'#ffffff',door:[14,18],to:'out',arrive:[12,5],nosolid:true}]}
+};
+function defaultState(){return {id:newId(),stamps:{},score:0,carrying:false,shipped:false,started:null,scene:'out',px:5*TS+8,py:10*TS+8,playMs:0};}
+function newId(){var n;try{var a=new Uint32Array(1);crypto.getRandomValues(a);n=a[0]%1000000;}catch(e){n=Math.floor(Math.random()*1000000);}return 'P-'+('000000'+n).slice(-6);}
+var S=defaultState(),mode='title',audio=null,muted=false,keys={},last=0,t=0,labOpen=false,toastT=0,face=1,walk=0,fade=0,SOLID={};
+function load(){try{var j=JSON.parse(localStorage.getItem(KEY)||'null');if(j&&j.stamps&&j.id)return Object.assign(defaultState(),j);}catch(e){}return null;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function has(id){return !!S.stamps[id];}
+function hasCast(){return has('sand-casting')||has('investment-casting');}
+function coreDone(){return has('printing')&&hasCast()&&has('heat-treatment')&&has('machining')&&has('joining-assembly');}
+/* ---------- the maps ---------- */
+Object.keys(SCENES).forEach(function(sk){var sol=[];for(var y=0;y<MH;y++){sol[y]=[];for(var x=0;x<MW;x++)sol[y][x]=(x===0||y===0||x===MW-1||y===MH-1);}
+  SCENES[sk].things.forEach(function(o){if(o.nosolid)return;for(var y=o.y;y<o.y+o.h;y++)for(var x=o.x;x<o.x+o.w;x++)sol[y][x]=true;});SOLID[sk]=sol;});
+function isSolid(px,py){var tx=Math.floor(px/TS),ty=Math.floor(py/TS);if(tx<0||ty<0||tx>=MW||ty>=MH)return true;return SOLID[S.scene][ty][tx];}
+function free(cx,cy){var h=4;return !(isSolid(cx-h,cy-h)||isSolid(cx+h,cy-h)||isSolid(cx-h,cy+h)||isSolid(cx+h,cy+h));}
+/* ---------- drawing (the canvas is drawn at twice the size, in 480 by 320 units) ---------- */
+var cv=$('g'),ctx=cv.getContext('2d');
+var FONT='"Press Start 2P",ui-monospace,Menlo,monospace',REDUCE=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function txt(s,x,y,col,size,al){ctx.font=size+'px '+FONT;ctx.textBaseline='top';ctx.textAlign=al||'left';ctx.fillStyle=col;ctx.fillText(s,x,y);}
+function glow(col,b){ctx.shadowColor=col;ctx.shadowBlur=b;}function noglow(){ctx.shadowBlur=0;}
+function floorOut(){
+  for(var y=0;y<MH;y++)for(var x=0;x<MW;x++){ctx.fillStyle=((x+y)&1)?'#120a2a':'#160d33';ctx.fillRect(x*TS,y*TS,TS,TS);}
+  ctx.strokeStyle='#1f1450';ctx.lineWidth=.5;ctx.beginPath();for(var x=0;x<=MW;x++){ctx.moveTo(x*TS,0);ctx.lineTo(x*TS,MH*TS);}for(var y=0;y<=MH;y++){ctx.moveTo(0,y*TS);ctx.lineTo(MW*TS,y*TS);}ctx.stroke();
+  var off=REDUCE?0:Math.floor(t*14)%16;ctx.fillStyle='#241a52';ctx.fillRect(5*TS,11*TS+2,17*TS,12);ctx.fillStyle='#39ff14';
+  for(var x=-16;x<17*TS;x+=16){ctx.fillRect(5*TS+x+off+3,11*TS+6,6,2);ctx.fillRect(5*TS+x+off+7,11*TS+4,2,6);}
+  ctx.fillStyle='#050113';ctx.fillRect(5*TS,11*TS+13,17*TS,1);
+}
+function floorFoundry(){
+  for(var y=0;y<MH;y++)for(var x=0;x<MW;x++){ctx.fillStyle=((x+y)&1)?'#1c0c0c':'#220f10';ctx.fillRect(x*TS,y*TS,TS,TS);}
+  ctx.strokeStyle='#3a1a14';ctx.lineWidth=.5;for(var y=0;y<MH;y++)for(var x=0;x<MW;x++){var o=(y&1)?8:0;ctx.strokeRect(x*TS-o+.25,y*TS+.25,TS,TS);}
+  var f=REDUCE?0:(Math.sin(t*4)+1)/2;ctx.fillStyle='rgba(255,120,30,'+(0.05+0.04*f)+')';ctx.fillRect(0,0,MW*TS,MH*TS);
+  ctx.fillStyle='#3a1a14';ctx.fillRect(0,MH*TS-24,MW*TS,2);
+  ctx.fillStyle='#2a1208';ctx.fillRect(13*TS,18*TS,4*TS,TS);ctx.fillStyle='#ff9f1c';ctx.fillRect(14*TS+2,18*TS+6,2*TS-4,4);
+}
+function walls(col){glow(col,6);ctx.fillStyle=col;ctx.fillRect(0,0,MW*TS,3);ctx.fillRect(0,MH*TS-3,MW*TS,3);ctx.fillRect(0,0,3,MH*TS);ctx.fillRect(MW*TS-3,0,3,MH*TS);noglow();}
+function icon(id,cx,cy,col){
+  var r=function(x,y,w,h,c){ctx.fillStyle=c||col;ctx.fillRect(cx+x,cy+y,w,h);};
+  if(id==='printing'){r(-8,2,16,3);r(-6,-2,12,3);r(-4,-6,8,3);r(-1,-12,2,5,'#fff');}
+  else if(id==='foundry'){r(-9,-2,18,10,'#5a2a10');r(-6,-8,12,7,'#8a5a1c');r(-4,-6,8,4,'#ff9f1c');var f=REDUCE?0:Math.floor(t*8)%2;r(-2,-12-f,4,5,'#ffd319');}
+  else if(id==='sand-casting'){r(-7,-6,14,12,'#8a5a1c');r(-5,-4,10,6,'#ff9f1c');r(-2,-9,4,4,'#ffd319');}
+  else if(id==='investment-casting'){r(-6,-7,12,14,'#d9c9a0');r(-4,-5,8,10,'#2a1b00');r(-2,-3,4,4,col);}
+  else if(id==='heat-treatment'){r(-8,-4,16,12,'#5a1632');var f=REDUCE?0:Math.floor(t*8)%2;r(-5,-9-f,3,6,'#ff9f1c');r(-1,-12+f,3,8,'#ffd319');r(3,-9-f,3,5,'#ff2a6d');}
+  else if(id==='machining'){r(-9,3,18,3,'#8a99a8');r(-7,-5,6,8,'#aab4bd');r(-1,-2,3,2,col);r(4,-6,4,9,'#6d7b86');}
+  else if(id==='bending'){r(-8,-1,12,4);r(2,-9,4,12);r(-8,5,16,2,'#8a99a8');}
+  else if(id==='extrusion-rolling'){ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx-3,cy-4,5,0,6.3);ctx.arc(cx-3,cy+5,5,0,6.3);ctx.fill();r(2,-2,8,3,'#fff');}
+  else if(id==='powder-metallurgy'){for(var i=0;i<5;i++)for(var j=0;j<=i;j++)r(-8+i*2+j*4,-6+i*3,3,3,(i+j)&1?col:'#fff');}
+  else if(id==='joining-assembly'){r(-8,-8,8,3,'#fff');r(-6,-5,4,11,col);ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx+5,cy+1,6,0,6.3);ctx.fill();r(3,-1,4,4,'#150a30');}
+  else if(id==='shipping'){r(-8,-4,16,10,'#c9a36a');r(-8,-4,16,2,'#8a6a3a');r(-1,-4,2,10,'#8a6a3a');}
+}
+function doorMark(o){var d=o.door;ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillRect(d[0]*TS,d[1]*TS,TS,TS);ctx.strokeStyle=o.col;ctx.lineWidth=.8;ctx.setLineDash([3,3]);ctx.strokeRect(d[0]*TS+.5,d[1]*TS+.5,TS-1,TS-1);ctx.setLineDash([]);}
+function building(o){
+  var x=o.x*TS,y=o.y*TS,w=o.w*TS,h=o.h*TS,done=o.k==='lab'?has(o.id):(o.id==='foundry'?hasCast():false);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x+3,y+4,w,h);
+  ctx.fillStyle='#1b0f3b';ctx.fillRect(x,y,w,h);ctx.fillStyle='#24144d';ctx.fillRect(x+2,y+6,w-4,h-8);
+  glow(o.col,5);ctx.fillStyle=o.col;ctx.fillRect(x,y,w,4);ctx.strokeStyle=o.col;ctx.lineWidth=1.2;ctx.strokeRect(x+.6,y+.6,w-1.2,h-1.2);noglow();
+  var lines=o.n.split('\n'),mx=Math.max.apply(null,lines.map(function(l){return l.length;})),sz=Math.max(5,Math.min(7,(w-12)/mx)),lh=lines.length>1?9:0;lines.forEach(function(l,i){txt(l,x+w/2,y+7+i*lh,'#fff',sz,'center');});
+  icon(o.id,x+w/2,y+h/2+(lines.length>1?13:8),o.col);
+  if(done){ctx.fillStyle='#39ff14';ctx.fillRect(x+w-14,y+6,9,9);txt('✓',x+w-9.5,y+7.5,'#0d0221',6,'center');}
+  doorMark(o);
+}
+var STAR=['...#...','...#...','#######','.#####.','..###..','.##.##.','.#...#.'];
+function partCol(){if(has('joining-assembly'))return 'rainbow';if(has('machining'))return '#f4f7f9';if(has('heat-treatment'))return '#ffd319';if(hasCast())return '#b8c2cc';if(has('printing'))return '#05d9e8';return '#e6e9ec';}
+function star(cx,cy,col,sc){
+  var c=col;if(col==='rainbow'){var hs=['#ff2a6d','#ff9f1c','#ffd319','#39ff14','#05d9e8','#b388ff'];c=hs[Math.floor(t*6)%6];}
+  ctx.fillStyle='rgba(255,255,255,.16)';ctx.fillRect(cx-5.5*sc,cy-5.5*sc,11*sc,11*sc);
+  for(var j=0;j<7;j++)for(var i=0;i<7;i++)if(STAR[j][i]==='#'){ctx.fillStyle=c;ctx.fillRect(cx-3.5*sc+i*sc,cy-3.5*sc+j*sc,sc+.04,sc+.04);}
+}
+function props(o){
+  var x=o.x*TS,y=o.y*TS,w=o.w*TS,h=o.h*TS;
+  if(o.k==='disp'){ctx.fillStyle='#2a1458';ctx.fillRect(x,y,w,h);glow('#ffd319',5);ctx.strokeStyle='#ffd319';ctx.lineWidth=1.2;ctx.strokeRect(x+.6,y+.6,w-1.2,h-1.2);noglow();txt('PART',x+w/2,y+4,'#ffd319',6,'center');
+    ctx.fillStyle='#3a2272';ctx.fillRect(x+8,y+30,16,12);ctx.fillStyle='#5a3fa0';ctx.fillRect(x+8,y+30,16,2);if(!S.carrying&&!S.shipped)star(x+16,y+21+(REDUCE?0:Math.sin(t*3)*2),partCol(),1.4);}
+  else if(o.k==='kiosk'){ctx.fillStyle='#150a30';ctx.fillRect(x,y,w,h);glow('#05d9e8',5);ctx.strokeStyle='#05d9e8';ctx.lineWidth=1.2;ctx.strokeRect(x+.6,y+.6,w-1.2,h-1.2);noglow();ctx.fillStyle='#05d9e8';ctx.fillRect(x+4,y+4,w-8,10);txt('?',x+w/2,y+5,'#0d0221',8,'center');txt('HELP',x+w/2,y+18,'#05d9e8',6,'center');}
+  else if(o.id==='crucible'){var f=REDUCE?0:Math.sin(t*3);ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+3,y+5,w,h);ctx.fillStyle='#3a1a14';ctx.fillRect(x,y+8,w,h-8);ctx.fillStyle='#5a2a10';ctx.fillRect(x+4,y+4,w-8,h-6);
+    glow('#ff9f1c',10);ctx.fillStyle='#ff9f1c';ctx.fillRect(x+10,y+9,w-20,10);noglow();ctx.fillStyle='#ffd319';ctx.fillRect(x+14,y+11+f,w-28,3);txt('HOT',x+w/2,y+h-12,'#ffd319',6,'center');}
+  if(o.door&&o.k!=='lab'&&o.k!=='door'&&o.k!=='ship'){var d=o.door;ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillRect(d[0]*TS,d[1]*TS,TS,TS);}
+}
+function player(){
+  var x=S.px,y=S.py,b=(Math.floor(walk*8)%2)?1:0;
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x-4.5,y+5,9,3);
+  ctx.fillStyle='#ffd319';ctx.fillRect(x-4,y-8,8,3);ctx.fillRect(x-5,y-6,10,1);ctx.fillStyle='#ffe96b';ctx.fillRect(x-4,y-8,8,1);
+  ctx.fillStyle='#f2c9a0';ctx.fillRect(x-3,y-5,6,4);ctx.fillStyle='#d9a878';ctx.fillRect(x-3,y-2,6,1);
+  ctx.fillStyle='#05d9e8';ctx.fillRect(x-4,y-1,8,5);ctx.fillStyle='#08a9b8';ctx.fillRect(x-4,y+3,8,1);ctx.fillStyle='#fff';ctx.fillRect(x-1,y,2,3);
+  ctx.fillStyle='#2b6cb0';ctx.fillRect(x-4,y+4,3,3+b);ctx.fillRect(x+1,y+4,3,4-b);
+  ctx.fillStyle='#0d0221';ctx.fillRect(x+(face>0?1:-3),y-4,2,1);
+  if(S.carrying)star(x,y-15+(REDUCE?0:Math.sin(t*6)),partCol(),1.6);
+}
+function frame(){
+  ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;
+  var sc=SCENES[S.scene];
+  if(S.scene==='out'){floorOut();walls('#ff2a6d');}else{floorFoundry();walls('#ff7a1a');}
+  sc.things.forEach(function(o){if(o.k==='lab'||(o.k==='door'&&o.id==='foundry')||o.k==='ship')building(o);else if(o.id==='exit'){doorMark(o);doorMark({door:[15,18],col:o.col});txt('EXIT',15*TS,19*TS-4,'#fff',5,'center');}else props(o);});
+  if(S.scene==='foundry')txt('THE FOUNDRY',MW*TS/2,10,'#ffd319',9,'center');
+  player();
+  if(fade>0){ctx.fillStyle='rgba(13,2,33,'+Math.min(1,fade)+')';ctx.fillRect(0,0,MW*TS,MH*TS);}
+}
+/* ---------- interaction ---------- */
+function nearest(){
+  var best=null,bd=22;SCENES[S.scene].things.forEach(function(o){if(!o.door)return;var cx=o.door[0]*TS+8,cy=o.door[1]*TS+8,dd=Math.hypot(S.px-cx,S.py-cy);if(o.id==='exit'){dd=Math.min(dd,Math.hypot(S.px-(15*TS+8),S.py-cy));}if(dd<bd){bd=dd;best=o;}});return best;
+}
+function promptFor(o){
+  if(!o)return '';
+  if(o.k==='disp')return S.carrying?'YOU HAVE THE PART. TAKE IT TO A STATION.':(S.shipped?'THE PART HAS SHIPPED.':'E: GRAB THE PART');
+  if(o.k==='kiosk')return 'E: HOW TO PLAY';
+  if(o.k==='ship')return S.carrying?'E: SHIP THE PART':'BRING THE PART TO SHIP IT';
+  if(o.k==='door')return o.id==='foundry'?'E: ENTER THE FOUNDRY (SAND AND INVESTMENT CASTING)':'E: LEAVE THE FOUNDRY';
+  var s=T(o.id);if(!S.carrying)return s.title.toUpperCase()+': GRAB THE PART FIRST';
+  return 'E: ENTER '+o.n.replace('\n',' ')+(has(o.id)?'  (STAMPED)':'  - '+s.d.toUpperCase());
+}
+function go(sceneKey,at){fade=1;beep('blip');S.scene=sceneKey;S.px=at[0]*TS+8;S.py=at[1]*TS+8;keys={};save();}
+function act(){
+  if(mode!=='play'||labOpen)return;var o=nearest();if(!o)return;
+  if(o.k==='disp'){if(!S.carrying&&!S.shipped){S.carrying=true;beep('grab');save();hud();}return;}
+  if(o.k==='kiosk'){show('how');beep('blip');return;}
+  if(o.k==='ship'){if(S.carrying)shipCard();else toast('BRING THE PART FIRST');return;}
+  if(o.k==='door'){go(o.to,o.arrive);return;}
+  if(!S.carrying){toast('GRAB THE PART FIRST');beep('no');return;}
+  openLab(T(o.id));
+}
+/* ---------- the simulators in an overlay ---------- */
+function openLab(s){labOpen=true;$('labt').textContent=s.title.toUpperCase();$('labmsg').textContent='MEET THE MISSION FOR A STAMP';$('labf').src='simulators/'+s.id+'.html?embed=1';$('lab').hidden=false;beep('enter');$('labclose').focus();}
+function closeLab(){if(!labOpen)return;labOpen=false;$('lab').hidden=true;$('labf').src='about:blank';cv.focus();save();hud();last=performance.now();}
+function stamp(slug,evidence){
+  var s=T(slug);if(!s||has(slug))return;
+  S.stamps[slug]={t:new Date().toISOString(),note:String(evidence||'').slice(0,80)};S.score+=1000;save();hud();beep('stamp');
+  $('labmsg').textContent='STAMP EARNED: '+s.title.toUpperCase()+'  +1000';toast('STAMP: '+s.title.toUpperCase()+'  +1000');
+}
+window.addEventListener('message',function(e){if(e.origin!==location.origin||!e.data)return;if(e.data.type==='sintr-stamp'&&labOpen)stamp(e.data.slug,e.data.evidence);if(e.data.type==='sintr-close')closeLab();});
+$('labclose').addEventListener('click',closeLab);
+/* ---------- screens, HUD, passport and save code ---------- */
+function show(id){$(id).hidden=false;var b=$(id).querySelector('button');if(b)b.focus();mode=id==='start'?'title':'menu';}
+function hide(id){$(id).hidden=true;mode='play';cv.focus();last=performance.now();}
+function shipCard(){
+  var need=[],list=[['PRINT THE PATTERN',has('printing')],['CAST IT (SAND OR INVESTMENT)',hasCast()],['HEAT TREAT IT',has('heat-treatment')],['MACHINE IT',has('machining')],['ASSEMBLE IT',has('joining-assembly')]];
+  list.forEach(function(l){if(!l[1])need.push(l[0]);});
+  $('cardl').innerHTML=list.map(function(l){return '<li class="'+(l[1]?'done':'todo')+'">'+(l[1]?'[X] ':'[ ] ')+l[0]+'</li>';}).join('');
+  if(!need.length){if(!S.shipped){S.shipped=true;S.carrying=false;S.score+=5000;save();hud();beep('win');}$('cardt').textContent='PART SHIPPED!';$('cardp').textContent='BONUS +5000. DOWNLOAD YOUR PASSPORT TO KEEP OR HAND IN.';}
+  else{$('cardt').textContent='NOT YET';$('cardp').textContent='THE PART STILL NEEDS THE STEPS ABOVE. SIDE TRIPS ARE OPTIONAL.';}
+  show('card');
+}
+function passport(){return {tool:'Sinter Quest: The Ornament Run (beta v0.2), sintrlab.ca',player:S.id,started:S.started,saved:new Date().toISOString(),score:S.score,shipped:S.shipped,corePathComplete:coreDone(),
+  stamps:ST.filter(function(s){return has(s.id);}).map(function(s){return {station:s.id,title:s.title,earned:S.stamps[s.id].t,note:S.stamps[s.id].note||''};}),playMinutes:+(S.playMs/60000).toFixed(1),saveCode:makeCode()};}
+function download(){var u=URL.createObjectURL(new Blob([JSON.stringify(passport(),null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='part-passport-'+S.id.toLowerCase()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},500);}
+function crc(str){var c,t=[];for(var n=0;n<256;n++){c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c;}var r=0xFFFFFFFF;for(var i=0;i<str.length;i++)r=t[(r^str.charCodeAt(i))&255]^(r>>>8);return ((r^0xFFFFFFFF)>>>0).toString(16).padStart(8,'0');}
+function b64(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function unb64(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)));}
+function makeCode(){var o={v:2,id:S.id,sc:S.score,sh:S.shipped?1:0,ca:S.carrying?1:0,pm:Math.round(S.playMs/1000),st:{}};ST.forEach(function(s){if(has(s.id))o.st[s.id]=Date.parse(S.stamps[s.id].t)||0;});var p=b64(JSON.stringify(o));return 'SQ2.'+p+'.'+crc(p);}
+function parseCode(code){
+  try{var m=String(code).trim().match(/^SQ2\.([A-Za-z0-9_-]+)\.([0-9a-f]{8})$/);if(!m||crc(m[1])!==m[2])return null;var o=JSON.parse(unb64(m[1]));if(o.v!==2||!/^P-\d{6}$/.test(o.id))return null;
+    var st={};Object.keys(o.st||{}).forEach(function(k){if(T(k)&&typeof o.st[k]==='number')st[k]={t:new Date(o.st[k]).toISOString(),note:''};});
+    var ns=Object.keys(st).length;return {id:o.id,stamps:st,score:Math.max(0,Math.min(1e6,+o.sc||0)),shipped:!!o.sh,carrying:!!o.ca,playMs:Math.max(0,(+o.pm||0)*1000),ns:ns};}catch(e){return null;}
+}
+function hud(){
+  $('score').textContent=('000000'+S.score).slice(-6);var n=ST.filter(function(s){return has(s.id);}).length;$('count').textContent=n+'/9';
+  ['pidhud','pidstart','pidside'].forEach(function(id){$(id).textContent=S.id;});
+  $('chips').innerHTML=ST.map(function(s){return '<span class="chip'+(has(s.id)?' on':'')+'" title="'+s.title+'">'+s.ab+'</span>';}).join('');
+  $('labs').innerHTML=ST.map(function(s){return '<li><a href="simulators/'+s.id+'.html">'+s.title+'</a>'+(has(s.id)?'<span class="st">stamped</span>':'')+'<span>'+s.d+'</span></li>';}).join('');
+}
+function toast(m){var el=$('toast');el.textContent=m;el.hidden=false;toastT=performance.now()+2600;}
+function codemsg(m){$('codemsg').textContent=m;}
+/* ---------- sound ---------- */
+function beep(kind){
+  if(muted)return;try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  var seq={grab:[[660,.07],[880,.09]],enter:[[440,.06],[660,.06],[880,.08]],stamp:[[523,.08],[659,.08],[784,.08],[1047,.16]],win:[[523,.1],[659,.1],[784,.1],[1047,.1],[784,.1],[1047,.3]],no:[[180,.12]],blip:[[760,.05]]}[kind]||[],tt=audio.currentTime;
+  seq.forEach(function(n){var o=audio.createOscillator(),g=audio.createGain();o.type='square';o.frequency.value=n[0];g.gain.setValueAtTime(.05,tt);g.gain.exponentialRampToValueAtTime(.001,tt+n[1]);o.connect(g);g.connect(audio.destination);o.start(tt);o.stop(tt+n[1]);tt+=n[1];});
+}
+/* ---------- input ---------- */
+var MAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right',W:'up',S:'down',A:'left',D:'right'};
+window.addEventListener('keydown',function(e){
+  if(labOpen){if(e.key==='Escape'){closeLab();e.preventDefault();}return;}
+  var tag=(e.target&&e.target.tagName)||'';if(tag==='INPUT')return;
+  if(MAP[e.key]&&mode==='play'){keys[MAP[e.key]]=true;e.preventDefault();}
+  else if((e.key==='e'||e.key==='E'||e.key===' ')&&mode==='play'){act();e.preventDefault();}
+  else if(e.key==='Escape'){['how','card'].forEach(function(id){if(!$(id).hidden)hide(id);});}
+  else if(e.key==='m'||e.key==='M'){toggleMute();}
+});
+window.addEventListener('keyup',function(e){if(MAP[e.key])keys[MAP[e.key]]=false;});
+window.addEventListener('blur',function(){keys={};});
+[].forEach.call(document.querySelectorAll('#pad [data-k]'),function(b){var k=b.getAttribute('data-k');
+  var on=function(e){e.preventDefault();if(k==='act')act();else keys[k]=true;},off=function(e){e.preventDefault();if(k!=='act')keys[k]=false;};
+  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);});
+function toggleMute(){muted=!muted;$('mute').textContent='Sound: '+(muted?'off':'on');$('mute').setAttribute('aria-pressed',muted);}
+$('mute').addEventListener('click',toggleMute);
+$('pass').addEventListener('click',download);$('cardpass').addEventListener('click',download);$('cardok').addEventListener('click',function(){hide('card');});$('howok').addEventListener('click',function(){hide('how');});
+$('copycode').addEventListener('click',function(){var c=makeCode();var done=function(){codemsg('Save code copied. Paste it into "Load a save code" on any device to continue.');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(done,function(){$('codein').value=c;$('codein').select();codemsg('Copy the code from the box.');});}else{$('codein').value=c;$('codein').select();codemsg('Copy the code from the box.');}});
+$('loadcode').addEventListener('click',function(){var r=parseCode($('codein').value);if(!r){codemsg('That is not a valid save code. Check that you copied all of it.');beep('no');return;}
+  if(Object.keys(S.stamps).length&&!confirm('Replace your progress on this browser with '+r.id+' ('+r.ns+' stamps)?'))return;
+  S=Object.assign(defaultState(),{id:r.id,stamps:r.stamps,score:r.score,shipped:r.shipped,carrying:r.carrying,playMs:r.playMs,started:new Date().toISOString()});save();hud();$('cont').hidden=false;$('codein').value='';codemsg('Loaded '+r.id+' with '+r.ns+' stamps.');beep('stamp');});
+$('reset').addEventListener('click',function(){if(confirm('Start over? Your stamps and score on this browser will be cleared and you will get a new player number.')){S=defaultState();save();hud();$('cont').hidden=true;codemsg('');show('start');}});
+$('go').addEventListener('click',function(){if(Object.keys(S.stamps).length||S.started){S=Object.assign(defaultState(),{id:S.id});}S.started=new Date().toISOString();S.scene='out';S.px=5*TS+8;S.py=10*TS+8;save();hide('start');hud();beep('blip');});
+$('cont').addEventListener('click',function(){if(!free(S.px,S.py)){S.scene='out';S.px=5*TS+8;S.py=10*TS+8;}save();hide('start');hud();beep('blip');});
+/* ---------- the loop ---------- */
+function tick(now){
+  var dt=Math.min(0.05,(now-last)/1000||0);last=now;t+=dt;if(fade>0)fade=Math.max(0,fade-dt*3);
+  if(mode==='play'&&!labOpen){
+    var dx=(keys.right?1:0)-(keys.left?1:0),dy=(keys.down?1:0)-(keys.up?1:0);
+    if(dx||dy){var len=Math.hypot(dx,dy),sp=72*dt/len,nx=S.px+dx*sp,ny=S.py+dy*sp;if(free(nx,S.py))S.px=nx;if(free(S.px,ny))S.py=ny;if(dx)face=dx;walk+=dt;}
+    S.playMs+=dt*1000;
+    var p=promptFor(nearest());if($('prompt').textContent!==p)$('prompt').textContent=p;
+  }
+  if(toastT&&now>toastT){toastT=0;$('toast').hidden=true;}
+  frame();requestAnimationFrame(tick);
+}
+/* ---------- start up ---------- */
+var saved=load();if(saved){S=saved;if(Object.keys(S.stamps).length||S.started)$('cont').hidden=false;}else{save();}
+hud();show('start');
+requestAnimationFrame(function(n){last=n;tick(n);});
+if(/[?&]debug=1/.test(location.search))window.__factory={S:function(){return S;},tp:function(tx,ty){S.px=tx*TS+8;S.py=ty*TS+8;},act:act,stamp:stamp,makeCode:makeCode,scene:function(){return S.scene;}};   /* for testing only */
+})();
+</script>
 </body>
 </html>

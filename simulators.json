@@ -1,14 +1,68 @@
 {
   "simulators": [
-    {"title": "3D printing", "file": "simulators/printing.html", "short": "Resin patterns: orientation, supports, exposure", "status": "Beta"},
-    {"title": "Sand casting", "file": "simulators/sand-casting.html", "short": "Alloy, sand mold, pour, and slice in 3D", "status": "Beta"},
-    {"title": "Investment casting", "file": "simulators/investment-casting.html", "short": "Tree, plaster, burnout, preheat and pour", "status": "Beta"},
-    {"title": "Heat treatment", "file": "simulators/heat-treatment.html", "short": "Microstructure and tensile tests: iron, A356, Al-Cu", "status": "Beta"},
-    {"title": "Machining", "file": "simulators/machining.html", "short": "Turning: speed, feed and surface finish", "status": "Beta"},
-    {"title": "Bending", "file": "simulators/bending.html", "short": "Strain hardening, springback, repeated bends", "status": "Beta"},
-    {"title": "Extrusion and rolling", "file": "simulators/extrusion-rolling.html", "short": "Hot extrusion window, rolling, strength along and across", "status": "Beta"},
-    {"title": "Powder metallurgy", "file": "simulators/powder-metallurgy.html", "short": "Press and sinter; spark plasma sintering", "status": "Beta"},
-    {"title": "Joining and assembly", "file": "simulators/joining-assembly.html", "short": "Bolts, welds and tolerance stack-up", "status": "Beta"},
-    {"title": "Coming soon", "short": "Plastics, forging and milling are next"}
+    {
+      "title": "Sinter Quest",
+      "file": "simulators.html",
+      "short": "A retro arcade factory: walk the ornament through every process",
+      "status": "New"
+    },
+    {
+      "title": "3D printing",
+      "file": "simulators/printing.html",
+      "short": "Resin patterns: orientation, supports, exposure",
+      "status": "Beta"
+    },
+    {
+      "title": "Sand casting",
+      "file": "simulators/sand-casting.html",
+      "short": "Alloy, sand mold, pour, and slice in 3D",
+      "status": "Beta"
+    },
+    {
+      "title": "Investment casting",
+      "file": "simulators/investment-casting.html",
+      "short": "Tree, plaster, burnout, preheat and pour",
+      "status": "Beta"
+    },
+    {
+      "title": "Heat treatment",
+      "file": "simulators/heat-treatment.html",
+      "short": "Microstructure and tensile tests: iron, A356, Al-Cu",
+      "status": "Beta"
+    },
+    {
+      "title": "Machining",
+      "file": "simulators/machining.html",
+      "short": "Turning: speed, feed and surface finish",
+      "status": "Beta"
+    },
+    {
+      "title": "Bending",
+      "file": "simulators/bending.html",
+      "short": "Strain hardening, springback, repeated bends",
+      "status": "Beta"
+    },
+    {
+      "title": "Extrusion and rolling",
+      "file": "simulators/extrusion-rolling.html",
+      "short": "Hot extrusion window, rolling, strength along and across",
+      "status": "Beta"
+    },
+    {
+      "title": "Powder metallurgy",
+      "file": "simulators/powder-metallurgy.html",
+      "short": "Press and sinter; spark plasma sintering",
+      "status": "Beta"
+    },
+    {
+      "title": "Joining and assembly",
+      "file": "simulators/joining-assembly.html",
+      "short": "Bolts, welds and tolerance stack-up",
+      "status": "Beta"
+    },
+    {
+      "title": "Coming soon",
+      "short": "Plastics, forging and milling are next"
+    }
   ]
 }
