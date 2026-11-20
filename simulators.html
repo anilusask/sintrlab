@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sinter Quest | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
-<meta name="description" content="Sinter Quest: The Ornament Run. A walkable retro arcade factory from the Sintering Materials Research Lab at the University of Saskatchewan. Carry an ornament through printing, casting, heat treatment, machining, forming, powder metallurgy and assembly, earning a stamp at every station.">
+<title>Sintrlab Quest: The Ornament Run | Sintering Materials Research Lab | University of Saskatchewan</title>
+<meta name="description" content="Sintrlab Quest: The Ornament Run. A walkable retro arcade factory from the Sintering Materials Research Lab at the University of Saskatchewan. Carry an ornament through printing, casting, heat treatment, machining, forming, powder metallurgy and assembly, earning a stamp at every station.">
 <link rel="canonical" href="https://sintrlab.ca/simulators.html">
-<meta property="og:title" content="Sinter Quest | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:title" content="Sintrlab Quest: The Ornament Run | Sintering Materials Research Lab">
 <meta property="og:description" content="Carry an ornament through a retro arcade factory, one manufacturing simulator at a time.">
 <meta property="og:url" content="https://sintrlab.ca/simulators.html">
 <meta property="og:type" content="website">
@@ -17,7 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site-shell.css">
 <!--
-  Sinter Quest: The Ornament Run (beta v0.2). A walkable retro arcade front door to the Manufacturing Simulator. It makes no network calls.
+  Sintrlab Quest: The Ornament Run (beta v0.2). A walkable retro arcade front door to the Sintrlab Quest. It makes no network calls.
   There are no accounts and no names: each browser gets a random player number, progress is kept in that browser (localStorage),
   and a save code or a passport file moves it to another device or hands it in. Each simulator opens inside the game with ?embed=1
   and reports back through site-nav.js when the mission is met. The header, dropdown and footer come from site-nav.js.
@@ -80,17 +80,17 @@
 <div data-site-header></div>
 <main id="main" class="wrap fx">
   <div style="padding:30px 0 4px">
-  <h1>Sinter Quest<span class="badge">Beta v0.2</span></h1>
-  <p class="sub"><b>The Ornament Run.</b> Grab the ornament and carry it through the factory. Every station is one of the manufacturing simulators: meet its mission and the part earns a stamp. Print the pattern, cast it, heat treat it, machine it, form it, and assemble it. Prefer a plain list? It is beside the game (or just below it on a phone), and every simulator also opens directly from the Manufacturing Simulator menu.</p>
+  <h1>Sintrlab Quest<span class="badge">Beta v0.2</span></h1>
+  <p class="sub"><b>The Ornament Run.</b> Grab the ornament and carry it through the factory. Every station is one of the manufacturing simulators: meet its mission and the part earns a stamp. Print the pattern, cast it, heat treat it, machine it, form it, and assemble it. Prefer a plain list? It is beside the game (or just below it on a phone), and every simulator also opens directly from the Sintrlab Quest menu.</p>
   </div>
   <section class="arcade">
     <div class="cab">
       <div class="hud"><span>PLAYER <b id="pidhud">P-000000</b></span><span>SCORE <b id="score">000000</b></span><span>STAMPS <b id="count">0/9</b></span><span class="chips" id="chips" aria-label="Stamps earned"></span></div>
       <div class="screen" id="screen">
-        <canvas id="g" width="960" height="640" tabindex="0" role="application" aria-label="Sinter Quest factory game. Use the arrow keys or W A S D to walk, and E to interact. A plain list of the simulators is next to the game."></canvas>
+        <canvas id="g" width="960" height="640" tabindex="0" role="application" aria-label="Sintrlab Quest factory game. Use the arrow keys or W A S D to walk, and E to interact. A plain list of the simulators is next to the game."></canvas>
         <div class="toast" id="toast" role="status" hidden></div>
         <div class="ov" id="start">
-          <h2>SINTER<br>QUEST</h2>
+          <h2>SINTRLAB<br>QUEST</h2>
           <h3>THE ORNAMENT RUN</h3>
           <p>GRAB THE ORNAMENT. CARRY IT THROUGH EVERY STATION.</p>
           <p>YOUR PLAYER NUMBER IS <span class="pid" id="pidstart">P-000000</span><br>WRITE IT DOWN. NO NAME NEEDED.</p>
@@ -304,7 +304,7 @@ function shipCard(){
   else{$('cardt').textContent='NOT YET';$('cardp').textContent='THE PART STILL NEEDS THE STEPS ABOVE. SIDE TRIPS ARE OPTIONAL.';}
   show('card');
 }
-function passport(){return {tool:'Sinter Quest: The Ornament Run (beta v0.2), sintrlab.ca',player:S.id,started:S.started,saved:new Date().toISOString(),score:S.score,shipped:S.shipped,corePathComplete:coreDone(),
+function passport(){return {tool:'Sintrlab Quest: The Ornament Run (beta v0.2), sintrlab.ca',player:S.id,started:S.started,saved:new Date().toISOString(),score:S.score,shipped:S.shipped,corePathComplete:coreDone(),
   stamps:ST.filter(function(s){return has(s.id);}).map(function(s){return {station:s.id,title:s.title,earned:S.stamps[s.id].t,note:S.stamps[s.id].note||''};}),playMinutes:+(S.playMs/60000).toFixed(1),saveCode:makeCode()};}
 function download(){var u=URL.createObjectURL(new Blob([JSON.stringify(passport(),null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='part-passport-'+S.id.toLowerCase()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},500);}
 function crc(str){var c,t=[];for(var n=0;n<256;n++){c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c;}var r=0xFFFFFFFF;for(var i=0;i<str.length;i++)r=t[(r^str.charCodeAt(i))&255]^(r>>>8);return ((r^0xFFFFFFFF)>>>0).toString(16).padStart(8,'0');}

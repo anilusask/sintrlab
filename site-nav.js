@@ -1,7 +1,7 @@
 /* site-nav.js
    Shared navigation for sintrlab.ca.
 
-   1. Fills every <span data-sim-menu> with the "Manufacturing Simulator" dropdown, built from simulators.json.
+   1. Fills every <span data-sim-menu> with the "Sintrlab Quest" dropdown, built from simulators.json.
    2. On pages that ask for it, builds the whole header (<div data-site-header>) and footer (<div data-site-footer>).
 
    To add a simulator: put its page in /simulators and add one entry to simulators.json. Nothing else changes. */
@@ -59,7 +59,7 @@
   /* ---------- header and footer for pages that ask for them ---------- */
   function headerHTML() {
     var nav = MAIN.map(function (it) {
-      if (it === 'SIM') return '<span data-sim-menu><a href="' + ROOT + 'simulators.html">Manufacturing Simulator</a></span>';
+      if (it === 'SIM') return '<span data-sim-menu><a href="' + ROOT + 'simulators.html">Sintrlab Quest</a></span>';
       return '<a href="' + ROOT + it[1] + '">' + it[0] + '</a>';
     }).join('');
     return '<header class="site-header"><div class="wrap"><a class="brand" href="' + ROOT + 'index.html" aria-label="Sintering Materials Research Lab, home">' +
@@ -89,7 +89,7 @@
       return '<li><a href="' + esc(ROOT + s.file) + '"' + cur + '>' + inner + '</a></li>';
     }).join('');
     host.innerHTML =
-      '<div class="sim-menu"><button type="button" class="sim-menu__btn' + (IN_SIMS ? ' is-current' : '') + '" aria-expanded="false" aria-haspopup="true" aria-controls="' + id + '">Manufacturing Simulator' +
+      '<div class="sim-menu"><button type="button" class="sim-menu__btn' + (IN_SIMS ? ' is-current' : '') + '" aria-expanded="false" aria-haspopup="true" aria-controls="' + id + '">Sintrlab Quest' +
       '<svg class="sim-menu__caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>' +
       '<div class="sim-menu__panel" id="' + id + '" hidden><div class="sim-menu__box"><ul>' + items + '</ul></div></div></div>';
     wireMenu(host.querySelector('.sim-menu'));

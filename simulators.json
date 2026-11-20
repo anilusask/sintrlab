@@ -1,9 +1,9 @@
 {
   "simulators": [
     {
-      "title": "Sinter Quest",
+      "title": "The Ornament Run",
       "file": "simulators.html",
-      "short": "A retro arcade factory: walk the ornament through every process",
+      "short": "Walk the part through the whole factory, one station at a time",
       "status": "New"
     },
     {
