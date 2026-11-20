@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3D printing | Manufacturing Simulator | Sintering Materials Research Lab | University of Saskatchewan</title>
+<title>3D printing | Sintrlab Quest | Sintering Materials Research Lab | University of Saskatchewan</title>
 <meta name="description" content="Interactive resin 3D printing simulator for casting patterns, from the Sintering Materials Research Lab at the University of Saskatchewan. Choose orientation, supports, layer height, exposure and hollowing, and see print time, surface finish and failures.">
 <link rel="canonical" href="https://sintrlab.ca/simulators/printing.html">
-<meta property="og:title" content="3D printing | Manufacturing Simulator | Sintering Materials Research Lab">
+<meta property="og:title" content="3D printing | Sintrlab Quest | Sintering Materials Research Lab">
 <meta property="og:description" content="Decide how to print a resin casting pattern and see what each choice costs.">
 <meta property="og:url" content="https://sintrlab.ca/simulators/printing.html">
 <meta property="og:type" content="website">
@@ -171,10 +171,10 @@ td.pass{color:var(--ok);font-weight:700}td.fail{color:var(--bad);font-weight:700
 <main id="main">
   <section class="tool-intro">
     <div class="wrap">
-      <p class="crumb">Manufacturing Simulator</p>
+      <p class="crumb">Sintrlab Quest</p>
       <h1>3D printing<span class="badge">Beta v0.1</span></h1>
       <p class="sub">Decide how to print a resin pattern for casting: how it sits on the plate, where the supports go, the layer height and exposure, and whether to hollow it. See what each choice does to the print time, the surface, the failures, and the casting that follows.</p>
-      <p class="fb">This is a beta. The printer and resin numbers are typical values, so calibrate them to your own printer under Printer and resin settings. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Manufacturing%20Simulator%20feedback%3A%203D%20printing%20(beta%20v0.1)">send feedback</a>.</p>
+      <p class="fb">This is a beta. The printer and resin numbers are typical values, so calibrate them to your own printer under Printer and resin settings. If something breaks or is confusing, <a href="mailto:anil.prasad@usask.ca?subject=Sintrlab%20Quest%20feedback%3A%203D%20printing%20(beta%20v0.1)">send feedback</a>.</p>
 
       <section class="mission" id="mission" aria-live="polite" style="margin-top:18px"></section>
 
@@ -707,7 +707,7 @@ function drawProfile(zc){
 
 /* ---------- save ---------- */
 function saveResult(){
-  const a=AN,rec={tool:'sintrlab.ca Manufacturing Simulator: 3D printing (beta v0.1)',saved:new Date().toISOString(),part:PARTS[S.part].name,
+  const a=AN,rec={tool:'sintrlab.ca Sintrlab Quest: 3D printing (beta v0.1)',saved:new Date().toISOString(),part:PARTS[S.part].name,
     settings:Object.assign({},params(),{printer:S.set}),
     result:{accepted:a.accepted,score:a.score,print_time_h:+(a.time/3600).toFixed(2),layers:a.layers,build_height_mm:+a.Hb.toFixed(1),resin_g:+a.resin_g.toFixed(1),cost:+a.cost.toFixed(2),
       pattern_mass_g:+a.pattern_g.toFixed(1),support_mL:+(a.suppVol/1000).toFixed(2),peel_load_pct:+(a.peelIdx*100).toFixed(0),ra_mean_um:+a.raMean.toFixed(1),
