@@ -1,11 +1,20 @@
 {
   "simulators": [
     {
+      "title": "3D printing",
+      "file": "simulators/printing.html",
+      "short": "Resin patterns: orientation, supports, exposure",
+      "status": "Beta"
+    },
+    {
       "title": "Casting",
       "file": "simulators/casting.html",
       "short": "Alloy, sand mold, pour, and slice in 3D",
-      "summary": "Design an alloy, build a sand mold in 3D, pour, and slice through the casting to see how it freezes, where it shrinks, and why it fails.",
       "status": "Beta"
+    },
+    {
+      "title": "Coming soon",
+      "short": "More simulators are on the way"
     }
   ]
 }
