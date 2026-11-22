@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Punch In | Sintering Materials Research Lab</title>
+<meta name="description" content="Punch In: carry an ornament through a factory staffed by Canadian animals, from the design office to the dock. A manufacturing game from the Sintering Materials Research Lab, University of Saskatchewan.">
+<meta name="theme-color" content="#0d0221">
+<link rel="icon" type="image/svg+xml" href="../sintrlab_symbol.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<noscript>Punch In needs JavaScript. Please turn it on, or use the plain simulator pages on sintrlab.ca.</noscript>
+<canvas id="screen" tabindex="0" role="application" aria-label="Punch In. Walk with the arrow keys or W A S D. Press E to interact, M for the map, Escape for the menu."></canvas>
+<div id="top" class="hud">
+  <a class="btn" id="back" href="../index.html">&#9664; sintrlab.ca</a>
+  <span id="where">THE YARD</span>
+  <span class="grow"></span>
+  <button class="btn" id="btnMap" type="button">MAP</button>
+  <button class="btn" id="btnMenu" type="button">MENU</button>
+</div>
+<div id="prompt" role="status" aria-live="polite" hidden></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="touch" aria-label="Touch controls">
+  <div id="dpad"><span></span><button data-k="up" aria-label="Up">&#9650;</button><span></span><button data-k="left" aria-label="Left">&#9664;</button><span></span><button data-k="right" aria-label="Right">&#9654;</button><span></span><button data-k="down" aria-label="Down">&#9660;</button><span></span></div>
+  <button id="abtn" data-k="act" aria-label="Interact">E</button>
+</div>
+
+<div id="select" class="ov" role="dialog" aria-modal="true" aria-labelledby="selT" hidden>
+  <div class="panel wide">
+    <h1 id="selT">PUNCH IN</h1>
+    <p class="tag">Pick your worker, then walk an ornament through the factory.</p>
+    <div id="cards" role="radiogroup" aria-label="Choose your character"></div>
+    <div class="row"><span class="lab">HARD HAT</span><div id="hats" role="radiogroup" aria-label="Hard hat colour"></div></div>
+    <div class="row"><button class="btn primary" id="selGo" type="button" data-first>START</button></div>
+    <p class="fine"><a href="../index.html">Back to sintrlab.ca</a></p>
+  </div>
+</div>
+
+<div id="menu" class="ov" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="panel">
+    <h2>MENU</h2>
+    <div class="list">
+      <button class="opt" id="mSound" type="button" aria-pressed="true">Sound: on</button>
+      <button class="opt" id="mHelp" type="button" aria-pressed="true">Helpers: on</button>
+      <div id="sizes" role="group" aria-label="View size"><span>View size</span><button type="button" data-size="S" aria-pressed="false">S</button><button type="button" data-size="M" aria-pressed="true">M</button><button type="button" data-size="L" aria-pressed="false">L</button></div>
+      <button class="opt" id="mChar" type="button">Change character</button>
+      <button class="opt" id="mFull" type="button">Fullscreen</button>
+      <button class="opt" id="mHow" type="button">How to play</button>
+      <details><summary>Plain simulator pages</summary>
+        <a href="../simulators/printing.html">3D printing</a><a href="../simulators/sand-casting.html">Sand casting</a><a href="../simulators/investment-casting.html">Investment casting</a><a href="../simulators/heat-treatment.html">Heat treatment</a><a href="../simulators/machining.html">Machining</a><a href="../simulators/bending.html">Bending</a><a href="../simulators/extrusion-rolling.html">Extrusion and rolling</a><a href="../simulators/powder-metallurgy.html">Powder metallurgy</a><a href="../simulators/joining-assembly.html">Joining and assembly</a>
+      </details>
+    </div>
+    <button class="btn primary" id="mClose" type="button" data-first>BACK TO GAME</button>
+    <p class="fine">Punch In, build 0.1: the yard and the doors. The shops are still being built.</p>
+  </div>
+</div>
+
+<div id="mapov" class="ov" role="dialog" aria-modal="true" aria-label="Map" hidden>
+  <div class="panel wide">
+    <h2>MAP</h2>
+    <canvas id="mapc" width="336" height="240" role="img" aria-label="Map of the factory yard with every building and your position"></canvas>
+    <p id="mapwhere"></p>
+    <button class="btn primary" id="mapClose" type="button" data-first>CLOSE (M)</button>
+  </div>
+</div>
+
+<div id="how" class="ov" role="dialog" aria-modal="true" aria-label="How to play" hidden>
+  <div class="panel">
+    <h2>HOW TO PLAY</h2>
+    <p>Walk: arrow keys or W A S D.
+Run: hold Shift.
+Use or read: E, Space or Enter.
+Map: M. Menu: Esc. Fullscreen: F.
+On a touch screen: the arrow pad and the E button.</p>
+    <p>Walk into a door to go inside. Walk out through the EXIT to come back. Read the boards to see what each shop will do.</p>
+    <button class="btn primary" id="howOk" type="button" data-first>OK</button>
+  </div>
+</div>
+
+<div id="dialog" class="ov" role="dialog" aria-modal="true" aria-labelledby="dlgT" hidden>
+  <div class="panel">
+    <h2 id="dlgT"></h2>
+    <p id="dlgX"></p>
+    <button class="btn primary" id="dlgOk" type="button" data-first>OK</button>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
