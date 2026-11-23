@@ -86,9 +86,11 @@ a:hover { color: var(--accent-deep); }
 .brand-word { height: 46px; width: auto; display: block; }
  
 .hero-grid { display: block; }
-.nav { display: flex; gap: 22px; flex-wrap: wrap; }
+.nav { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
 .nav a { font-family: var(--head); font-weight: 500; font-size: 0.98rem; color: var(--ink); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
 .nav a:hover { border-bottom-color: var(--accent); color: var(--ink); }
+.nav a.nav-game { background: var(--accent); color: #fff; padding: 6px 14px; border-radius: 4px; border-bottom-color: transparent; }
+.nav a.nav-game:hover { background: var(--accent-deep); color: #fff; border-bottom-color: transparent; }
  
 /* Hero */
 .hero { padding: 72px 0 56px; }
@@ -210,9 +212,9 @@ address { font-style: normal; }
       <a href="#capabilities">Capabilities</a>
       <a href="#people">People</a>
       <a href="#publications">Publications</a>
-      <span data-sim-menu><a href="simulators.html">Sintrlab Quest</a></span>
       <a href="#join">Join the lab</a>
       <a href="#contact">Contact</a>
+      <a class="nav-game" href="punch-in/index.html">Play Punch In</a>
     </nav>
   </div>
 </header>
